@@ -1,0 +1,193 @@
+#ifndef __MY_PDF_H
+#define __MY_PDF_H
+
+#include <iostream>
+#include <iomanip>
+#include <string>
+#include "OptionHandler.h"
+
+//root
+#include <TH1D.h>
+#include "TGraphAsymmErrors.h"
+#include "TMath.h"
+#include "TMatrixT.h"
+
+//appl_grid
+#include "appl_grid/appl_grid.h"
+#include "appl_grid/generic_pdf.h"
+
+//LHAPDF
+#include "LHAPDF/LHAPDF.h"
+#include "LHAPDF.h"
+
+//TEMP
+//#include "VariableDefinitions.h"
+
+#define DEFAULT -1
+
+using namespace std;
+
+
+//TEMP delcared in Variables.h file needed for stand alone myPDF use but not when using older MyCrossSection file
+enum enum_RenScales {e_RenScale0p5, e_RenScale1p0, e_RenScale2p0, e_n_RenScaleVals}; //e_n_* dictates future size
+enum enum_FacScales {e_FacScale0p5, e_FacScale1p0, e_FacScale2p0, e_n_FacScaleVals};
+
+
+class MyPDF {
+
+    public:
+        //VARIABLES
+        string optionsFileName;
+        const string defaultOptionsFileName; //default is to look in current directory for this file
+        TH1D* h_qqbar_prenorm;
+        TH1D* h_gg_prenorm;
+        TH1D* h_tot_prenorm;
+        TH1D* h_qqbar;
+        TH1D* h_gg;
+        TH1D* h_tot;
+        TH1D* h_gg_frac;
+        TH1D* h_qqbar_frac;
+        TGraphAsymmErrors *h_PDFBand_results;
+        TGraphAsymmErrors *h_PDFBand_results_ratio_to_ref;
+        TGraphAsymmErrors *h_AlphaS_results;
+        TGraphAsymmErrors *h_AlphaS_results_ratio_to_ref;
+        TGraphAsymmErrors *h_RenormalizationScale_results;
+        TGraphAsymmErrors *h_RenormalizationScale_results_ratio_to_ref;
+        TGraphAsymmErrors *h_FactorizationScale_results;
+        TGraphAsymmErrors *h_FactorizationScale_results_ratio_to_ref;
+        TGraphAsymmErrors *h_TotError_results;
+        TGraphAsymmErrors *h_TotError_results_ratio_to_ref;
+        string calc_desc;
+        
+        //METHODS
+        MyPDF(bool _debug=false); //default constructor
+        MyPDF(string _gridName, double _xscale=1.0, string _steeringFileName="steering_mypdf.txt", bool _debug=false);
+        void Print();
+        void PrintKnownOptionsForSteering();
+        void PrintFoundOptionsFromSteering();
+        void ReadSteering(const string _fileName);
+        TH1 *TH1NormToTot(TH1 *h1, double _yscale=1.0, double _xscale=1.);
+        void InitializeErrorGraphs();
+        void CalcSystErrors();
+        void CalcPDFBandErrors();
+        void CalcAlphaSErrors();
+        void CalcRenormalizationScaleErrors();
+        void CalcFactorizationScaleErrors();
+        void CalcTotErrors();
+        void GetRatioToTH1(TH1D* href);
+        TGraphAsymmErrors* myTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr=1);
+        TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
+        void CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMatrixT<double> data_cov_matrix, double &chi2);
+        
+        
+        //accessor methods
+        bool isDebugOn() const{return debug;};
+        string getSteeringFileDir() const{return steeringFileDir;};
+        string getSteeringFileName() const{return steeringFileName;};
+        string getPDFtype() const{return PDFtype;};
+        string getPDFname() const{return PDFname;};
+        int getNumPDFMembers() const{return n_PDFMembers;};
+        int getFillStyleCode() const{return fillStyleCode;};
+        int getFillColorCode() const{return fillColorCode;};
+        string getPDFBandType() const{return PDFBandType;};
+        string getPDFErrorType() const{return PDFErrorType;};
+        string getPDFErrorSize() const{return PDFErrorSize;};
+        string getRenScaleName() const{return renScaleName;};
+        double getRenScaleVal() const{return renScaleVal;};
+        string getFacScaleName() const{return facScaleName;};
+        double getFacScaleVal() const{return facScaleVal;};
+        int getNumPDFtypes() const{return n_PDFtypes;};
+        bool getDoPDFBand() const{return do_PDFBand;};
+        bool getDoAlphaS() const{return do_AlphaS;};
+        bool getDoRenormalizationScale() const{return do_RenormalizationScale;};
+        bool getDoFactorizationScale() const{return do_FactorizationScale;};
+        bool getDoTotError() const{return do_TotError;};
+        
+        //mutator methods
+        void setDebug(bool _debug);
+        void setSteeringFilePath(string _setSteeringFilePath);
+        void setSteeringFileDir(string _steeringFileDir);
+        void setSteeringFileName(string _steeringFileName);
+        void setPDFtype(string _PDFtype);
+        void setPDFname(string _PDFname);
+        void setNumPDFMembers(int _n_PDFMembers);
+        void setFillStyleCode(int _fillStyleCode);
+        void setFillColorCode(int _fillColorCode);
+        void setPDFBandType(string _PDFBandType);
+        void setPDFErrorType(string _PDFErrorType);
+        void setPDFErrorSize(string _PDFErrorSize);
+        void setRenScaleName(string _renScaleName);
+        void setRenScaleVal(double _renScaleVal);
+        void setFacScaleName(string _facScaleName);
+        void setFacScaleVal(double _facScaleVal);
+        void setOptionsFileName(string _optionsFileName);
+
+    private:
+        //VARIABLES
+        bool debug;
+        string steeringFilePath;
+        string steeringFileDir;
+        string steeringFileName;    //name of steering file
+        int n_PDFtypes;
+        string PDFtype;             //general name for PDF EX: "MSTW2008nlo"
+        string PDFname;             //specific name for PDF EX: "MSTW2008nlo68cl"
+        int n_PDFMembers;
+        int fillStyleCode;
+        int fillColorCode;
+        string PDFBandType;
+        string PDFErrorType;
+        string PDFErrorSize;
+        string renScaleName;
+        double renScaleVal;
+        string facScaleName;
+        double facScaleVal;
+        OptionHandler *myOptions;
+        bool f_PDFBandType;
+        bool f_PDFErrorSize;
+        
+        //start old from therory_error_info/calc
+        appl::grid *my_grid;
+    
+        string gridName;
+        std::vector<TH1D*> h_errors_RenormalizationScale;
+        std::vector<TH1D*> h_errors_FactorizationScale;
+        std::vector<TH1D*> h_errors_PDFBand;
+        std::vector<TH1D*> h_errors_prenorm;
+        std::vector<TH1D*> h_errors_AlphaS;
+        std::vector<TH1D*> h_errors_AlphaS_prenorm;
+        
+        double xscale;
+        bool do_PDFBand;
+        bool do_AlphaS;
+        bool do_RenormalizationScale;
+        bool do_FactorizationScale;
+        bool do_TotError;
+        //end old from therory_error_info/calc
+        
+        //METHODS
+        void Initialize();
+        bool fileExists(const string _fileName);
+        void setVariablesDefault();
+        void setSteeringFileNameAndDir(const string _path);
+};
+
+const string defaultOptionsFileName="options_mypdf.txt";
+
+/*
+//currently decalred in local directory LHAPDF.h
+extern "C" void evolvepdf_(const double& , const double& , double* );
+extern "C" double alphaspdf_(const double& Q);
+*/
+
+/*
+void getPDF(const double& x, const double& Q, double* xf) {
+    evolvepdf_(x, Q, xf);
+    //evolvePDF( x, Q, xf);        //// calls LHAPDF
+}
+
+double alphasPDF(const double& Q) {
+    return alphaspdf_(Q);
+}
+*/
+
+#endif
