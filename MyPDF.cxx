@@ -41,7 +41,7 @@ MyPDF::MyPDF(bool _debug)
     if(debug)std::cout<<" MyPDF::MyPDF: start"<<std::endl;
     
     //no values are being set for default, so assign default values to avoid crashes
-    this->setVariablesDefault();
+    setVariablesDefault();
 
     debug=_debug;
     if(debug) std::cout<<"MyPDF::MyPDF: Debug is: "<<std::endl;
@@ -53,9 +53,9 @@ MyPDF::MyPDF(bool _debug)
 //overloaded constructor
 MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _debug)
 {
-    if(debug)std::cout<<" MyPDF::MyPDF: overloaded start"<<std::endl;
+    if(debug)std::cout<<" MyPDF::MyPDF: Start overloaded constructor"<<std::endl;
     
-    this->setVariablesDefault();
+    setVariablesDefault();
     debug=_debug;
     gridName=_gridName;
     xscale=_xscale;
@@ -70,15 +70,15 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _d
            <<"\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
 
     if(fileExists(_steeringFileName)==true) {
-        this->ReadSteering(_steeringFileName);
-        this->Initialize();
+        ReadSteering(_steeringFileName);
+        Initialize();
     }
     else {
         std::cout<<"MyPDF::MyPDF: WARNING: Couldn't find file names: "<<_steeringFileName<<std::endl;
-        this->setVariablesDefault();
+        setVariablesDefault();
     }
     
-    if(debug)std::cout<<" MyPDF::MyPDF: overloaded End"<<std::endl;
+    if(debug)std::cout<<" MyPDF::MyPDF: End overloaded constructor"<<std::endl;
 }
 
 
@@ -232,7 +232,7 @@ void MyPDF::Initialize()
 
         for(int alphai = 0; alphai < h_errors_AlphaS_prenorm.size(); alphai++) {
             double stev=1000.;
-            std::cout<<" MyPDF::Initialize: use an xscale of "<<xscale<<" #evs assumed: "<<stev<<"\n";
+            if(debug) std::cout<<" MyPDF::Initialize: use an xscale of "<<xscale<<" #evs assumed: "<<stev<<"\n";
             temp_hist = (TH1D*) TH1NormToTot(h_errors_AlphaS_prenorm.at(alphai), 1. / 1000., 1000.*xscale/stev);
             TString the_name = h_errors_AlphaS_prenorm.at(alphai)->GetName();
             temp_hist->SetName((TString) (the_name + "_normalized"));
@@ -338,10 +338,11 @@ void MyPDF::InitializeErrorGraphs()
 
     if(debug) std::cout<<" MyPDF::InitializeErrorGraphs: PDFtype: "<<PDFtype<<", do_AlphaS: "<<do_AlphaS<<", do_PDFBand: "<<do_PDFBand<<std::endl;
     int n_bins = 0;
-    if(debug)  std::cout<<"Initialize PDFBand_results TGraphs. size of AlphaS = "<<h_errors_AlphaS.size()
-                       <<", RenScale size = "<<h_errors_RenormalizationScale.size()
-                       <<", FactScale size = "<<h_errors_FactorizationScale.size()
-                       <<", PDFBand size = "<<h_errors_PDFBand.size()<<std::endl;
+    if(debug)  std::cout<<"MyPDF::InitializeErrorGraphs: Initialize PDFBand_results TGraphs. "
+                        <<" Size of AlphaS = "<<h_errors_AlphaS.size()
+                        <<", RenScale size = "<<h_errors_RenormalizationScale.size()
+                        <<", FactScale size = "<<h_errors_FactorizationScale.size()
+                        <<", PDFBand size = "<<h_errors_PDFBand.size()<<std::endl;
 
 
     if( do_AlphaS ) n_bins = h_errors_AlphaS.at(0)->GetNbinsX();
@@ -928,12 +929,18 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
 //read the provided steering file and set internal variables depending on what is read
 void MyPDF::ReadSteering(const string _fileName)
 {
-    if (debug) std::cout<<" MyPDF::ReadSteering: reading steering file named: "<<_fileName<<std::endl;
+    string fName="";
+    if(_fileName.size()>0)
+        fName=_fileName;
+    else
+        fName=steeringFilePath;
+        
+    if (debug) std::cout<<" MyPDF::ReadSteering: reading steering file named: "<<fName<<std::endl;
 
     //Open the file for reading if it can be read/found
-    ifstream infile(_fileName.c_str(), ios::in);
+    ifstream infile(fName.c_str(), ios::in);
     if(!infile) {
-        cerr<<" MyPDF::ReadSteering: WARNING: Can't open "<<_fileName<<"\n";
+        cerr<<" MyPDF::ReadSteering: WARNING: Can't open "<<fName<<std::endl;
         infile.close();
         exit (1); //TEMP TEST
     } else {
@@ -1043,7 +1050,7 @@ void MyPDF::Print()
        <<"\n"<<setw(w)<<"renScaleVal:"    <<setw(w)<<(renScaleVal!=DEFAULT? to_string(renScaleVal):empty)
        <<"\n"<<setw(w)<<"facScaleName:"   <<setw(w)<<(facScaleName.size()>0? facScaleName:empty)
        <<"\n"<<setw(w)<<"facScaleVal:"    <<setw(w)<<(facScaleVal!=DEFAULT? to_string(facScaleVal):empty)
-       <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
+       <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
 }
 
 
@@ -1166,8 +1173,13 @@ void MyPDF::PrintFoundOptionsFromSteering()
 void MyPDF::setDebug(bool _debug) {
     debug=_debug;
 }
+void MyPDF::setGridName(string _gridName) {
+    gridName=_gridName;
+}
 void MyPDF::setSteeringFilePath(string _steeringFilePath) {
     steeringFilePath=_steeringFilePath;
+    //udate the Dir location and file name of the steering file if the path is changed
+    setSteeringFileNameAndDir(steeringFilePath); 
 }
 void MyPDF::setSteeringFileDir(string _steeringFileDir) {
     steeringFileDir=_steeringFileDir;

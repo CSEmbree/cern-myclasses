@@ -62,6 +62,7 @@ class MyPDF {
         //METHODS
         MyPDF(bool _debug=false); //default constructor
         MyPDF(string _gridName, double _xscale=1.0, string _steeringFileName="steering_mypdf.txt", bool _debug=false);
+        void Initialize();
         void Print();
         void PrintKnownOptionsForSteering();
         void PrintFoundOptionsFromSteering();
@@ -82,6 +83,7 @@ class MyPDF {
         
         //accessor methods
         bool isDebugOn() const{return debug;};
+        string getSteeringFilePath() const{return steeringFilePath;};
         string getSteeringFileDir() const{return steeringFileDir;};
         string getSteeringFileName() const{return steeringFileName;};
         string getPDFtype() const{return PDFtype;};
@@ -105,7 +107,8 @@ class MyPDF {
         
         //mutator methods
         void setDebug(bool _debug);
-        void setSteeringFilePath(string _setSteeringFilePath);
+        void setGridName(string _gridName);
+        void setSteeringFilePath(string _steeringFilePath);
         void setSteeringFileDir(string _steeringFileDir);
         void setSteeringFileName(string _steeringFileName);
         void setPDFtype(string _PDFtype);
@@ -148,13 +151,13 @@ class MyPDF {
         //start old from therory_error_info/calc
         appl::grid *my_grid;
     
-        string gridName;
         std::vector<TH1D*> h_errors_RenormalizationScale;
         std::vector<TH1D*> h_errors_FactorizationScale;
         std::vector<TH1D*> h_errors_PDFBand;
         std::vector<TH1D*> h_errors_prenorm;
         std::vector<TH1D*> h_errors_AlphaS;
         std::vector<TH1D*> h_errors_AlphaS_prenorm;
+        string gridName;
         
         double xscale;
         bool do_PDFBand;
@@ -165,7 +168,6 @@ class MyPDF {
         //end old from therory_error_info/calc
         
         //METHODS
-        void Initialize();
         bool fileExists(const string _fileName);
         void setVariablesDefault();
         void setSteeringFileNameAndDir(const string _path);

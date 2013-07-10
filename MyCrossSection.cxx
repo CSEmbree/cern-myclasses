@@ -475,20 +475,20 @@ void MyCrossSection::DrawErrors(MyPDF *mypdf[], bool use_this_pdf[], TString x_t
         std::cout << "pdfi: " << pdfi << ", error code = " << error_code << ", use it? ";
         std::cout << use_this_pdf[pdfi] << std::endl;
         if( !use_this_pdf[pdfi] ) continue;
-        if( error_code == e_PDFBandCode ) {
+        if( mypdf[pdfi]->getDoPDFBand() ) {
             std::cout << "Do PDFBand" << std::endl;
-            std::cout << "PDF_strs = " << PDF_strs[pdfi] << std::endl;
+            std::cout << "PDFType = " << mypdf[pdfi]->getPDFtype() << std::endl;
             std::cout << "calc desc = " << mypdf[pdfi]->calc_desc << std::endl;
             std::cout << "PDFBand name = " << mypdf[pdfi]->h_PDFBand_results->GetName() << std::endl;
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_PDFBand_results->Clone((TString) (PDF_strs[pdfi] + "_error_bar_graph"));
-        } else if( error_code == e_AlphaSCode ) {
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_AlphaS_results->Clone((TString) (PDF_strs[pdfi] + "_error_bar_graph"));
-        } else if( error_code == e_RenormalizationScaleCode ) {
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_RenormalizationScale_results->Clone((TString) (PDF_strs[pdfi] + "_error_bar_graph"));
-        } else if( error_code == e_FactorizationScaleCode ) {
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_FactorizationScale_results->Clone((TString) (PDF_strs[pdfi] + "_error_bar_graph"));
-        } else if( error_code == e_TotErrorCode ) {
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_TotError_results->Clone((TString) (PDF_strs[pdfi] + "_error_bar_graph"));
+            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_PDFBand_results->Clone((TString) (mypdf[pdfi]->getPDFtype() + "_error_bar_graph"));
+        } else if( mypdf[pdfi]->getDoAlphaS() ) {
+            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_AlphaS_results->Clone((TString) (mypdf[pdfi]->getPDFtype() + "_error_bar_graph"));
+        } else if( mypdf[pdfi]->getDoRenormalizationScale() ) {
+            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_RenormalizationScale_results->Clone((TString) (mypdf[pdfi]->getPDFtype() + "_error_bar_graph"));
+        } else if( mypdf[pdfi]->getDoFactorizationScale() ) {
+            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_FactorizationScale_results->Clone((TString) (mypdf[pdfi]->getPDFtype() + "_error_bar_graph"));
+        } else if( mypdf[pdfi]->getDoTotError() ) {
+            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) mypdf[pdfi]->h_TotError_results->Clone((TString) (mypdf[pdfi]->getPDFtype() + "_error_bar_graph"));
         }
     }
     std::cout << "DrawErrors 2" << std::endl;
@@ -511,6 +511,10 @@ void MyCrossSection::DrawErrors(MyPDF *mypdf[], bool use_this_pdf[], TString x_t
         if( x_min < x_max) Theory_graph_for_draw[pdfi]->GetXaxis()->SetRangeUser(x_min, x_max);
         Theory_graph_for_draw[pdfi]->GetXaxis()->SetTitle(x_title);
         Theory_graph_for_draw[pdfi]->SetTitle("");
+        
+        Theory_graph_for_draw[pdfi]->SetFillColor(mypdf[pdfi]->getFillColorCode());
+        Theory_graph_for_draw[pdfi]->SetFillStyle(mypdf[pdfi]->getFillStyleCode());
+        /*
         if( pdfi == e_CT10 ) {
             Theory_graph_for_draw[pdfi]->SetFillColor(kGreen+2);
             Theory_graph_for_draw[pdfi]->SetFillStyle(3005);
@@ -527,6 +531,7 @@ void MyCrossSection::DrawErrors(MyPDF *mypdf[], bool use_this_pdf[], TString x_t
             Theory_graph_for_draw[pdfi]->SetFillColor(kGreen+10);
             Theory_graph_for_draw[pdfi]->SetFillStyle(3021);
         }
+        */
         if( first_time_pdf && first_of_canv ) Theory_graph_for_draw[pdfi]->Draw("A E2");
         else Theory_graph_for_draw[pdfi]->Draw("E2 same");
         first_time_pdf = false;
