@@ -23,6 +23,7 @@ using std::string;
 //#include "theory_error_info.h"
 
 #include "OptionHandler.h"
+#include "MyPDF.h"
 
 //#include "appl_grid/appl_pdf.h"
 
@@ -65,6 +66,9 @@ class MyCrossSection {
   std::vector<int> refhistlinecolor; // line color of reference histogram
   std::vector<long unsigned int> events; // number of events from grid
   std::vector<MyFrame*> framepointer; // pointer to MyFrame
+  
+  std::vector<string> pdfdata;
+  std::vector<MyPDF*> t_mypdf;
 
 
   int processnumber; // process number foresee setting from reaction
@@ -102,11 +106,82 @@ class MyCrossSection {
 
   void Normalise(TH1D* h, double yscale, double xscale, bool normtot);
   int GetNGrid(){return gridname.size();};
+  
+  void mypdfInitializeErrorGraphs(int igrid) {
+    if(igrid>t_mypdf.size())
+        std::cout<<" MyCrossSection::mypdfInitializeErrorGraphs: ERROR: t_mypdf not found for igrid: "<<igrid<<std::endl;
+    else
+        t_mypdf.at(igrid)->InitializeErrorGraphs();
+  }
+
+  void mypdfCalcSystErrors(int igrid) {
+    if(igrid>t_mypdf.size())
+        std::cout<<" MyCrossSection::mypdfCalcSystErrors: ERROR: t_mypdf not found for igrid: "<<igrid<<std::endl;
+    else
+        t_mypdf.at(igrid)->CalcSystErrors();
+  }
+
+  void mypdfGetRatioToTH1(int igrid, TH1D* href) {
+    if(igrid>t_mypdf.size())
+        std::cout<<" MyCrossSection::mypdfGetRatioToTH: ERROR: t_mypdf not found for igrid: "<<igrid<<std::endl;
+    else
+        t_mypdf.at(igrid)->GetRatioToTH1(href);
+  }
+
+  
   //string GetNtupDirInput(){ return ntupdirinput;};
   //string GetNtupDirOutput(){ return ntupdiroutput;};
   string GetNtupName(){ return ntupname;};
 
-  string GetGridName(int igrid){ return gridnamedir+"/"+gridname[igrid];};
+  string GetGridName(int igrid){ 
+    if(gridnamedir.compare("")==0)
+        return gridname[igrid];
+    else
+        return gridnamedir+"/"+gridname[igrid];
+  };
+  
+  
+  string GetPDFData(int igrid) {
+    if(igrid>pdfdata.size()) {
+        std::cout<<" MyCrossSection:: GetPDFData: ERROR: pdfdata not found for igrid: "<<igrid<<std::endl;
+        return string("");
+    }
+    else
+        return pdfdata[igrid];
+  };
+  
+  std::vector<std::string>* GetPDFData() {
+    if(pdfdata.size()==0)
+        return NULL;
+    else
+        return &pdfdata;
+  };
+  
+  int GetNumPDF() {
+    return pdfdata.size();
+  };
+  
+  MyPDF* GetMyPDF(int igrid) {
+    if(igrid>t_mypdf.size()) {
+        std::cout<<" MyCrossSection:: GetMyPDF: ERROR: mypdf not found for igrid: "<<igrid<<std::endl;
+        return NULL;
+    }
+    else
+        return t_mypdf[igrid];
+  }
+  
+  std::vector<MyPDF*>* GetMyPDF() {
+    if(t_mypdf.size()==0) {
+        std::cout<<" MyCrossSection:: GetMyPDF: ERROR: mypdf not found for igrid: "<<std::endl;
+        return NULL;
+    }
+    else
+        return &t_mypdf;
+  }
+
+  
+  
+  
   TString GetTStringGridName(int igrid){ return ((TString) (gridnamedir+"/"+gridname[igrid]));  };
   TString GetVarDesc(int igrid){ return ((TString) (vardesc.at(igrid))); }
  /*
@@ -247,8 +322,11 @@ class MyCrossSection {
 
   TH1D *GetReference(int igrid);
   void Draw(int igrid);
- // void DrawPDFs(theory_error_calc *my_theory_calcs[], bool use_this_pdf[], TString x_title, float x_min, float x_max, bool first_of_canv);
-  void MyCrossSection::DrawErrors(MyPDF *mypdf[], bool use_this_pdf[], TString x_title, float x_min, float x_max, bool first_of_canv, int error_code);
+
+  
+  void MyCrossSection::DrawErrors(TString x_title, float x_min, float x_max, bool first_of_canv, int error_code);
+  void MyCrossSection::DrawError(int pdfi, TString x_title, float x_min, float x_max, bool first_of_canv, int error_code);
+  
   void DrawData(int igrid){
    mydata[igrid]->DrawData();
    return;

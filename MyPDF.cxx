@@ -91,7 +91,7 @@ void MyPDF::Initialize()
     else std::cout<<" MyPDF::Initialize: ERROR: No steering file was provided!"<<std::endl;
 
 
-    calc_desc = "theory_errors";
+    calc_desc = "mypdf-theory_errors";
     if(do_PDFBand)
         calc_desc+="_PDFBand";
     if(do_AlphaS)
@@ -102,7 +102,7 @@ void MyPDF::Initialize()
         calc_desc+="_FS";
     if( !do_PDFBand && !do_AlphaS && !do_RenormalizationScale && !do_FactorizationScale ) {
         std::cout<<" MyPDF::Initialize: ERORR: All theory uncertainties disabled. Configuration file error?"<<std::endl;
-        exit(0);
+        exit(0); //TEST
     }
 
     my_grid = new appl::grid(gridName.c_str());
@@ -122,7 +122,9 @@ void MyPDF::Initialize()
     std::cout<<" MyPDF::Initialize: Fill PDF errors for "<<PDFtype<<std::endl;
     string default_pdf_set_name = (std::string) ("PDFsets/"+PDFtype+".LHgrid");
     if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name ="PDFsets/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
+    std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
     LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
+    
 
     h_qqbar_prenorm = (TH1D*)my_grid->convolute_subproc(6, getPDF, alphasPDF, nLoops);      ///// maybe also subprocess 5?
     h_qqbar_prenorm->SetName((TString) ("h_qqbar_prenorm_" + calc_desc));
