@@ -1030,15 +1030,16 @@ void MyPDF::ReadSteering(const string _fileName)
 //Print all internal variable values
 void MyPDF::Print()
 {
-    int w=25;               //arbitrary size that makes the formatting look pretty
+    int w=30;               //arbitrary size that makes the formatting look pretty
     string empty="<empty>"; //print this if no input has been provided for that variable
 
-    std::cout<<" MyPDF::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-       <<"\n"<<setw(w)<<"debug:"          <<setw(w)<<(debug? "ON":"OFF")
-       <<"\n"<<setw(w)<<"steeringFilePath:"<<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
-       <<"\n"<<setw(w)<<"steeringFileDir:"<<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
-       <<"\n"<<setw(w)<<"steeringFileName:"<<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
-       <<"\n"<<setw(w)<<"optionsFile:"    <<setw(w)<<(optionsFileName.size()>0? optionsFileName:empty)
+    std::cout<<" MyPDF::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+       <<"\n"<<setw(w)<<"debug:"            <<setw(w)<<(debug? "ON":"OFF")
+       <<"\n"<<setw(w)<<"steeringFilePath:" <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
+       <<"\n"<<setw(w)<<"steeringFileDir:"  <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
+       <<"\n"<<setw(w)<<"steeringFileName:" <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
+       <<"\n"<<setw(w)<<"optionsFile:"      <<setw(w)<<(optionsFileName.size()>0? optionsFileName:empty)
+       <<"\n"<<setw(w)<<"gridName:"         <<setw(w)<<(gridName.size()>0? gridName:empty)
        <<"\n"
        <<"\n"<<setw(w)<<"PDFtype:"        <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
        <<"\n"<<setw(w)<<"PDFname:"        <<setw(w)<<(PDFname.size()>0? PDFname:empty)
@@ -1052,18 +1053,23 @@ void MyPDF::Print()
        <<"\n"<<setw(w)<<"renScaleVal:"    <<setw(w)<<(renScaleVal!=DEFAULT? to_string(renScaleVal):empty)
        <<"\n"<<setw(w)<<"facScaleName:"   <<setw(w)<<(facScaleName.size()>0? facScaleName:empty)
        <<"\n"<<setw(w)<<"facScaleVal:"    <<setw(w)<<(facScaleVal!=DEFAULT? to_string(facScaleVal):empty)
-       <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
+       <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
 }
 
 
 //always check for file existence before usage
 bool MyPDF::fileExists(const string _fileName)
 {
+    bool exists;
+    
     if ( FILE* file=fopen(_fileName.c_str(),"r") ) {
         fclose(file);
-        return true;
+        exists = true;
     }
-    else return false;
+    else exists = false;
+    
+    std::cout<<"Does this file: '"<<_fileName<<"' exist? "<<exists<<std::endl;
+    return exists;
 }
 
 

@@ -19,7 +19,7 @@ void DumpTH1D(TH1D* my_hist);
 void DrawRatioPlot(MyFrameData *myframe, TGraphAsymmErrors* reference_ratio, MyCrossSection *mycross, float x_min, float x_max, int error_code, int igrid);
 void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code);
 void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc, TString x_title, bool logy, bool logx);
-void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx);
+void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx);
 std::vector<bool> first_time_pdf; //vector indicating if a paritcular index has been drawn for the first time yet
 
 
@@ -66,15 +66,16 @@ int main(int argc, char** argv)
     inputname="atlas2012_top.txt";
 
     MyCrossSection *mycross= new MyCrossSection( (char*) inputname.c_str());
-    std::cout<<"mycross has this many pdfs: "<<mycross->PDFSetCodes_vec.size()<<std::endl;
+    std::cout<<"mycross has this many pdfs: "<<mycross->GetNPDF()<<std::endl;
+    std::cout<<"mycross has this many grids: "<<mycross->GetNGrid()<<std::endl;
     std::cout<<"Printing Crosssection..."<<std::endl;
     mycross->Print();
     std::cout << "Printed Cross section" << std::endl;
     
-            int numPDFtypes = mycross->GetNumPDF();
+            int NGrids = mycross->GetNGrid();
 
-    for (int igrid=0; igrid<numPDFtypes igrid++) {
-        std::cout << "MyFrameData for igrid " << igrid <<", of NGrids: "<<mycross->GetNGrid()<<", and numPDFtypes: "<<numPDFtypes<<std::endl;
+    for (int igrid=0; igrid<NGrids; igrid++) {
+        std::cout << "MyFrameData for igrid " << igrid <<", of NGrids: "<<mycross->GetNGrid()<<std::endl;
 
         first_time_pdf.push_back(true);
         
@@ -82,11 +83,11 @@ int main(int argc, char** argv)
 
         double xscale_factor = mycross->GetMyData(igrid)->GetUnitGeVFactor();
         std::cout << "for grid: " << mycross->GetGridName(igrid) << ", xscale_factor is " << xscale_factor << std::endl;
-        mycross->GetMyPDF(igrid)->Print();
+        //mycross->GetMyPDF(igrid)->Print();
 
         mycross->mypdfInitializeErrorGraphs(igrid);
         mycross->mypdfCalcSystErrors(igrid);
-        mycross->mypdfGetRatioToTH1(igrid, h_reference);
+        mycross->mypdfGetRatioToTH1(h_reference,igrid);
 
        
         DrawAndSaveResults(mycross, igrid, 0);
@@ -124,12 +125,13 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
     std::cout << "Save sub2" << std::endl;
 
     //int numPDFtypes = mypdf[0]->getNumPDFtypes();
-    int numPDFtypes = mycross->GetNumPDF();
+    //int numPDFtypes = mycross->GetNumPDF(igrid);
+    int numPDFtypes = mycross->GetNPDF(igrid);
     
-    for(int pdfi = 0; pdfi < numPDFtypes; pdfi++)
+    for(int ipdf = 0; ipdf < numPDFtypes; ipdf++)
     {
-        MyPDF *current_pdf = mycross->GetMyPDF(pdfi);
-        std::cout << "Save sub2, pdfi: " << pdfi << std::endl;
+        MyPDF *current_pdf = mycross->GetMyPDF(igrid, ipdf);
+        std::cout << "Save sub2, ipdf: " << ipdf << std::endl;
         hists_to_plot_gg_prenorm.push_back      (current_pdf->h_gg_prenorm);
         hists_to_plot_qqbar_prenorm.push_back   (current_pdf->h_qqbar_prenorm);
         hists_to_plot_tot_prenorm.push_back     (current_pdf->h_tot_prenorm);
@@ -138,40 +140,40 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
         hists_to_plot_qqbar_frac.push_back      (current_pdf->h_qqbar_frac);
         hists_to_plot_qqbar.push_back           (current_pdf->h_qqbar);
         hists_to_plot_tot.push_back             (current_pdf->h_tot);
-        PDF_codes.push_back(pdfi);
+        PDF_codes.push_back(ipdf);
     }
 
-    SaveThisSubprocess(hists_to_plot_gg_prenorm,    mycross, TString(var_desc + "_gg_prenorm"),    x_title, logy, logx);
-    SaveThisSubprocess(hists_to_plot_qqbar_prenorm, mycross, TString(var_desc + "_qqbar_prenorm"), x_title, logy, logx);
-    SaveThisSubprocess(hists_to_plot_tot_prenorm,   mycross, TString(var_desc + "_tot_prenorm"),   x_title, logy, logx);
-    SaveThisSubprocess(hists_to_plot_gg,            mycross, TString(var_desc + "_gg"),            x_title, logy, logx);
-    SaveThisSubprocess(hists_to_plot_gg_frac,       mycross, TString(var_desc + "_gg_frac"),       x_title, false, logx);
-    SaveThisSubprocess(hists_to_plot_qqbar_frac,    mycross, TString(var_desc + "_qqbar_frac"),    x_title, false, logx);
-    SaveThisSubprocess(hists_to_plot_qqbar,         mycross, TString(var_desc + "_qqbar"),         x_title, logy, logx);
-    SaveThisSubprocess(hists_to_plot_tot,           mycross, TString(var_desc + "_tot"),           x_title, logy, logx);
-
-
-    for(int pdfi = 0; pdfi < numPDFtypes; pdfi++) 
+    for(int ipdf = 0; ipdf < numPDFtypes; ipdf++)
     {
-        std::cout << "Get inclusive cross-section for " << var_desc << ", PDF: " << mycross->GetMyPDF(pdfi)->getPDFBandType() << ": " << std::endl;
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_gg_prenorm,    mycross, TString(var_desc + "_gg_prenorm"),    x_title, logy, logx);
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_qqbar_prenorm, mycross, TString(var_desc + "_qqbar_prenorm"), x_title, logy, logx);
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_tot_prenorm,   mycross, TString(var_desc + "_tot_prenorm"),   x_title, logy, logx);
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_gg,            mycross, TString(var_desc + "_gg"),            x_title, logy, logx);
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_gg_frac,       mycross, TString(var_desc + "_gg_frac"),       x_title, false, logx);
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_qqbar_frac,    mycross, TString(var_desc + "_qqbar_frac"),    x_title, false, logx);
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_qqbar,         mycross, TString(var_desc + "_qqbar"),         x_title, logy, logx);
+        SaveThisSubprocess(igrid, ipdf, hists_to_plot_tot,           mycross, TString(var_desc + "_tot"),           x_title, logy, logx);
+    }
+
+    for(int ipdf = 0; ipdf < numPDFtypes; ipdf++) 
+    {
+        std::cout << "Get inclusive cross-section for " << var_desc << ", PDF: " << mycross->GetMyPDF(igrid, ipdf)->getPDFBandType() << ": " << std::endl;
         float inclusive_cross_section = 0.;
-        for(int bi = 1; bi <= hists_to_plot_tot_prenorm.at(pdfi)->GetNbinsX(); bi++) {
-            float bin_width = hists_to_plot_tot_prenorm.at(pdfi)->GetBinWidth(bi) / 1000.;
-            float bin_center = hists_to_plot_tot_prenorm.at(pdfi)->GetBinCenter(bi);
-            float bin_content = hists_to_plot_tot_prenorm.at(pdfi)->GetBinContent(bi);
+        for(int bi = 1; bi <= hists_to_plot_tot_prenorm.at(ipdf)->GetNbinsX(); bi++) {
+            float bin_width = hists_to_plot_tot_prenorm.at(ipdf)->GetBinWidth(bi) / 1000.;
+            float bin_center = hists_to_plot_tot_prenorm.at(ipdf)->GetBinCenter(bi);
+            float bin_content = hists_to_plot_tot_prenorm.at(ipdf)->GetBinContent(bi);
             inclusive_cross_section += (bin_width*bin_content);
             std::cout << "center: " << bin_center << ", width: " << bin_width << ", content: " << bin_content << ", Add " << (bin_width*bin_content) << ", cross-section now is " << inclusive_cross_section << "\n";
 
         }
-        std::cout << "For " << mycross->GetMyPDF(pdfi)->getPDFBandType() << ", inclusive cross-section  is " << inclusive_cross_section << "\n";
+        std::cout << "For " << mycross->GetMyPDF(igrid, ipdf)->getPDFBandType() << ", inclusive cross-section  is " << inclusive_cross_section << "\n";
     }
 }
 
 //void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, std::vector<int> PDF_codes, TString plot_desc, TString x_title, bool logy, bool logx)
-void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx)
+void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx)
 {
-    //int numPDFtypes = mypdf[0]->getNumPDFtypes();
-    int numPDFtypes = mycross->GetNumPDF();
 
     TString plot_dir = "images/subprocesses/";
     TCanvas *print_canv = new TCanvas("print_canv", "", 600, 700);
@@ -187,25 +189,23 @@ void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, MyCrossSection *mycros
     float min_val = 9999999.;
     std::cout << "Spew hist contents for " << plot_desc << "\n";
 
-    //for(int pdfi = 0; pdfi < PDF_codes.size(); pdfi++) {
-    for(int pdfi = 0; pdfi < numPDFtypes; pdfi++) {
-        //std::cout << "PDF: " << mypdf[pdfi]->getPDFname() << ": "<<endl;
-        std::cout << "PDF: " << mycross->GetMyPDF(pdfi)->getPDFname() << ": "<<endl;
+
+        std::cout << "PDF: " << mycross->GetMyPDF(igrid, ipdf)->getPDFname() << ": "<<endl;
         
         
         std::cout << "TEST: hists_to_plot.size(): "<<hists_to_plot.size()<<std::endl;
         //exit(0); //TEST
 
-        for(int bi = 1; bi <= hists_to_plot.at(pdfi)->GetNbinsX(); bi++) {
+        for(int bi = 1; bi <= hists_to_plot.at(ipdf)->GetNbinsX(); bi++) {
             
-            float center = hists_to_plot.at(pdfi)->GetBinCenter(bi);
-            float content = hists_to_plot.at(pdfi)->GetBinContent(bi);
+            float center = hists_to_plot.at(ipdf)->GetBinCenter(bi);
+            float content = hists_to_plot.at(ipdf)->GetBinContent(bi);
 
             if( content > max_val ) max_val = content;
             if( content < min_val && content > 0.0000000001 ) min_val = content;
             std::cout << "center: " << center << ", content: " << content << ", max so far: " << max_val << ", min: " << min_val << "\n";
         }
-    }
+  
 
     max_val *= 1.4;
     if( logy ) {
@@ -224,12 +224,11 @@ void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, MyCrossSection *mycros
     hists_to_plot.at(0)->SetXTitle(x_title);
     hists_to_plot.at(0)->Draw();
 
-    for(int pdfi = 1; pdfi < numPDFtypes; pdfi++) {
-        hists_to_plot.at(pdfi)->Draw("same");
-    }
-    for(int pdfi = numPDFtypes-1; pdfi >= 0; pdfi--) {
-        my_leg->AddEntry(hists_to_plot.at(pdfi), mycross->GetMyPDF(pdfi)->getPDFname().c_str());
-    }
+
+        hists_to_plot.at(ipdf)->Draw("same");
+
+        my_leg->AddEntry(hists_to_plot.at(ipdf), mycross->GetMyPDF(igrid, ipdf)->getPDFname().c_str());
+
     my_leg->Draw();
 
     std::cout << "cd to pad2" << std::endl;
@@ -243,11 +242,11 @@ void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, MyCrossSection *mycros
 
     float ratio_miny = 999.;
     float ratio_maxy = -999.;
-    //for(int pdfi = 1; pdfi < PDF_codes.size(); pdfi++) {
-    for(int pdfi = 1; pdfi < numPDFtypes; pdfi++) {
-        TString this_ratio_name = hists_to_plot.at(pdfi)->GetName();
+
+
+        TString this_ratio_name = hists_to_plot.at(ipdf)->GetName();
         this_ratio_name += "_ratio";
-        TH1D* this_ratio_hist = (TH1D*) hists_to_plot.at(pdfi)->Clone(this_ratio_name);
+        TH1D* this_ratio_hist = (TH1D*) hists_to_plot.at(ipdf)->Clone(this_ratio_name);
         this_ratio_hist->Divide(hists_to_plot.at(0));
 
         for(int bi = 1; bi <= this_ratio_hist->GetNbinsX(); bi++) {
@@ -256,7 +255,7 @@ void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, MyCrossSection *mycros
             if( content > ratio_maxy ) ratio_maxy = content;
         }
         ratio_hists.push_back(this_ratio_hist);
-    }  /// pdfi
+
 
     std::cout << "collected ratio hists" << std::endl;
     float range = ratio_maxy - ratio_miny;
@@ -275,9 +274,9 @@ void SaveThisSubprocess(std::vector<TH1D*> hists_to_plot, MyCrossSection *mycros
     ratio_hists.at(0)->SetXTitle(x_title);
     ratio_hists.at(0)->SetYTitle("Ratio to CT10");
 
-    for(int pdfi = 1; pdfi < ratio_hists.size(); pdfi++) {
-        ratio_hists.at(pdfi)->Draw("same");
-    }
+
+        ratio_hists.at(ipdf)->Draw("same");
+    
     print_canv->cd();
 
     print_canv->Print((TString) (plot_dir + plot_desc + ".eps"));
@@ -297,12 +296,12 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
     this_leg->AddEntry(mycross->GetMyData(igrid)->GetTGraphTotErr(), experiment_and_year, "pl");
 
     //int numPDFtypes = mypdf[0]->getNumPDFtypes();
-    int numPDFtypes = mycross->GetNumPDF();
+    int numPDFtypes = mycross->GetNPDF(igrid);
 
     TString the_desc = "";
-    for(int pdfi = 0; pdfi < numPDFtypes; pdfi++) {
-        the_desc = mycross->GetMyPDF(pdfi)->calc_desc;
-        the_desc += (TString) ("_" + mycross->GetMyPDF(pdfi)->getPDFErrorType() + "_");
+    for(int ipdf = 0; ipdf < numPDFtypes; ipdf++) {
+        the_desc = mycross->GetMyPDF(igrid, ipdf)->calc_desc;
+        the_desc += (TString) ("_" + mycross->GetMyPDF(igrid, ipdf)->getPDFErrorType() + "_");
         the_desc += mycross->GetVarDesc(igrid);
     }
     std::cout << "Draw and save results for " << the_desc << std::endl;
@@ -323,7 +322,10 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
     std::cout << "Draw errors for desc: " << the_desc << std::endl;
 
     //mycross->DrawErrors(mycross->GetMyData(igrid)->GetTitleX(), x_min, x_max, first_of_canv, error_code);
-    mycross->DrawError(igrid, mycross->GetMyData(igrid)->GetTitleX(), x_min, x_max, first_of_canv, error_code);
+    int numPDFsForGrid = mycross->GetNPDF(igrid);
+    for(int ipdf=0; ipdf< numPDFsForGrid; ipdf++) {
+        mycross->DrawError(igrid, ipdf, mycross->GetMyData(igrid)->GetTitleX(), x_min, x_max, first_of_canv, error_code);
+    }
     std::cout << "Draw individual" << std::endl;
 
     mycross->Draw(igrid);
@@ -373,8 +375,9 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
     }
     */
     
-
-        MyPDF *current_pdf = mycross->GetMyPDF(igrid);
+    numPDFsForGrid = mycross->GetNPDF(igrid);
+    for(int ipdf=0; ipdf< numPDFsForGrid; ipdf++) {
+        MyPDF *current_pdf = mycross->GetMyPDF(igrid, ipdf);
         chi2[igrid] = -999;
         //std::cout << "For " << the_desc << ", " << mypdf[igrid]->getPDFBandType() << ", determine chi2 to the data:" << std::endl;
         std::cout << "For " << the_desc << ", " << current_pdf->getPDFBandType() << ", at: "<<igrid<<", determine chi2 to the data:" << std::endl;
@@ -415,6 +418,7 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
         DrawRatioPlot(myframe, reference_ratio, mycross, x_min, x_max, error_code, igrid);
     gPad->Update();
     myframe->SaveFile((TString) ("images/ErrorResults/Results_" + the_desc  + "_overlay.eps"));
+    }
 }
 
 void DumpTH1D(TH1D* my_hist)
@@ -453,7 +457,7 @@ void DumpTGraphAsymmErrors(TGraphAsymmErrors* my_graph )
 void DrawRatioPlot(MyFrameData *myframe, TGraphAsymmErrors* reference_ratio, MyCrossSection *mycross, float x_min, float x_max, int error_code, int igrid)
 {
     //int numPDFtypes = mypdf[0]->getNumPDFtypes();
-    int numPDFtypes = mycross->GetNumPDF();
+    int numPDFtypes = mycross->GetNPDF(igrid);
 
     std::cout << "Now compute range" << std::endl;
     double xmin=0., xmax=0., ymin=0., ymax=0.;
@@ -512,8 +516,10 @@ void DrawRatioPlot(MyFrameData *myframe, TGraphAsymmErrors* reference_ratio, MyC
     }
     */
     
+    int numPDFsForGrid = mycross->GetNPDF(igrid);
+    for(int ipdf=0; ipdf< numPDFsForGrid; ipdf++) {
     
-        MyPDF *current_pdf = mycross->GetMyPDF(igrid);
+        MyPDF *current_pdf = mycross->GetMyPDF(igrid, ipdf);
         
         if( current_pdf->getDoPDFBand() ) {
             if( first_time_pdf.at(igrid) )      current_pdf->h_PDFBand_results_ratio_to_ref->Draw("e2");
@@ -539,7 +545,7 @@ void DrawRatioPlot(MyFrameData *myframe, TGraphAsymmErrors* reference_ratio, MyC
          //v1.insert(v1.begin()+i, v2[i])
          first_time_pdf.insert(first_time_pdf.begin()+igrid,false);
        //if(first_time_pdf) first_time_pdf = false;
-    
+    }
     
 
     reference_ratio->Draw("ep same");
