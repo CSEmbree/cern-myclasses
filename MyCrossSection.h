@@ -2,9 +2,9 @@
 #define __MY_CROSS_SECTION_H
 
 #include <stdlib.h> // exit()
-#include<iostream> // needed for io
-#include<sstream>  // needed for internal io
-#include<vector>
+#include <iostream> // needed for io
+#include <sstream>  // needed for internal io
+#include <vector>
 #include <string>
 //#include <map>
 
@@ -67,7 +67,12 @@ class MyCrossSection {
   std::vector<long unsigned int> events; // number of events from grid
   std::vector<MyFrame*> framepointer; // pointer to MyFrame
   
-  std::vector<string> pdfdata;
+  //std::vector<string> pdfdata;
+  std::vector<std::vector<string> > pdfdata;
+  /*
+  std::vector<std::vector<string> > pdfdata;
+  std::vector<string> pdfsteering;
+  */
   std::vector<MyPDF*> t_mypdf;
 
 
@@ -80,9 +85,12 @@ class MyCrossSection {
   std::vector<bool> isBooked;        // flag grid already booked 
   std::vector<MyData*> mydata;       // information about data from steering file
   generic_pdf *mypdf;
+  
+    std::vector<string>* ParseString(std::string rawData, char delimeter); //For parsing steering input
+
 
  public:
-  std::vector<int> PDFSetCodes_vec;
+  //std::vector<int> PDFSetCodes_vec;
   bool do_PDFBand;
   bool do_AlphaS;
   bool do_RenormalizationScale;
@@ -141,16 +149,16 @@ class MyCrossSection {
   };
   
   
-  string GetPDFData(int igrid) {
+  std::vector<string> *GetPDFData(int igrid) {
     if(igrid>pdfdata.size()) {
         std::cout<<" MyCrossSection:: GetPDFData: ERROR: pdfdata not found for igrid: "<<igrid<<std::endl;
-        return string("");
+        return NULL;
     }
     else
-        return pdfdata[igrid];
+        return &(pdfdata.at(igrid));
   };
   
-  std::vector<std::string>* GetPDFData() {
+  vector<std::vector<std::string> > *GetPDFData() {
     if(pdfdata.size()==0)
         return NULL;
     else
@@ -167,7 +175,7 @@ class MyCrossSection {
         return NULL;
     }
     else
-        return t_mypdf[igrid];
+        return t_mypdf.at(igrid);
   }
   
   std::vector<MyPDF*>* GetMyPDF() {
@@ -177,6 +185,10 @@ class MyCrossSection {
     }
     else
         return &t_mypdf;
+  }
+  
+  int getNPDF() {
+    return t_mypdf.size();
   }
 
   
@@ -324,8 +336,8 @@ class MyCrossSection {
   void Draw(int igrid);
 
   
-  void MyCrossSection::DrawErrors(TString x_title, float x_min, float x_max, bool first_of_canv, int error_code);
-  void MyCrossSection::DrawError(int pdfi, TString x_title, float x_min, float x_max, bool first_of_canv, int error_code);
+  void DrawErrors(TString x_title, float x_min, float x_max, bool first_of_canv, int error_code);
+  void DrawError(int pdfi, TString x_title, float x_min, float x_max, bool first_of_canv, int error_code);
   
   void DrawData(int igrid){
    mydata[igrid]->DrawData();

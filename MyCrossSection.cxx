@@ -101,10 +101,10 @@ void MyCrossSection::Initialize() {
         } else {
             if (debug) cout<<" MyCrossSection::Initialize no data found "<<endl;
         }
-        
+
         string fname=this->GetGridName(igrid);
         //string fname=gridname[igrid];
-        
+
         if (debug) cout<<" MyCrossSection::Initialize Grid Name "<<fname<<endl;
 
         if (this->file_exists(fname)) {
@@ -127,16 +127,24 @@ void MyCrossSection::Initialize() {
             //htest->Print("all");
 
         } else {
-            cout<<" MyCrossSection::Initialize  file not found "<<fname<<endl;
+            cout<<" MyCrossSection::Initialize:  file not found "<<fname<<endl;
         }
-        if (debug) std::cout << " MyCrossSection::Initialize end of igrid loop" << std::endl;
+        if (debug) std::cout << " MyCrossSection::Initialize: end of igrid loop" << std::endl;
 
         if(debug) std::cout<<"MyCrossSection::Initialize: Created mypdf instance with GridName: "<<GetGridName(igrid)<<", PDFData: "<<GetPDFData(igrid)<<std::endl;
+        
         //MyPDF *newpdf = new MyPDF(GetGridName(igrid), 1.0, GetPDFData(igrid), false);
-        MyPDF *newpdf = new MyPDF(GetGridName(igrid), GetMyData(igrid)->GetUnitGeVFactor(), GetPDFData(igrid), false);
-        t_mypdf.push_back(newpdf);
-        
-        
+        for(int ipdf=0; ipdf<pdfdata.at(igrid).size(); ipdf++)
+        {
+            MyPDF *newpdf = new MyPDF(GetGridName(igrid), GetMyData(igrid)->GetUnitGeVFactor(), pdfdata.at(igrid).at(ipdf), false);
+            std::cout<<" MyCrossSection::Initialize: Printing new mypdf num: "<<(ipdf+1)
+                                <<" of "<<pdfdata.at(igrid).size()
+                                <<" for grid: "<<GetGridName(igrid)<<std::endl;
+            newpdf->Print();
+            t_mypdf.push_back(newpdf);
+            std::cout<<" MyCrossSection::Initialize: There are now '"<<t_mypdf.size()<<"' pdfs created"<<std::endl;
+        }
+
     }
 
     if (debug) cout<<" MyCrossSection::Initialize finished  "<<endl;
@@ -344,11 +352,17 @@ void MyCrossSection::ReadSteering(char fname[100]) {
                 corrname.push_back(myname);
             } else if (strstr(line,"pdfdata")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection:ReadSteering pdfsteering: "<<text<<" "<<name<<endl;
-                string myname=name;
-                pdfdata.push_back(myname);
+                std::cout<<"text: "<<text<<"name: "<<name<<std::endl;
+                std::vector<string> *parsedNames;
+                std::string pdfSteeringFileNames = name;
+                char delimeter = ',';
+                parsedNames = ParseString(pdfSteeringFileNames, delimeter);
+                std::cout<<"TEST: parsedNames: "<<parsedNames->size()<<std::endl;
+                if (debug) cout<<" MyCrossSection:ReadSteering pdfsteering for grid: '"<<pdfSteeringFileNames<<"'"<<endl;
+                //string myname=name;
+                pdfdata.push_back(*parsedNames);
             }
-            
+
 
             /*
             ////// What theory error types will we consider and how will they be displayed?
@@ -371,7 +385,7 @@ void MyCrossSection::ReadSteering(char fname[100]) {
                 }
             }
             */
-            
+
         }
     }
 }
@@ -493,16 +507,16 @@ void MyCrossSection::DrawErrors(TString x_title, float x_min, float x_max, bool 
 {
     std::cout << " MyCrossSection::DrawErrors: DrawErrors 1" << std::endl;
     int numPDFtypes=pdfdata.size();
-    
+
     TGraphAsymmErrors *Theory_graph_for_draw[numPDFtypes];
     double x=0.75, y=0.8;
     for(int pdfi = 0; pdfi < numPDFtypes; pdfi++) {
         std::cout << " MyCrossSection::DrawErrors: pdfi: " << pdfi << " of numPDFTypes: "<<numPDFtypes<<", error code = " << error_code <<std::endl;
-        
+
         std::cout << "\t MyCrossSection::DrawErrors: PDFType = " << t_mypdf.at(pdfi)->getPDFtype() << std::endl;
         std::cout << "\t MyCrossSection::DrawErrors: calc desc = " << t_mypdf.at(pdfi)->calc_desc << std::endl;
         //std::cout << "\tPDFBand name = " << t_mypdf.at(pdfi)->h_PDFBand_results->GetName() << std::endl;
-            
+
         if( t_mypdf.at(pdfi)->getDoPDFBand() ) {
             std::cout << "\t MyCrossSection::DrawErrors: DoPDFBand" << std::endl;
             Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_PDFBand_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
@@ -520,8 +534,8 @@ void MyCrossSection::DrawErrors(TString x_title, float x_min, float x_max, bool 
             Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_TotError_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
         }
     }
-    
-    
+
+
     std::cout << " MyCrossSection::DrawErrors: DrawErrors 2" << std::endl;
     bool first_time_pdf = true;
     for(int pdfi = 0; pdfi < numPDFtypes; pdfi++) {
@@ -541,8 +555,8 @@ void MyCrossSection::DrawErrors(TString x_title, float x_min, float x_max, bool 
         if( x_min < x_max) Theory_graph_for_draw[pdfi]->GetXaxis()->SetRangeUser(x_min, x_max);
         Theory_graph_for_draw[pdfi]->GetXaxis()->SetTitle(x_title);
         Theory_graph_for_draw[pdfi]->SetTitle("");
-        
-                std::cout << " MyCrossSection::DrawErrors: Setting fill color and style, pdfi = " <<pdfi<< std::endl;
+
+        std::cout << " MyCrossSection::DrawErrors: Setting fill color and style, pdfi = " <<pdfi<< std::endl;
         Theory_graph_for_draw[pdfi]->SetFillColor(t_mypdf.at(pdfi)->getFillColorCode());
         Theory_graph_for_draw[pdfi]->SetFillStyle(t_mypdf.at(pdfi)->getFillStyleCode());
 
@@ -560,64 +574,64 @@ void MyCrossSection::DrawError(int pdfi, TString x_title, float x_min, float x_m
 {
     std::cout << " MyCrossSection::DrawErrors: DrawErrors 1" << std::endl;
     int numPDFtypes=pdfdata.size();
-    
+
     TGraphAsymmErrors *Theory_graph_for_draw[numPDFtypes];
     double x=0.75, y=0.8;
 
 
-        std::cout << " MyCrossSection::DrawErrors: pdfi: " << pdfi << " of numPDFTypes: "<<numPDFtypes<<", error code = " << error_code <<std::endl;
-        
-        std::cout << "\t MyCrossSection::DrawErrors: PDFType = " << t_mypdf.at(pdfi)->getPDFtype() << std::endl;
-        std::cout << "\t MyCrossSection::DrawErrors: calc desc = " << t_mypdf.at(pdfi)->calc_desc << std::endl;
-        //std::cout << "\tPDFBand name = " << t_mypdf.at(pdfi)->h_PDFBand_results->GetName() << std::endl;
-            
-        if( t_mypdf.at(pdfi)->getDoPDFBand() ) {
-            std::cout << "\t MyCrossSection::DrawErrors: DoPDFBand" << std::endl;
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_PDFBand_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
-        } else if( t_mypdf.at(pdfi)->getDoAlphaS() ) {
-            std::cout << "\t MyCrossSection::DrawErrors: DoAlphaS" << std::endl;
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_AlphaS_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
-        } else if( t_mypdf.at(pdfi)->getDoRenormalizationScale() ) {
-            std::cout << "\t MyCrossSection::DrawErrors: DoRenormalizationScale" << std::endl;
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_RenormalizationScale_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
-        } else if( t_mypdf.at(pdfi)->getDoFactorizationScale() ) {
-            std::cout << "\t MyCrossSection::DrawErrors: DoFactorizationScale" << std::endl;
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_FactorizationScale_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
-        } else if( t_mypdf.at(pdfi)->getDoTotError() ) {
-            std::cout << "\t MyCrossSection::DrawErrors: DoTotError" << std::endl;
-            Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_TotError_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
-        }
-    
-    
-    
+    std::cout << " MyCrossSection::DrawErrors: pdfi: " << pdfi << " of numPDFTypes: "<<numPDFtypes<<", error code = " << error_code <<std::endl;
+
+    std::cout << "\t MyCrossSection::DrawErrors: PDFType = " << t_mypdf.at(pdfi)->getPDFtype() << std::endl;
+    std::cout << "\t MyCrossSection::DrawErrors: calc desc = " << t_mypdf.at(pdfi)->calc_desc << std::endl;
+    //std::cout << "\tPDFBand name = " << t_mypdf.at(pdfi)->h_PDFBand_results->GetName() << std::endl;
+
+    if( t_mypdf.at(pdfi)->getDoPDFBand() ) {
+        std::cout << "\t MyCrossSection::DrawErrors: DoPDFBand" << std::endl;
+        Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_PDFBand_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(pdfi)->getDoAlphaS() ) {
+        std::cout << "\t MyCrossSection::DrawErrors: DoAlphaS" << std::endl;
+        Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_AlphaS_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(pdfi)->getDoRenormalizationScale() ) {
+        std::cout << "\t MyCrossSection::DrawErrors: DoRenormalizationScale" << std::endl;
+        Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_RenormalizationScale_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(pdfi)->getDoFactorizationScale() ) {
+        std::cout << "\t MyCrossSection::DrawErrors: DoFactorizationScale" << std::endl;
+        Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_FactorizationScale_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(pdfi)->getDoTotError() ) {
+        std::cout << "\t MyCrossSection::DrawErrors: DoTotError" << std::endl;
+        Theory_graph_for_draw[pdfi] = (TGraphAsymmErrors*) t_mypdf.at(pdfi)->h_TotError_results->Clone((TString) (t_mypdf.at(pdfi)->getPDFtype() + "_error_bar_graph"));
+    }
+
+
+
     std::cout << " MyCrossSection::DrawErrors: DrawErrors 2" << std::endl;
     bool first_time_pdf = true;
 
-        float min_y = 99999;
-        float max_y = 0.;
-        for(int pi = 0; pi < Theory_graph_for_draw[pdfi]->GetN(); pi++) {
-            Double_t x_val;
-            Double_t y_val;
-            Theory_graph_for_draw[pdfi]->GetPoint(pi, x_val, y_val);
-            if( y_val > max_y ) max_y = y_val;
-            if( y_val < min_y ) min_y = y_val;
-        }
-        max_y *= 40.;
-        min_y *= 0.2;
-        std::cout << " MyCrossSection::DrawErrors: DrawErrors 2.1, pdfi = " << pdfi << std::endl;
-        Theory_graph_for_draw[pdfi]->GetYaxis()->SetRangeUser(min_y, max_y);
-        if( x_min < x_max) Theory_graph_for_draw[pdfi]->GetXaxis()->SetRangeUser(x_min, x_max);
-        Theory_graph_for_draw[pdfi]->GetXaxis()->SetTitle(x_title);
-        Theory_graph_for_draw[pdfi]->SetTitle("");
-        
-                std::cout << " MyCrossSection::DrawErrors: Setting fill color and style, pdfi = " <<pdfi<< std::endl;
-        Theory_graph_for_draw[pdfi]->SetFillColor(t_mypdf.at(pdfi)->getFillColorCode());
-        Theory_graph_for_draw[pdfi]->SetFillStyle(t_mypdf.at(pdfi)->getFillStyleCode());
+    float min_y = 99999;
+    float max_y = 0.;
+    for(int pi = 0; pi < Theory_graph_for_draw[pdfi]->GetN(); pi++) {
+        Double_t x_val;
+        Double_t y_val;
+        Theory_graph_for_draw[pdfi]->GetPoint(pi, x_val, y_val);
+        if( y_val > max_y ) max_y = y_val;
+        if( y_val < min_y ) min_y = y_val;
+    }
+    max_y *= 40.;
+    min_y *= 0.2;
+    std::cout << " MyCrossSection::DrawErrors: DrawErrors 2.1, pdfi = " << pdfi << std::endl;
+    Theory_graph_for_draw[pdfi]->GetYaxis()->SetRangeUser(min_y, max_y);
+    if( x_min < x_max) Theory_graph_for_draw[pdfi]->GetXaxis()->SetRangeUser(x_min, x_max);
+    Theory_graph_for_draw[pdfi]->GetXaxis()->SetTitle(x_title);
+    Theory_graph_for_draw[pdfi]->SetTitle("");
 
-        if( first_time_pdf && first_of_canv ) Theory_graph_for_draw[pdfi]->Draw("A E2");
-        else Theory_graph_for_draw[pdfi]->Draw("E2 same");
-        first_time_pdf = false;
-    
+    std::cout << " MyCrossSection::DrawErrors: Setting fill color and style, pdfi = " <<pdfi<< std::endl;
+    Theory_graph_for_draw[pdfi]->SetFillColor(t_mypdf.at(pdfi)->getFillColorCode());
+    Theory_graph_for_draw[pdfi]->SetFillStyle(t_mypdf.at(pdfi)->getFillStyleCode());
+
+    if( first_time_pdf && first_of_canv ) Theory_graph_for_draw[pdfi]->Draw("A E2");
+    else Theory_graph_for_draw[pdfi]->Draw("E2 same");
+    first_time_pdf = false;
+
     std::cout << " MyCrossSection::DrawErrors: DrawErrors 3" << std::endl;
 }
 
@@ -1189,5 +1203,28 @@ void MyCrossSection::split_string(std::string str, std::vector<std::string>& spl
         // Find next "non-delimiter"
         pos = str.find_first_of(delimiters, lastPos);
     }
+}
+
+std::vector<string>* MyCrossSection::ParseString(std::string rawData, char delimeter)
+{
+    std::stringstream lineStream(rawData);
+    std::string cell;
+    std::vector<string> *parsedDataVec;
+    parsedDataVec = new std::vector<string>();
+    parsedDataVec->clear();
+
+    std::cout<<" MyData::ParseString: Start parsing data: '"<<rawData<<"'; Delimeterized by: "<<delimeter<<std::endl;
+
+    while(std::getline(lineStream,cell,delimeter)) {
+        std::cout<<" MyData::ParseString: found: "<<cell<<std::endl;
+        cell.erase( std::remove(cell.begin(), cell.end(), ' '), cell.end() ); //remove any whitespace
+        parsedDataVec->push_back(cell);
+    }
+    
+    std::cout<<" MyData::ParseString: End found "<<parsedDataVec->size()<<" parts."<<std::endl;
+    
+    if(parsedDataVec->size()==0) parsedDataVec->push_back(rawData);    
+    
+    return parsedDataVec;
 }
 

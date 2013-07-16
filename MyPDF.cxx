@@ -1059,11 +1059,16 @@ void MyPDF::Print()
 //always check for file existence before usage
 bool MyPDF::fileExists(const string _fileName)
 {
+    bool exists;
+    
     if ( FILE* file=fopen(_fileName.c_str(),"r") ) {
         fclose(file);
-        return true;
+        exists = true;
     }
-    else return false;
+    else exists = false;
+    
+    std::cout<<"Does this file: '"<<_fileName<<"' exist? "<<exists<<std::endl;
+    return exists;
 }
 
 

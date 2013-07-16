@@ -66,14 +66,14 @@ int main(int argc, char** argv)
     inputname="atlas2012_top.txt";
 
     MyCrossSection *mycross= new MyCrossSection( (char*) inputname.c_str());
-    std::cout<<"mycross has this many pdfs: "<<mycross->PDFSetCodes_vec.size()<<std::endl;
+    std::cout<<"mycross has this many pdfs: "<<mycross->getNPDF()<<std::endl;
     std::cout<<"Printing Crosssection..."<<std::endl;
     mycross->Print();
     std::cout << "Printed Cross section" << std::endl;
     
             int numPDFtypes = mycross->GetNumPDF();
 
-    for (int igrid=0; igrid<numPDFtypes igrid++) {
+    for (int igrid=0; igrid<numPDFtypes; igrid++) {
         std::cout << "MyFrameData for igrid " << igrid <<", of NGrids: "<<mycross->GetNGrid()<<", and numPDFtypes: "<<numPDFtypes<<std::endl;
 
         first_time_pdf.push_back(true);
