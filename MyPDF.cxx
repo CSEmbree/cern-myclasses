@@ -22,6 +22,14 @@ void getPDF(const double& x, const double& Q, double* xf) {
     //evolvePDF( x, Q, xf);        //// calls LHAPDF
 }
 
+string MyPDF::GetEnv( const string & var ) {
+    const char* res= getenv( var.c_str() );
+
+    std::string s = res!=NULL? res:"";
+    cout<<"s: "<<s<<endl;
+    return s;
+}
+
 /*
 //currently declared in local directories LHAPDF.h file
 double alphasPDF(const double& Q) {
@@ -118,14 +126,24 @@ void MyPDF::Initialize()
     double stev=1000.;
     TH1D* temp_hist;
     TH1D* temp_hist_prenorm;
-
+    
+  
+    
+    std::cout<<" MyPDF::Initialize: Fill PDF errors for PDFType: "<<PDFtype<<", PDFName: "<<PDFname<<", from PDFPath: "<<pdfSetPath<<std::endl;
+    string default_pdf_set_name = (std::string) (pdfSetPath+"/"+PDFname+".LHgrid");
+    if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name =pdfSetPath+"/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
+    std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
+/*
     std::cout<<" MyPDF::Initialize: Fill PDF errors for "<<PDFtype<<std::endl;
     string default_pdf_set_name = (std::string) ("PDFsets/"+PDFname+".LHgrid");
     if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name ="PDFsets/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
     std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
+*/
+
+
+    
     LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
     
-
     h_qqbar_prenorm = (TH1D*)my_grid->convolute_subproc(6, getPDF, alphasPDF, nLoops);      ///// maybe also subprocess 5?
     h_qqbar_prenorm->SetName((TString) ("h_qqbar_prenorm_" + calc_desc));
 
@@ -225,12 +243,122 @@ void MyPDF::Initialize()
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
             LHAPDF::initPDFSet(((std::string) ("PDFsets/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 11);  //// alphaS up
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as1196_prenorm"));
+            temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as1196_prenorm")); //looks wrong? copied from previous incorrectly??
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
         }
         else {
             std::cout<<" MyPDF::Initialize: unsupported pdfCode encountered."<<std::endl;
         }
+        
+        
+        
+        
+        
+    
+    /*
+    string pdfSetPath = "PDFsets";
+    string pdfSetDefaultPath = GetEnv("LHAPATH");
+
+    if(pdfSetDefaultPath.size()>0) {
+        pdfSetPath=pdfSetDefaultPath;
+        cout<<" makegridfromsherpa::main: LHAPATH environment varaible found, using path: "<<pdfSetPath<<endl;
+    }
+    else {
+        cout<<" makegridfromsherpa::main: LHAPATH environment varaible not set, using default: "<<pdfSetPath<<endl;
+    }
+    
+    
+    std::cout<<" MyPDF::Initialize: Fill PDF errors for PDFType: "<<PDFtype<<"PDFName: "<<PDFname<<std::endl;
+    string default_pdf_set_name = (std::string) (pdfSetPath+"/"+PDFname+".LHgrid");
+    if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name =pdfSetPath+"/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
+    std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
+    LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
+
+
+    h_qqbar_prenorm = (TH1D*)my_grid->convolute_subproc(6, getPDF, alphasPDF, nLoops);      ///// maybe also subprocess 5?
+    h_qqbar_prenorm->SetName((TString) ("h_qqbar_prenorm_" + calc_desc));
+
+    TH1D* h_qqbar_prenorm2 = (TH1D*) my_grid->convolute_subproc(5, getPDF, alphasPDF, nLoops);
+    h_qqbar_prenorm2->SetName((TString) ("h_qqbar_prenorm_" + calc_desc));
+    h_qqbar_prenorm->Add(h_qqbar_prenorm2);
+    h_qqbar_prenorm->SetLineColor(fillColorCode);
+    h_qqbar_prenorm->SetMarkerColor(fillColorCode);
+
+    h_qqbar = (TH1D*) TH1NormToTot(h_qqbar_prenorm, 1. / 1000., 1000.*xscale/stev);
+    h_qqbar->SetName((TString) ("h_qqbar_" + calc_desc));
+    h_qqbar->SetLineColor(fillColorCode);
+    h_qqbar->SetMarkerColor(fillColorCode);
+
+    h_gg_prenorm = (TH1D*) my_grid->convolute_subproc(0, getPDF, alphasPDF, nLoops);
+    h_gg_prenorm->SetName((TString) ("h_gg_prenorm_" + calc_desc));
+    h_gg_prenorm->SetLineColor(fillColorCode);
+    h_gg_prenorm->SetMarkerColor(fillColorCode);
+
+    h_gg = (TH1D*) TH1NormToTot(h_gg_prenorm, 1. / 1000., 1000.*xscale/stev);
+    h_gg->SetName((TString) ("h_gg_" + calc_desc));
+    h_gg->SetLineColor(fillColorCode);
+    h_gg->SetMarkerColor(fillColorCode);
+
+    h_tot_prenorm = (TH1D*) my_grid->convolute(getPDF, alphasPDF, nLoops);
+    h_tot_prenorm->SetName((TString) ("h_tot_prenorm_" + calc_desc));
+    h_tot_prenorm->SetLineColor(fillColorCode);
+    h_tot_prenorm->SetMarkerColor(fillColorCode);
+
+    h_tot = (TH1D*) TH1NormToTot(h_tot_prenorm, 1. / 1000., 1000.*xscale/stev);
+    h_tot->SetName((TString) ("h_tot_" + calc_desc));
+    h_tot->SetLineColor(fillColorCode);
+    h_tot->SetMarkerColor(fillColorCode);
+
+    h_gg_frac = (TH1D*) h_gg_prenorm->Clone((TString) ("h_gg_frac_" + calc_desc));
+    h_gg_frac->Divide(h_tot_prenorm);
+
+    h_qqbar_frac = (TH1D*) h_qqbar_prenorm->Clone((TString) ("h_qqbar_frac_" + calc_desc));
+    h_qqbar_frac->Divide(h_tot_prenorm);
+
+
+    if( do_RenormalizationScale ) {
+        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renScaleVal, 1.);
+        temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + renScaleName));
+        temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
+        temp_hist->SetName((TString) ("h_xsec_rscale_" + renScaleName + "_norm"));
+        h_errors_RenormalizationScale.push_back(temp_hist);
+    }
+
+    if( do_FactorizationScale ) {
+        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, 1., facScaleVal);
+        temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + facScaleName));
+        temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
+        temp_hist->SetName((TString) ("h_xsec_rscale_" + facScaleName + "_norm"));
+        h_errors_FactorizationScale.push_back(temp_hist);
+    }
+        
+        
+    if( do_AlphaS ) {
+        LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
+        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+        temp_hist_prenorm->SetName((TString) ("h_xsec_default"));
+        h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+        
+        int memberNumFirst;     // would need to be read from steering file
+        int memberNumSecond;    // would need to be read from steering file
+        int PDFnameFirst;       // would need to be read from steering file
+        int PDFnameSecond;      // would need to be read from steering file
+        
+        LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+PDFnameFirst+".LHgrid")).c_str(), memberNumFirst);  //// alphaS down
+            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+            temp_hist_prenorm->SetName((TString) ("h_xsec_"+PDFnameFirst));
+            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+PDFnameSecond+".LHgrid")).c_str(), memberNumSecond);  //// alphaS up
+            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+            temp_hist_prenorm->SetName((TString) ("h_xsec_"+PDFnameSecond));
+            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+    }
+    */
+        
+        
+        
+        
+        
 
         for(int alphai = 0; alphai < h_errors_AlphaS_prenorm.size(); alphai++) {
             double stev=1000.;
@@ -948,6 +1076,22 @@ void MyPDF::ReadSteering(const string _fileName)
     } else {
         if (debug) std::cout<<" MyPDF::ReadSteering: Steering file named successfuly opened."<<std::endl;
     }
+    
+    
+    pdfSetPath = deafultPDFSetPath;
+    string pdfSetDefaultPath = GetEnv("LHAPATH");
+
+    if(pdfSetDefaultPath.size()>0) {
+        if(pdfSetDefaultPath.find_last_of("/") == pdfSetDefaultPath.size()-1)
+            pdfSetDefaultPath = pdfSetDefaultPath.substr(0,pdfSetDefaultPath.size()-1); //remove trailing slashes if there are any
+        
+        pdfSetPath=pdfSetDefaultPath;
+        
+        cout<<" makegridfromsherpa::main: LHAPATH environment varaible found, using path: "<<pdfSetPath<<endl;
+    }
+    else {
+        cout<<" makegridfromsherpa::main: LHAPATH environment varaible not set, using default: "<<pdfSetPath<<endl;
+    }
 
 
     string line;
@@ -1021,7 +1165,15 @@ void MyPDF::ReadSteering(const string _fileName)
                 sscanf(text.c_str(), "%lf", &facScaleVal);
             } else if (optionName.compare("numPDFTypes")==0) {
                 sscanf(text.c_str(), "%d", &n_PDFtypes);
-            }
+            }else if (optionName.compare("pdfSetPath")==0) {
+                pdfSetPath=text;
+                std::cout<<"TEST: text: "<<text<<std::endl;
+                if(pdfSetPath.find_last_of("/") == pdfSetPath.size()-1)
+                    pdfSetPath = pdfSetPath.substr(0,pdfSetPath.size()-1); //remove trailing slashes if there are any
+        
+                std::cout<<" MyPDF::ReadSteering: new PDF set path found! Now path is: "<<pdfSetPath<<std::endl;
+                //exit(0);
+            }    
         }
     }
 }

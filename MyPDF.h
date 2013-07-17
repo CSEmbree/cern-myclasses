@@ -147,6 +147,7 @@ class MyPDF {
         OptionHandler *myOptions;
         bool f_PDFBandType;
         bool f_PDFErrorSize;
+        string pdfSetPath;
         
         //start old from therory_error_info/calc
         appl::grid *my_grid;
@@ -171,9 +172,11 @@ class MyPDF {
         bool fileExists(const string _fileName);
         void setVariablesDefault();
         void setSteeringFileNameAndDir(const string _path);
+        string GetEnv( const string & var);
 };
 
 const string defaultOptionsFileName="options_mypdf.txt";
+const string deafultPDFSetPath="PDFsets";
 
 /*
 //currently decalred in local directory LHAPDF.h
