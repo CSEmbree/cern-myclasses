@@ -1276,6 +1276,8 @@ void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
   }
   
   void MyCrossSection::mypdfCalcSystErrors(int igrid, int ipdf) {
+    std::cout<<" MyCrossSection::mypdfCalcSystErrors: called with igrid: "<<igrid<<", ipdf: "<<ipdf<<std::endl;
+          
     if(igrid>t_mypdf.size() || ipdf> (int) t_mypdf.at(igrid).size()) {
         std::cout<<" MyCrossSection::mypdfCalcSystErrors: ERROR: t_mypdf not found for igrid: "<<igrid
                 <<", and ipdf: "<<ipdf
@@ -1286,8 +1288,14 @@ void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
     else{
         if(ipdf==-1) { //no pdf index was NOT provided, so GetRatioToTH all pdfs for the given grid
             int numPDFsForGrid = GetNPDF(igrid); 
+            std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: numPDFsForGrid: "<<numPDFsForGrid<<std::endl;
+            
             for(int ipdf=0; ipdf< numPDFsForGrid; ipdf++) {
+                std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: igrid: "<<igrid<<", ipdf: "<<ipdf<<std::endl;
+                std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: t_mypdf.size(): "<<(int)t_mypdf.size()<<std::endl;
+                std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: t_mypdf.at("<<igrid<<").size(): "<<(int)t_mypdf.at(igrid).size()<<std::endl;
                 t_mypdf.at(igrid).at(ipdf)->CalcSystErrors(); 
+                std::cout<<"test"<<std::endl;
             }
         }
         else { //a pdf index was provided, so ONLY GetRatioToTH the pdf for that given grid and given pdf

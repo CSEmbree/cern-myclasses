@@ -1,10 +1,11 @@
-#ifndef __MY_DATA_H
-#define __MY_DATA_H
+#ifndef MyData_H
+#define MyData_H
 
 #include "root.h"
 //#include "VariableDefinitions.h"
 #include "TMatrixT.h"
 #include "string.h"
+#include <sstream>
 
 #include "OptionHandler.h"
 
@@ -91,7 +92,7 @@ private:
     //>>>>>>> .r147604
     
     std::string GetFileNameFromPath(std::string filepath){
-        string filename = filepath;
+        std::string filename = filepath;
         const size_t last_slash = filename.find_last_of("\\/");
         if (std::string::npos != last_slash)
             filename.erase(0, last_slash + 1);

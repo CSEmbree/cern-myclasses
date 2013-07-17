@@ -1,6 +1,7 @@
 
 #include "MyData.h"
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 /******************************************************************
@@ -72,14 +73,14 @@ MyData::MyData()
 }
 
 void MyData::ReadCorrelations(const char fname[200], double myscale) {
-/*
- * Read data correlation file provided by fname
- */
+    /*
+     * Read data correlation file provided by fname
+     */
     debug = true;
 
     if (debug) std::cout << " MyData::ReadCorrelations  Read correlations fname= "<<fname<< std::endl;
-    cov_matrix = new TMatrixT<double>(datavectortoterr->GetN(), datavectortoterr->GetN());    
-    
+    cov_matrix = new TMatrixT<double>(datavectortoterr->GetN(), datavectortoterr->GetN());
+
 
 
     //remove path characters and file extentions from file path to extract JUST file name
@@ -92,8 +93,8 @@ void MyData::ReadCorrelations(const char fname[200], double myscale) {
     corrfilename=TString(fname);
     corrfilename.ReplaceAll(TString("data/"),TString(""));
     corrfilename.ReplaceAll(TString(".txt"),TString("")); */
-    
-    
+
+
     // std::vector<std::vector<double>> corr_matrix;
     ifstream infile(fname, ios::in);
     if(!infile) { // Check open
@@ -153,12 +154,12 @@ void MyData::ReadData(const char fname[200], double myscale) {
     filename=TString(fname);
     filename.ReplaceAll(TString("data/"),TString(""));
     filename.ReplaceAll(TString(".txt"),TString(""));*/
-    
+
     filename.Clear();
     string pathfilename = this->GetFileNameFromPath(string(fname));
     filename=TString(pathfilename.c_str());
-    
-    
+
+
     datavector = new  TGraphAsymmErrors();
     datavector->SetName(fname);
     if (!datavector) cout<<" MyData::ReadData can not create data vector "<<endl;
@@ -285,16 +286,16 @@ void MyData::ReadData(const char fname[200], double myscale) {
 
         if (debug) cout<< "line= "<< line << "\n";
         if(line[0] != '%') { //ignore comments
-             /*
-             if(line[0] != 'Y' && line[0] != 'S' && line[0] != 'E' && line[0] != 'N' && line[0] != 'J' && line[0] != 'Y'
-                    && line[0] != 'D' && line[0] != 'P' && line[0] != 'M' && line[0] != 'O' && line[0] != 'R'
-                    && line[0] != 't' && line[0] != 'f' && line[0] != 'u' && line[0] != 'n'
-              ) 
-              {*/
-              
-              if(mydataoptions->isKnownOption(cpp_lineFirstWord)==false) {
+            /*
+            if(line[0] != 'Y' && line[0] != 'S' && line[0] != 'E' && line[0] != 'N' && line[0] != 'J' && line[0] != 'Y'
+                   && line[0] != 'D' && line[0] != 'P' && line[0] != 'M' && line[0] != 'O' && line[0] != 'R'
+                   && line[0] != 't' && line[0] != 'f' && line[0] != 'u' && line[0] != 'n'
+             )
+             {*/
+
+            if(mydataoptions->isKnownOption(cpp_lineFirstWord)==false) {
                 if(strlen(line) != 0) {
-                    float xm=0., xl=0., xh=0., y=0., dypstat=0., dymstat=0., dypsyst=0., dymsyst=0., dymtoterr=0., dyptoterr=0.;
+                    double xm=0., xl=0., xh=0., y=0., dypstat=0., dymstat=0., dypsyst=0., dymsyst=0., dymtoterr=0., dyptoterr=0.;
                     if (debug) std::cout << "nsyst: " << nsyst << std::endl;
                     if (nsyst!=1) {
                         //here must be an easier way to do that
@@ -318,78 +319,97 @@ void MyData::ReadData(const char fname[200], double myscale) {
                             //for (int i=0; i<nsyst*2; i++) cout<<" vsyst= "<<vsyst[i]<<endl;
                         }
                     } else {
-                        sscanf(line,"%f %f %f %e %e %e %e %e",&xm, &xl, &xh, &y, &dypstat, &dymstat, &dypsyst, &dymsyst);
-                    }
-                        
-                        
-                        
-                        /*
-                        //Possible code for bringing in multiple errors
-                        //OPTION 1 - assuming standardized format for errors being brought in. Any empty erros would need to be '0'
-                        std::string dataLine = line;
+                        //OLD IMPLIMENTATION
+                        //sscanf(line,"%lf %lf %lf %le %le %le %le %le",&xm, &xl, &xh, &y, &dypstat, &dymstat, &dypsyst, &dymsyst);
+
+
+                        //NEW IMPLIMENTATION
+                        //
+                        //
+                        std::string dataLine = cpp_line;
                         std::stringstream lineStream(dataLine);
                         std::string cell;
-                        int dataCount=0;
+                        int inputCount=0;
+                        double error;
+
+                        std::vector<double> errors;
+
+                        //std::cout<<"TEST: line: "<<dataLine<<std::endl;
+
                         while(std::getline(lineStream,cell,' '))
                         {
-                            switch(dataCount){
+                            if(cell.compare("")!=0)
+                            {
+                                //std::cout<<"TEST: cell: "<<cell<<", for index: "<<inputCount<<std::endl;
+
+                                switch(inputCount) {
                                 case 0:
-                                    scanf(line, "%f", &xm); break;
+                                    sscanf(cell.c_str(), "%lf", &xm);
+                                    break;
                                 case 1:
-                                    scanf(line, "%f", &xl); break;
+                                    sscanf(cell.c_str(), "%lf", &xl);
+                                    break;
                                 case 2:
-                                    scanf(line, "%f", &xh); break;
+                                    sscanf(cell.c_str(), "%lf", &xh);
+                                    break;
                                 case 3:
-                                    scanf(line, "%e", &y); break;
-                                case 4:
-                                    scanf(line, "%e", &dypstat); break;
-                                case 5:
-                                    scanf(line, "%e", &dymstat); break;
-                                case 6:
-                                    scanf(line, "%e", &dypsyst); break;
-                                case 7:
-                                    scanf(line, "%e", &dymsyst); break;
-                                case 8:
-                                    scanf(line, "%e", &OTHER_ERRORS1); break;
-                                case 9:
-                                    scanf(line, "%e", &OTHER_ERRORS2); break;
-                            }
-                            dataCount++;
-                        }
-                        
-                        
-                        //OPTION 2 - assumes each error is prefaced by the name of the error. 
-                        //           Would require later interetation of map to determine what errors were provided.
-                        
-                        std::string dataLine = line;
-                        std::stringstream lineStream(dataLine);
-                        std::string cell;
-                        float error;
-                        int dataCount=0;
-                        
-                        map<string, float> errors;
-                        
-                        while(std::getline(lineStream,cell,' '))
-                        {
-                            switch(dataCount){
-                                case 0:
-                                    scanf(line, "%f", &xm); break;
-                                case 1:
-                                    scanf(line, "%f", &xl); break;
-                                case 2:
-                                    scanf(line, "%f", &xh); break;
-                                case 3:
-                                    scanf(line, "%e", &y); break;
+                                    sscanf(cell.c_str(), "%lf", &y);
+                                    break;
                                 default:
-                                    scanf(line, "%s %e", text, &error); break;
-                                    errors[text]=error;   
+                                    //std::cout<<"TEST: default met: "<<cell<<", for index: "<<inputCount<<std::endl;
+
+                                    if(inputCount>3) {
+                                        //std::cout<<"TEST: appropreate input count."<<std::endl;
+
+                                        error=0;
+                                        sscanf(cell.c_str(), "%lf", &error);
+                                        errors.push_back(error);
+                                    }
+                                    else {
+                                        //std::cout<<" MyData::ReadData: ERROR: invalid input encountered."<<std::endl;
+                                        exit(0); //TEST
+                                    }
+                                }
+                                inputCount++;
+
+                                //std::cout<<"TEST: errors.size(): "<<errors.size()<<std::endl;
                             }
-                            dataCount++;
                         }
-                        
+
+                        //HARD coded temporarily to keep the following code the same as with the old implimentation:
+                        // simply converting the indexes of the erros in the vector to the appropreate variables
+                        //std::cout<<"TEST: errors.size(): "<<errors.size()<<std::endl;
+
+                        for(int i=0; i<errors.size(); i++) {
+                            switch(i) {
+                            case 0:
+                                dypstat = errors.at(i);
+                                break;
+                            case 1:
+                                dymstat = errors.at(i);
+                                break;
+                            case 2:
+                                dypsyst = errors.at(i);
+                                break;
+                            case 3:
+                                dymsyst = errors.at(i);
+                                break;
+                            default:
+                                std::cout<<" MyData::ReadData: More errors were provided then are currently accounted for!"<<std::endl;
+                                exit(0); //TEST
+                            }
+                            //std::cout<<"TEST: Assigned: "<<errors.at(i)<<", for index: "<<i<<std::endl;
+                        }
+                        /*
+                        std::cout<<"TEST: dypstat: "<<dypstat
+                                <<", dymstat: "<<dymstat
+                                <<", dypsyst: "<<dypsyst
+                                <<", dymsyst: "<<dymsyst<<std::endl;
                         */
-                    
-                        
+                        //exit(0); //TEST
+                    }
+
+
 
 
                     if (debug) printf(" MyData::ReadData xm= %f xl= %f xr= %f  y = %e dypstat = %e  dymstat= %e dypsyst= %e dymsyst= %e \n",
@@ -964,14 +984,14 @@ void MyData::DrawLegend(char name[100], float x, float y) {
     sprintf(text2,"%d",year);
     sprintf(text3,"#sqrt{s} = %4.0f GeV",sqrts);
     double fractpart, intpart;
-    fractpart=modf (ymax*10., &intpart);
+    fractpart= std::modf(ymax*10., &intpart);
 
     //cout<<" ymax= "<<ymax<<" fractpart= "<<fractpart<<" intpart= "<<intpart<<endl;
 
     if (fractpart<0.01) sprintf(text4,"%3.1f< |y| < %3.1f",ymin,ymax);
     else                sprintf(text4,"%3.2f< |y| < %3.2f",ymin,ymax);
 
-    if (fabs(ymin)<0.01) {
+    if (std::fabs(ymin)<0.01) {
         if (fractpart<0.01)  sprintf(text4," |y| < %3.1f",ymax);
         else                 sprintf(text4," |y| < %3.2f",ymax);
 
