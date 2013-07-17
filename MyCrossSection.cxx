@@ -1291,9 +1291,10 @@ void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
             std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: numPDFsForGrid: "<<numPDFsForGrid<<std::endl;
             
             for(int ipdf=0; ipdf< numPDFsForGrid; ipdf++) {
-                std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: igrid: "<<igrid<<", ipdf: "<<ipdf<<std::endl;
-                std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: t_mypdf.size(): "<<(int)t_mypdf.size()<<std::endl;
-                std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: t_mypdf.at("<<igrid<<").size(): "<<(int)t_mypdf.at(igrid).size()<<std::endl;
+                std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors:\n"
+                    <<"\tigrid: "<<igrid<<", ipdf: "<<ipdf
+                    <<"\tt_mypdf.size(): "<<(int)t_mypdf.size()
+                    <<"\tt_mypdf.at("<<igrid<<").size(): "<<t_mypdf.at(igrid).size()<<std::endl;
                 t_mypdf.at(igrid).at(ipdf)->CalcSystErrors(); 
                 std::cout<<"test"<<std::endl;
             }

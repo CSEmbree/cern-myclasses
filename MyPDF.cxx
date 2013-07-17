@@ -101,7 +101,7 @@ void MyPDF::Initialize()
     if(do_FactorizationScale)
         calc_desc+="_FS";
     if( !do_PDFBand && !do_AlphaS && !do_RenormalizationScale && !do_FactorizationScale ) {
-        std::cout<<" MyPDF::Initialize: ERORR: All theory uncertainties disabled. Configuration file error?"<<std::endl;
+        std::cout<<" MyPDF::Initialize: ERORR: All theory uncertainties disabled. Possible steering file error? Check file: "<<steeringFilePath<<std::endl;
         exit(0); //TEST
     }
 
@@ -120,7 +120,7 @@ void MyPDF::Initialize()
     TH1D* temp_hist_prenorm;
 
     std::cout<<" MyPDF::Initialize: Fill PDF errors for "<<PDFtype<<std::endl;
-    string default_pdf_set_name = (std::string) ("PDFsets/"+PDFtype+".LHgrid");
+    string default_pdf_set_name = (std::string) ("PDFsets/"+PDFname+".LHgrid");
     if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name ="PDFsets/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
     std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
     LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
