@@ -151,6 +151,11 @@ class MyGrid {
     return versionname;
   }
 
+  string SetGridVersionName(string version){ //<--added mutator method to versionname
+    return versionname=version;
+  }
+
+
   string GetGridFullFileName(int i){
     return this->GetNtupDirOutput()+"/"+this->GetGridFileName(i);
   }
