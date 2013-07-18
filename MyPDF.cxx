@@ -1387,3 +1387,45 @@ void MyPDF::setOptionsFileName(string _optionsFileName) {
     optionsFileName=_optionsFileName;
 };
 
+void MyPDF::CleanUpMyPDF() {
+    if(debug) std::cout<<"MyPDF::CleanUpMyPDF: Starting to clean up..."<<std::endl;
+    
+    if(h_errors_RenormalizationScale.size()>0) {
+        for(int i=0; i<h_errors_RenormalizationScale.size(); ++i) {
+            delete h_errors_RenormalizationScale.at(i);
+        }
+    }
+    
+    if(h_errors_FactorizationScale.size()>0) {
+        for(int i=0; i<h_errors_FactorizationScale.size(); ++i) {
+            delete h_errors_FactorizationScale.at(i);
+        }
+    }
+    
+    if(h_errors_PDFBand.size()>0) {
+        for(int i=0; i<h_errors_PDFBand.size(); ++i) {
+            delete h_errors_PDFBand.at(i);
+        }
+    }
+    
+    if(h_errors_prenorm.size()>0) {
+        for(int i=0; i<h_errors_prenorm.size(); ++i) {
+            delete h_errors_prenorm.at(i);
+        }
+    }
+    
+    if(h_errors_AlphaS.size()>0) {
+        for(int i=0; i<h_errors_AlphaS.size(); ++i) {
+            delete h_errors_AlphaS.at(i);
+        }
+    }
+    
+    if(h_errors_AlphaS_prenorm.size()>0) {
+        for(int i=0; i<h_errors_AlphaS_prenorm.size(); ++i) {
+            delete h_errors_AlphaS_prenorm.at(i);
+        }
+    }
+
+    if(debug) std::cout<<"MyPDF::CleanUpMyPDF: Finished clean up!"<<std::endl;
+}
+

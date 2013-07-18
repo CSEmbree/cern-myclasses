@@ -62,6 +62,8 @@ class MyPDF {
         //METHODS
         MyPDF(bool _debug=false); //default constructor
         MyPDF(string _gridName, double _xscale=1.0, string _steeringFileName="steering_mypdf.txt", bool _debug=false);
+        virtual ~MyPDF() { CleanUpMyPDF(); }; //destructor
+        void CleanUpMyPDF();
         void Initialize();
         void Print();
         void PrintKnownOptionsForSteering();
