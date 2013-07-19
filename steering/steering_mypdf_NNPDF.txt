@@ -1,0 +1,48 @@
+%myPDF steeringfile
+%
+%saying debug turns on the debug facilities of MyPDF
+%debug
+%providing optionFileName lets you choose your own options file and path
+%
+%%optionsFileName: name a *.txt file with path (if not in current directory)
+optionsFileName options_mypdf.txt
+%
+%%pdfSetPath: optional option for overwriting the default location (ENV VAR PDFPATH) where this PDF is located
+pdfSetPath /home/admin/Documents/pdfdata/
+%
+%%PDFtype: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO
+PDFtype NNPDF23nlo
+%
+%%PDFname: CT10, MSTW2008nlo68cl, NNPDF23_nlo_as_0118, HERAPDF15NLO_EIG
+PDFname NNPDF23_nlo_as_0118
+%
+%%numPDFMembers: 53, 41, 101, 33
+numPDFMembers 101
+%
+%%fillStyleCode: 3005, 3004, 3002, 3021
+fillStyleCode 3021
+%
+%%fillColorCode: kWhite=0, kBlack=1, kGray=920, kRed=632, kGreen=416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432, kOrange=800 
+fillColorCode 602
+%
+%%PDFBandType: UseAlphaS, UseErrorBand
+PDFBandType UseAlphaS
+%
+%%PDFErrorType: PDFBand, AlphaS, RenormalizationScale, FactorizationScale, TotError
+PDFErrorType PDFBand
+PDFErrorType AlphaS
+PDFErrorType RenormalizationScale
+PDFErrorType FactorizationScale
+%
+%%PDFErrorSize: OneSigma, 90Percent
+PDFErrorSize OneSigma
+%
+%%renScaleVal: 0.5, 1., 2.
+renScaleValUp 2.0
+renScaleValDefault 1.0
+renScaleValDown 0.5
+%
+%%facScaleVal: 0.5, 1., 2.
+facScaleValUp 2.0
+facScaleValDefault 1.0
+facScaleValDown 0.5
