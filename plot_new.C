@@ -19,9 +19,14 @@ void DumpTH1D(TH1D* my_hist);
 void DrawRatioPlot(MyFrameData *myframe, TGraphAsymmErrors* reference_ratio, MyCrossSection *mycross, float x_min, float x_max, int error_code, int igrid);
 void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code);
 void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc, TString x_title, bool logy, bool logx);
-void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx);
+void SaveThisSubprocess(int igrid, std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx);
 std::vector<bool> first_time_pdf; //vector indicating if a paritcular index has been drawn for the first time yet
-
+//TLegend *my_leg_res;
+//TLegend *my_leg_sp;
+//TCanvas *print_canv;
+//TPad *pad1;
+//TPad *pad2;
+//MyFrameData *myframe;
 
 
 int main(int argc, char** argv)
@@ -56,7 +61,7 @@ int main(int argc, char** argv)
 
             mycross2->GetMyFrame(iframe)->GetCanvas()->Print(psfile2);
         }
-        
+
         std::cout << " plot_new::main: Done with frame loop " << std::endl;
     }
 
@@ -85,10 +90,10 @@ int main(int argc, char** argv)
 
         std::cout<<" plot_new::main: calling mycrosssection's mypdfInitializeErrorGraphs"<<std::endl;
         mycross->mypdfInitializeErrorGraphs(igrid);
-        
+
         std::cout<<" plot_new::main: calling mycrosssection's mypdfCalcSystErrors"<<std::endl;
         mycross->mypdfCalcSystErrors(igrid);
-        
+
         std::cout<<" plot_new::main: calling mycrosssection's mypdfGetRatioToTH1"<<std::endl;
         mycross->mypdfGetRatioToTH1(h_reference,igrid);
 
@@ -149,6 +154,9 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
         PDF_codes.push_back(ipdf);
     }
 
+
+
+    /*
     for(int ipdf = 0; ipdf < numPDFtypes; ipdf++)
     {
         SaveThisSubprocess(igrid, ipdf, hists_to_plot_gg_prenorm,    mycross, TString(var_desc + "_gg_prenorm"),    x_title, logy, logx);
@@ -160,6 +168,18 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
         SaveThisSubprocess(igrid, ipdf, hists_to_plot_qqbar,         mycross, TString(var_desc + "_qqbar"),         x_title, logy, logx);
         SaveThisSubprocess(igrid, ipdf, hists_to_plot_tot,           mycross, TString(var_desc + "_tot"),           x_title, logy, logx);
     }
+    */
+
+
+    SaveThisSubprocess(igrid, hists_to_plot_gg_prenorm,    mycross, TString(var_desc + "_gg_prenorm"),    x_title, logy, logx);
+    SaveThisSubprocess(igrid, hists_to_plot_qqbar_prenorm, mycross, TString(var_desc + "_qqbar_prenorm"), x_title, logy, logx);
+    SaveThisSubprocess(igrid, hists_to_plot_tot_prenorm,   mycross, TString(var_desc + "_tot_prenorm"),   x_title, logy, logx);
+    SaveThisSubprocess(igrid, hists_to_plot_gg,            mycross, TString(var_desc + "_gg"),            x_title, logy, logx);
+    SaveThisSubprocess(igrid, hists_to_plot_gg_frac,       mycross, TString(var_desc + "_gg_frac"),       x_title, false, logx);
+    SaveThisSubprocess(igrid, hists_to_plot_qqbar_frac,    mycross, TString(var_desc + "_qqbar_frac"),    x_title, false, logx);
+    SaveThisSubprocess(igrid, hists_to_plot_qqbar,         mycross, TString(var_desc + "_qqbar"),         x_title, logy, logx);
+    SaveThisSubprocess(igrid, hists_to_plot_tot,           mycross, TString(var_desc + "_tot"),           x_title, logy, logx);
+
 
     for(int ipdf = 0; ipdf < numPDFtypes; ipdf++)
     {
@@ -178,7 +198,7 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
 }
 
 
-void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx)
+void SaveThisSubprocess(int igrid, std::vector<TH1D*> hists_to_plot, MyCrossSection *mycross, TString plot_desc, TString x_title, bool logy, bool logx)
 {
     TString plot_dir = "images/subprocesses/";
     TCanvas *print_canv = new TCanvas("print_canv", "", 600, 700);
@@ -186,28 +206,31 @@ void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, M
     pad1->SetBottomMargin(0);
     pad1->Draw();
     pad1->cd();
-    TLegend *my_leg = new TLegend(0.6, 0.6, 0.9, 0.9);
-    my_leg->SetFillColor(0);
-    my_leg->SetBorderSize(0);
+    TLegend *my_leg_sp = new TLegend(0.6, 0.6, 0.9, 0.9);
+    my_leg_sp->SetFillColor(0);
+    my_leg_sp->SetBorderSize(0);
 
     float max_val = 0.;
     float min_val = 9999999.;
     std::cout << " plot_new::SaveThisSubprocess: Spew hist contents for " << plot_desc << "\n";
 
-    std::cout << " plot_new::SaveThisSubprocess: PDF: " << mycross->GetMyPDF(igrid, ipdf)->getPDFname() << ": "<<endl;
+    int numPDFtypes = mycross->GetNPDF(igrid);
 
-    std::cout << " plot_new::SaveThisSubprocess: Number of hists to plot: "<<hists_to_plot.size()<<std::endl;
+    for(int ipdf=0; ipdf<numPDFtypes; ipdf++)
+    {
+        std::cout << " plot_new::SaveThisSubprocess: PDF: " << mycross->GetMyPDF(igrid, ipdf)->getPDFname() << ": "<<endl;
+        std::cout << " plot_new::SaveThisSubprocess: Number of hists to plot: "<<hists_to_plot.size()<<std::endl;
 
-    for(int bi = 1; bi <= hists_to_plot.at(ipdf)->GetNbinsX(); bi++) {
+        for(int bi = 1; bi <= hists_to_plot.at(ipdf)->GetNbinsX(); bi++) {
 
-        float center = hists_to_plot.at(ipdf)->GetBinCenter(bi);
-        float content = hists_to_plot.at(ipdf)->GetBinContent(bi);
+            float center = hists_to_plot.at(ipdf)->GetBinCenter(bi);
+            float content = hists_to_plot.at(ipdf)->GetBinContent(bi);
 
-        if( content > max_val ) max_val = content;
-        if( content < min_val && content > 0.0000000001 ) min_val = content;
-        std::cout << "\tcenter: " << center << ", content: " << content << ", max so far: " << max_val << ", min: " << min_val <<std::endl;
+            if( content > max_val ) max_val = content;
+            if( content < min_val && content > 0.0000000001 ) min_val = content;
+            std::cout << "\tcenter: " << center << ", content: " << content << ", max so far: " << max_val << ", min: " << min_val <<std::endl;
+        }
     }
-
 
     max_val *= 1.4;
     if( logy ) {
@@ -217,22 +240,23 @@ void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, M
 
     if( !logy ) min_val = 0.;
     std::cout << "\tlogx: " << logx << ", logy: " << logy << ", max val: " << max_val << ", min_val: " << min_val <<std::endl;
-    //hists_to_plot.at(0)->GetYaxis()->SetRangeUser(min_val, max_val);
-    hists_to_plot.at(ipdf)->GetYaxis()->SetRangeUser(min_val, max_val);
+    hists_to_plot.at(0)->GetYaxis()->SetRangeUser(min_val, max_val);
+    //hists_to_plot.at(ipdf)->GetYaxis()->SetRangeUser(min_val, max_val);
 
     if( logy ) gPad->SetLogy();
     else  gPad->SetLogy(0);
     if( logx ) gPad->SetLogx();
     else gPad->SetLogx(0);
-    hists_to_plot.at(ipdf)->SetXTitle(x_title);
-    hists_to_plot.at(ipdf)->Draw();
+    //hists_to_plot.at(ipdf)->SetXTitle(x_title);
+    hists_to_plot.at(0)->SetXTitle(x_title);
+    //hists_to_plot.at(ipdf)->Draw();
+    hists_to_plot.at(0)->Draw();
 
-
-    hists_to_plot.at(ipdf)->Draw("same");
-
-    my_leg->AddEntry(hists_to_plot.at(ipdf), mycross->GetMyPDF(igrid, ipdf)->getPDFname().c_str());
-
-    my_leg->Draw();
+    for(int ipdf=0; ipdf<numPDFtypes; ipdf++) {
+        hists_to_plot.at(ipdf)->Draw("same");
+        my_leg_sp->AddEntry(hists_to_plot.at(ipdf), mycross->GetMyPDF(igrid, ipdf)->getPDFname().c_str());
+    }
+    my_leg_sp->Draw();
 
     std::cout << " plot_new::SaveThisSubprocess: cd to pad2" << std::endl;
     gPad->RedrawAxis();
@@ -246,19 +270,20 @@ void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, M
     float ratio_miny = 999.;
     float ratio_maxy = -999.;
 
+    for(int ipdf=0; ipdf<numPDFtypes; ipdf++) {
+        TString this_ratio_name = hists_to_plot.at(ipdf)->GetName();
+        this_ratio_name += "_ratio";
+        TH1D* this_ratio_hist = (TH1D*) hists_to_plot.at(ipdf)->Clone(this_ratio_name);
+        this_ratio_hist->Divide(hists_to_plot.at(0));
+        //this_ratio_hist->Divide(hists_to_plot.at(ipdf));
 
-    TString this_ratio_name = hists_to_plot.at(ipdf)->GetName();
-    this_ratio_name += "_ratio";
-    TH1D* this_ratio_hist = (TH1D*) hists_to_plot.at(ipdf)->Clone(this_ratio_name);
-    //this_ratio_hist->Divide(hists_to_plot.at(0));
-    this_ratio_hist->Divide(hists_to_plot.at(ipdf));
-
-    for(int bi = 1; bi <= this_ratio_hist->GetNbinsX(); bi++) {
-        float content = this_ratio_hist->GetBinContent(bi);
-        if( content < ratio_miny ) ratio_miny = content;
-        if( content > ratio_maxy ) ratio_maxy = content;
+        for(int bi = 1; bi <= this_ratio_hist->GetNbinsX(); bi++) {
+            float content = this_ratio_hist->GetBinContent(bi);
+            if( content < ratio_miny ) ratio_miny = content;
+            if( content > ratio_maxy ) ratio_maxy = content;
+        }
+        ratio_hists.push_back(this_ratio_hist);
     }
-    ratio_hists.push_back(this_ratio_hist);
 
 
     std::cout << " plot_new::SaveThisSubprocess: collected ratio hists" << std::endl;
@@ -273,15 +298,16 @@ void SaveThisSubprocess(int igrid, int ipdf, std::vector<TH1D*> hists_to_plot, M
     if( ratio_maxy < 0.5 || ratio_maxy > 3. ) ratio_maxy = 2.;
     if( logx ) gPad->SetLogx();
     else gPad->SetLogx(0);
-    
+
     ratio_hists.at(0)->GetYaxis()->SetRangeUser(ratio_miny, ratio_maxy);
     ratio_hists.at(0)->Draw();
     ratio_hists.at(0)->SetXTitle(x_title);
     ratio_hists.at(0)->SetYTitle("Ratio to CT10");
 
-    std::cout<<"TEST: ipdf: "<<ipdf<<std::endl;
-    //exit(0);//TEST
-    ratio_hists.at(0)->Draw("same");
+
+    for(int ipdf=0; ipdf<numPDFtypes; ipdf++) {
+        ratio_hists.at(ipdf)->Draw("same");
+    }
 
     print_canv->cd();
 
@@ -296,10 +322,10 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
     experiment_and_year += mycross->GetMyData(igrid)->GetYear();
     experiment_and_year += " Data";
 
-    TLegend *this_leg = new TLegend(0.4, 0.55, 0.9, 0.9);
-    this_leg->SetBorderSize(0);
-    this_leg->SetFillColor(0);
-    this_leg->AddEntry(mycross->GetMyData(igrid)->GetTGraphTotErr(), experiment_and_year, "pl");
+    TLegend *my_leg_res = new TLegend(0.4, 0.55, 0.9, 0.9);
+    my_leg_res->SetBorderSize(0);
+    my_leg_res->SetFillColor(0);
+    my_leg_res->AddEntry(mycross->GetMyData(igrid)->GetTGraphTotErr(), experiment_and_year, "pl");
 
     //int numPDFtypes = mypdf[0]->getNumPDFtypes();
     int numPDFtypes = mycross->GetNPDF(igrid);
@@ -378,11 +404,11 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
         std::string cpp_format = strstream.str();
         chi2prob_str[igrid] = "";
         chi2prob_str[igrid] += cpp_format;
-        this_leg->AddEntry(current_pdf->h_TotError_results, (TString) (current_pdf->getPDFBandType()+", #chi^{2} prob = "+chi2prob_str[igrid]), "f");
+        my_leg_res->AddEntry(current_pdf->h_TotError_results, (TString) (current_pdf->getPDFBandType()+", #chi^{2} prob = "+chi2prob_str[igrid]), "f");
         std::cout << " plot_new::DrawAndSaveResults: For " << the_desc << ", " << current_pdf->getPDFBandType() << ", chi2 = " << chi2[igrid] << ", / dof = " << chi2perdof[igrid] << ", prob = " << chi2prob[igrid] << ", string format: " << chi2prob_str[igrid] << std::endl;
 
 
-        this_leg->Draw();
+        my_leg_res->Draw();
 
         myframe->GetMyFrame()->GetSubPad2()->cd();
         std::cout << " plot_new::DrawAndSaveResults: Now get ref ratio" << std::endl;
@@ -468,20 +494,20 @@ void DrawRatioPlot(MyFrameData *myframe, TGraphAsymmErrors* reference_ratio, MyC
             else                                current_pdf->h_PDFBand_results_ratio_to_ref->Draw("e2 same");
         }
         else if( current_pdf->getDoAlphaS() ) {
-            if( first_time_pdf.at(igrid) )    current_pdf->h_AlphaS_results_ratio_to_ref->Draw("e2");
-            else                    current_pdf->h_AlphaS_results_ratio_to_ref->Draw("e2 same");
+            if( first_time_pdf.at(igrid) )      current_pdf->h_AlphaS_results_ratio_to_ref->Draw("e2");
+            else                                current_pdf->h_AlphaS_results_ratio_to_ref->Draw("e2 same");
         }
         else if( current_pdf->getDoRenormalizationScale() ) {
-            if( first_time_pdf.at(igrid) )    current_pdf->h_RenormalizationScale_results_ratio_to_ref->Draw("e2");
-            else                    current_pdf->h_RenormalizationScale_results_ratio_to_ref->Draw("e2 same");
+            if( first_time_pdf.at(igrid) )      current_pdf->h_RenormalizationScale_results_ratio_to_ref->Draw("e2");
+            else                                current_pdf->h_RenormalizationScale_results_ratio_to_ref->Draw("e2 same");
         }
         else if( current_pdf->getDoFactorizationScale() ) {
-            if( first_time_pdf.at(igrid) )    current_pdf->h_FactorizationScale_results_ratio_to_ref->Draw("e2");
-            else                    current_pdf->h_FactorizationScale_results_ratio_to_ref->Draw("e2 same");
+            if( first_time_pdf.at(igrid) )      current_pdf->h_FactorizationScale_results_ratio_to_ref->Draw("e2");
+            else                                current_pdf->h_FactorizationScale_results_ratio_to_ref->Draw("e2 same");
         }
         else if( current_pdf->getDoTotError() ) {
-            if( first_time_pdf.at(igrid) )    current_pdf->h_TotError_results_ratio_to_ref->Draw("e2");
-            else                    current_pdf->h_TotError_results_ratio_to_ref->Draw("e2 same");
+            if( first_time_pdf.at(igrid) )      current_pdf->h_TotError_results_ratio_to_ref->Draw("e2");
+            else                                current_pdf->h_TotError_results_ratio_to_ref->Draw("e2 same");
         }
 
         //v1.insert(v1.begin()+i, v2[i])
