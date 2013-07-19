@@ -211,7 +211,7 @@ void MyPDF::Initialize()
         temp_hist_prenorm->SetName((TString) ("h_xsec_default"));
         h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
         if(PDFtype.compare("CT10")==0) {
-            LHAPDF::initPDFSet(((std::string) ("PDFsets/CT10as.LHgrid")).c_str(), 3);  //// alphaS down
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/CT10as.LHgrid")).c_str(), 3);  //// alphaS down
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
             temp_hist_prenorm->SetName((TString) ("h_xsec_CT10as116_prenorm"));
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
@@ -221,37 +221,38 @@ void MyPDF::Initialize()
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
         }
         else if(PDFtype.compare("MSTW2008nlo")==0) {
-            LHAPDF::initPDFSet(((std::string) ("PDFsets/MSTW2008nlo68cl_asmz-68cl.LHgrid")).c_str(), 0);   //// alphaS down
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/MSTW2008nlo68cl_asmz-68cl.LHgrid")).c_str(), 0);   //// alphaS down
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
             temp_hist_prenorm->SetName((TString) ("h_xsec_MSTW2008nloAsDown_prenorm"));
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDFSet(((std::string) ("PDFsets/MSTW2008nlo68cl_asmz+68cl.LHgrid")).c_str(), 0);   //// alphaS up
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/MSTW2008nlo68cl_asmz+68cl.LHgrid")).c_str(), 0);   //// alphaS up
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
             temp_hist_prenorm->SetName((TString) ("h_xsec_MSTW2008nloAsUp_prenorm"));
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
         }
         else if(PDFtype.compare("NNPDF23nlo")==0) {
-            LHAPDF::initPDFSet(((std::string) ("PDFsets/NNPDF23_nlo_as_0116.LHgrid")).c_str(), 0);  //// alphaS down
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/NNPDF23_nlo_as_0116.LHgrid")).c_str(), 0);  //// alphaS down
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
             temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as117_prenorm"));
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDFSet(((std::string) ("PDFsets/NNPDF23_nlo_as_0120.LHgrid")).c_str(), 0);  //// alphaS up
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/NNPDF23_nlo_as_0120.LHgrid")).c_str(), 0);  //// alphaS up
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
             temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as123_prenorm"));
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
         }
-        else if(PDFtype.compare("HERAPDF15NLO_EIG")==0) {
-            LHAPDF::initPDFSet(((std::string) ("PDFsets/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 9);  //// alphaS down
+        else if(PDFtype.compare("HERAPDF15NLO")==0) {
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 9);  //// alphaS down
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
             temp_hist_prenorm->SetName((TString) ("h_xsec_HERAPDF15NLOas1156_prenorm"));
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDFSet(((std::string) ("PDFsets/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 11);  //// alphaS up
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 11);  //// alphaS up
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
             temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as1196_prenorm")); //looks wrong? copied from previous incorrectly??
             h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
         }
         else {
-            std::cout<<" MyPDF::Initialize: unsupported pdfCode encountered."<<std::endl;
+            std::cout<<" MyPDF::Initialize: unsupported pdfCode '"<<PDFtype<<"' encountered."<<std::endl;
+            exit(0);
         }
         
         
@@ -631,7 +632,7 @@ void MyPDF::CalcPDFBandErrors()
                 this_err_down *= 1.645;
             }
         }
-        else if(PDFtype.compare("HERAPDF15NLO_EIG")==0) {
+        else if(PDFtype.compare("HERAPDF15NLO")==0) {
             central_val = h_errors_PDFBand.at(0)->GetBinContent(bi);
             for(int pdferri = 1; pdferri < 20; pdferri += 2) {   //// experimental errors
                 this_err_up += pow( 0.5*(h_errors_PDFBand.at(pdferri)->GetBinContent(bi) - h_errors_PDFBand.at(pdferri+1)->GetBinContent(bi)), 2.);
