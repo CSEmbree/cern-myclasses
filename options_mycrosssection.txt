@@ -1,0 +1,25 @@
+%CrossSectionOptions.txt
+%list all supported cross section options listed here seperated by newlines
+%All areas that arn't valid options should have a "%" in front of them
+%
+debug
+nprocessnumber
+subprocesssteername
+pdffunction
+ntupname
+Gridnamedir
+datanamedir
+gridname
+markerstyle
+markercolor
+reflinestyle
+reflinecolor
+datascalex
+mcscalex
+scaley
+frameid
+divideid
+vardesc
+dataname
+corrname
+pdfdata
