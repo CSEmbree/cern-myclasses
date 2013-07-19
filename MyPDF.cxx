@@ -717,11 +717,8 @@ void MyPDF::CalcRenormalizationScaleErrors()
     //assert(h_errors_RenormalizationScale.size() >= 3);
 
     for(int bi = 1; bi <= h_errors_RenormalizationScale.at(0)->GetNbinsX(); bi++) {
-        std::cout<<"test1, h_errors_RenormalizationScale.size(): "<<h_errors_RenormalizationScale.size()<<std::endl;
         double this_default_val = h_errors_RenormalizationScale.at(DEF)->GetBinContent(bi);
-        std::cout<<"test2"<<std::endl;
         double this_err_down = h_errors_RenormalizationScale.at(DOWN)->GetBinContent(bi);
-        std::cout<<"test3"<<std::endl;
         double this_err_up = h_errors_RenormalizationScale.at(UP)->GetBinContent(bi);
         if(debug)std::cout<<" MyPDF::CalcRenormalizationScaleErrors: bi = "<<bi<<", default val = "<<this_default_val<<" +"<<this_err_up  <<" -"<<this_err_down<<"\n";
         
@@ -747,9 +744,9 @@ void MyPDF::CalcFactorizationScaleErrors()
     //assert(h_errors_FactorizationScale.size() >= 3);
 
     for(int bi = 1; bi <= h_errors_FactorizationScale.at(0)->GetNbinsX(); bi++) {
-        double this_default_val = h_errors_FactorizationScale.at(e_FacScale1p0)->GetBinContent(bi);
-        double this_err_down = h_errors_FactorizationScale.at(e_FacScale0p5)->GetBinContent(bi);
-        double this_err_up = h_errors_FactorizationScale.at(e_FacScale2p0)->GetBinContent(bi);
+        double this_default_val = h_errors_FactorizationScale.at(DEF)->GetBinContent(bi);
+        double this_err_down = h_errors_FactorizationScale.at(DOWN)->GetBinContent(bi);
+        double this_err_up = h_errors_FactorizationScale.at(UP)->GetBinContent(bi);
         if(debug)std::cout<<" MyPDF::CalcFactorizationScaleErrors: bi = "<<bi<<", default val = "<<this_default_val<<" +"<<this_err_up  <<" -"<<this_err_down<<"\n";
 
         double error = 0.5*fabs(this_err_up-this_err_down);

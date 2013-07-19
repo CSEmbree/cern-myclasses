@@ -29,8 +29,8 @@ using namespace std;
 
 
 //TEMP delcared in Variables.h file needed for stand alone myPDF use but not when using older MyCrossSection file
-enum enum_RenScales {e_RenScale0p5, e_RenScale1p0, e_RenScale2p0, e_n_RenScaleVals}; //e_n_* dictates future size
-enum enum_FacScales {e_FacScale0p5, e_FacScale1p0, e_FacScale2p0, e_n_FacScaleVals};
+//enum enum_RenScales {e_RenScale0p5, e_RenScale1p0, e_RenScale2p0, e_n_RenScaleVals}; //e_n_* dictates future size
+//enum enum_FacScales {e_FacScale0p5, e_FacScale1p0, e_FacScale2p0, e_n_FacScaleVals};
 enum scales{UP=0, DEF, DOWN, n_SCALES};
 
 

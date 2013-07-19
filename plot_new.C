@@ -117,23 +117,14 @@ int main(int argc, char** argv)
 void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc, TString x_title, bool logy, bool logx)
 {
     std::cout << " plot_new::SaveSubprocessResults: Save sub1" << std::endl;
-    std::vector<TH1D*> hists_to_plot_gg_prenorm;
-    hists_to_plot_gg_prenorm.clear();
-    std::vector<TH1D*> hists_to_plot_qqbar_prenorm;
-    hists_to_plot_qqbar_prenorm.clear();
-    std::vector<TH1D*> hists_to_plot_tot_prenorm;
-    hists_to_plot_tot_prenorm.clear();
-    std::vector<TH1D*> hists_to_plot_gg;
-    hists_to_plot_gg.clear();
-    std::vector<TH1D*> hists_to_plot_qqbar;
-    hists_to_plot_qqbar.clear();
-    std::vector<TH1D*> hists_to_plot_tot;
-    hists_to_plot_tot.clear();
-    std::vector<TH1D*> hists_to_plot_gg_frac;
-    hists_to_plot_gg_frac.clear();
-    std::vector<TH1D*> hists_to_plot_qqbar_frac;
-    hists_to_plot_qqbar_frac.clear();
-    std::vector<int> PDF_codes;
+    std::vector<TH1D*> hists_to_plot_gg_prenorm;        hists_to_plot_gg_prenorm.clear();
+    std::vector<TH1D*> hists_to_plot_qqbar_prenorm;     hists_to_plot_qqbar_prenorm.clear();
+    std::vector<TH1D*> hists_to_plot_tot_prenorm;       hists_to_plot_tot_prenorm.clear();
+    std::vector<TH1D*> hists_to_plot_gg;                hists_to_plot_gg.clear();
+    std::vector<TH1D*> hists_to_plot_qqbar;             hists_to_plot_qqbar.clear();
+    std::vector<TH1D*> hists_to_plot_tot;               hists_to_plot_tot.clear();
+    std::vector<TH1D*> hists_to_plot_gg_frac;           hists_to_plot_gg_frac.clear();
+    std::vector<TH1D*> hists_to_plot_qqbar_frac;        hists_to_plot_qqbar_frac.clear();
     std::cout << " plot_new::SaveSubprocessResults: Save sub2" << std::endl;
 
 
@@ -151,24 +142,8 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
         hists_to_plot_qqbar_frac.push_back      (current_pdf->h_qqbar_frac);
         hists_to_plot_qqbar.push_back           (current_pdf->h_qqbar);
         hists_to_plot_tot.push_back             (current_pdf->h_tot);
-        PDF_codes.push_back(ipdf);
     }
 
-
-
-    /*
-    for(int ipdf = 0; ipdf < numPDFtypes; ipdf++)
-    {
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_gg_prenorm,    mycross, TString(var_desc + "_gg_prenorm"),    x_title, logy, logx);
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_qqbar_prenorm, mycross, TString(var_desc + "_qqbar_prenorm"), x_title, logy, logx);
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_tot_prenorm,   mycross, TString(var_desc + "_tot_prenorm"),   x_title, logy, logx);
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_gg,            mycross, TString(var_desc + "_gg"),            x_title, logy, logx);
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_gg_frac,       mycross, TString(var_desc + "_gg_frac"),       x_title, false, logx);
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_qqbar_frac,    mycross, TString(var_desc + "_qqbar_frac"),    x_title, false, logx);
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_qqbar,         mycross, TString(var_desc + "_qqbar"),         x_title, logy, logx);
-        SaveThisSubprocess(igrid, ipdf, hists_to_plot_tot,           mycross, TString(var_desc + "_tot"),           x_title, logy, logx);
-    }
-    */
 
 
     SaveThisSubprocess(igrid, hists_to_plot_gg_prenorm,    mycross, TString(var_desc + "_gg_prenorm"),    x_title, logy, logx);
@@ -190,8 +165,11 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
             float bin_center = hists_to_plot_tot_prenorm.at(ipdf)->GetBinCenter(bi);
             float bin_content = hists_to_plot_tot_prenorm.at(ipdf)->GetBinContent(bi);
             inclusive_cross_section += (bin_width*bin_content);
-            std::cout << "\tcenter: " << bin_center << ", width: " << bin_width << ", content: " << bin_content << ", Add " << (bin_width*bin_content) << ", cross-section now is " << inclusive_cross_section <<std::endl;
-
+            std::cout << "\tcenter: " << bin_center
+                    << ", width: " << bin_width 
+                    << ", content: " << bin_content 
+                    << ", Add " << (bin_width*bin_content) 
+                    << ", cross-section now is " << inclusive_cross_section <<std::endl;
         }
         std::cout << " plot_new::SaveSubprocessResults: For " << mycross->GetMyPDF(igrid, ipdf)->getPDFBandType() << ", inclusive cross-section  is " << inclusive_cross_section <<std::endl;
     }
