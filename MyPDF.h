@@ -111,7 +111,6 @@ class MyPDF {
         double getFacScaleValDefault() const{return facScaleValDefault;};
         double getFacScaleValDown() const{return facScaleValDown;};
         
-        int getNumPDFtypes() const{return n_PDFtypes;};
         bool getDoPDFBand() const{return do_PDFBand;};
         bool getDoAlphaS() const{return do_AlphaS;};
         bool getDoRenormalizationScale() const{return do_RenormalizationScale;};
@@ -146,7 +145,6 @@ class MyPDF {
         string steeringFilePath;
         string steeringFileDir;
         string steeringFileName;    //name of steering file
-        int n_PDFtypes;
         string PDFtype;             //general name for PDF EX: "MSTW2008nlo"
         string PDFname;             //specific name for PDF EX: "MSTW2008nlo68cl"
         int n_PDFMembers;

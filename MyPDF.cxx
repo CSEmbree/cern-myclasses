@@ -1201,9 +1201,7 @@ void MyPDF::ReadSteering(const string _fileName)
                 facScaleNameDown=text;
                 facScaleVals[DOWN]=facScaleValDown;
                 facScaleNames[DOWN]="FacScale("+facScaleNameDown+")";
-            } else if (optionName.compare("numPDFTypes")==0) {
-                sscanf(text.c_str(), "%d", &n_PDFtypes);
-            }else if (optionName.compare("pdfSetPath")==0) {
+            } else if (optionName.compare("pdfSetPath")==0) {
                 pdfSetPath=text;
                 std::cout<<"TEST: text: "<<text<<std::endl;
                 if(pdfSetPath.find_last_of("/") == pdfSetPath.size()-1)
@@ -1286,7 +1284,6 @@ void MyPDF::setVariablesDefault()
     myOptions=NULL;
     steeringFileDir=defaultString;
     steeringFileName=defaultString;
-    n_PDFtypes=DEFAULT;
     PDFtype=defaultString;
     PDFname=defaultString;
     n_PDFMembers=DEFAULT;
