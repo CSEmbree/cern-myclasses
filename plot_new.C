@@ -65,8 +65,8 @@ int main(int argc, char** argv)
 
     MyCrossSection *mycross= new MyCrossSection( (char*) inputname.c_str());
     std::cout<<"mycross has this many pdfs: "<<mycross->GetNPDF()
-             <<"mycross has this many grids: "<<mycross->GetNGrid()
-             <<"Printing Crosssection..."<<std::endl;
+             <<", mycross has this many grids: "<<mycross->GetNGrid()
+             <<", Printing Crosssection..."<<std::endl;
     mycross->Print();
 
 
