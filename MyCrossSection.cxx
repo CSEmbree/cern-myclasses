@@ -162,16 +162,16 @@ void MyCrossSection::ReadSteering(char fname[100]) {
     // read steering from file fname
     //
     steername=fname;
-    if (debug) cout<<" MyCrossSection::ReadSteering steering "<<steername<<endl;
+    if (debug) cout<<" MyCrossSection::ReadSteering: steering "<<steername<<endl;
 
     ifstream infiletmp(steername.c_str(), ios::in);
-//if( debug ) std::cout << " MyCrossSection::ReadSteering Why am I not here? " << std::endl;
+//if( debug ) std::cout << " MyCrossSection::ReadSteering: Why am I not here? " << std::endl;
     if(!infiletmp) { // Check open
-        cerr << " MyCrossSection::ReadSteering Can't open " << steername <<"\n";
+        cerr << " MyCrossSection::ReadSteering: Can't open " << steername <<"\n";
         infiletmp.close();
         exit (1);
     } else {
-        if (debug) cout <<" MyCrossSection::ReadSteering read data file: " << steername << endl;
+        if (debug) cout <<" MyCrossSection::ReadSteering: read data file: " << steername << endl;
     }
 
     int iline=0;
@@ -188,18 +188,18 @@ void MyCrossSection::ReadSteering(char fname[100]) {
         if(line[0] != 'g') continue;
         if (strstr(line,"gridname")!=0) {
             sscanf(line," %s %[^\n] ",text, name);
-            if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<name<<endl;
+            if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<name<<endl;
             string myname=name;
             gridname.push_back(myname);
         }
     }
 
 
-    if (debug) cout<<" MyCrossSection::ReadSteering number of grids "<<gridname.size()<<endl;
+    if (debug) cout<<" MyCrossSection::ReadSteering: number of grids "<<gridname.size()<<endl;
 
 // set up options vector, one option for each grid
     for (int igrid=0; igrid<gridname.size(); igrid++) {
-        if (debug) cout<<" MyCrossSection::ReadSteering gridname["<<igrid<<"]= "<<gridname[igrid]<<endl;
+        if (debug) cout<<" MyCrossSection::ReadSteering: gridname["<<igrid<<"]= "<<gridname[igrid]<<endl;
         markerstyle.push_back(20);
         markercolor.push_back(1);
         mcscalex.push_back(1.);
@@ -231,12 +231,12 @@ void MyCrossSection::ReadSteering(char fname[100]) {
         //std::vector<std::string> colon_split_cpp_line;
         //colon_split_cpp_line.clear();
         //split_string(cpp_line, colon_split_cpp_line, ":");
-        //if (debug) std::cout << " MyCrossSection:ReadSteering ReadColon-split of line " << cpp_line << " has size " << colon_split_cpp_line.size() << "\n";
+        //if (debug) std::cout << " MyCrossSection:ReadSteering: ReadColon-split of line " << cpp_line << " has size " << colon_split_cpp_line.size() << "\n";
 //
         sscanf(line," %s",lineFirstWord);
         std::string cpp_lineFirstWord(lineFirstWord);
 
-        if (debug) cout<< " MyCrossSection::ReadSteering line= "<< line << "\n";
+        if (debug) cout<< " MyCrossSection::ReadSteering: line= "<< line << "\n";
         if(line[0] != '%') { //ignore comments
             /*
             if(line[0] != 'g' && line[0] != 'n' && line[0] != 's' && line[0] != 'p' && line[0] != 'm'
@@ -256,15 +256,15 @@ void MyCrossSection::ReadSteering(char fname[100]) {
                 debug=true;
             } else if (strstr(line,"nprocessnumber")!=0) {
                 sscanf(line," %s %d ",text, &processnumber);
-                if (debug) printf(" MyCrossSection::ReadSteering processnumber= %d   \n",processnumber);
+                if (debug) printf(" MyCrossSection::ReadSteering: processnumber= %d   \n",processnumber);
             } else if (strstr(line,"subprocesssteername")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
                 subprocesssteername=string(name);
-                if (debug) printf(" MyCrossSection::ReadSteering subprocesssteername= %s \n",subprocesssteername.c_str());
+                if (debug) printf(" MyCrossSection::ReadSteering: subprocesssteername= %s \n",subprocesssteername.c_str());
             } else if (strstr(line,"pdffunction")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
                 pdf_function=string(name);
-                if (debug) cout<<" MyCrossSection:ReadSteering pdffunction= "<<pdf_function<<endl;
+                if (debug) cout<<" MyCrossSection:ReadSteering: pdffunction= "<<pdf_function<<endl;
                 //   } else if (strstr(line,"ntupdiroutput")!=0) {
                 //sscanf(line," %s %[^\n] ",text, name);
                 //if (debug) cout<<"MyCrossSection Read "<<text<<" "<<name<<endl;
@@ -275,84 +275,84 @@ void MyCrossSection::ReadSteering(char fname[100]) {
                 //ntupdirinput=name;
             } else if (strstr(line,"ntupname")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<name<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<name<<endl;
                 ntupname=name;
             } else if (strstr(line,"Gridnamedir")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<name<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<name<<endl;
                 gridnamedir=name;
-                if (debug) cout<<" MyCrossSection::ReadSteering gridnamedir= "<<" "<<gridnamedir<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: gridnamedir= "<<" "<<gridnamedir<<endl;
             } else if (strstr(line,"datanamedir")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<name<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<name<<endl;
                 datanamedir=name;
             } else if (strstr(line,"gridname")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<name<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<name<<endl;
                 string myname=name;
                 //gridname.push_back(myname);
                 igrid++;
-                cout<<" MyCrossSection::ReadSteering igrid= "<<igrid<<" "<<name<<endl;
+                cout<<" MyCrossSection::ReadSteering: igrid= "<<igrid<<" "<<name<<endl;
             } else if (strstr(line,"markerstyle")!=0) {
                 int mymarker;
                 sscanf(line," %s %d ",text, &mymarker);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<mymarker<<endl;
-                if (igrid<0) cout<<" MyCrossSection::ReadSteering something wrong ! "<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<mymarker<<endl;
+                if (igrid<0) cout<<" MyCrossSection::ReadSteering: something wrong ! "<<endl;
                 markerstyle[igrid]=mymarker;
             } else if (strstr(line,"markercolor")!=0) {
                 int mymarker;
                 sscanf(line," %s %d ",text, &mymarker);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<mymarker<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<mymarker<<endl;
                 markercolor[igrid]=mymarker;
             } else if (strstr(line,"reflinestyle")!=0) {
                 int mystyle;
                 sscanf(line," %s %d ",text, &mystyle);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<mystyle<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<mystyle<<endl;
                 refhistlinestyle[igrid]=mystyle;
             } else if (strstr(line,"reflinecolor")!=0) {
                 int mycolor;
                 sscanf(line," %s %d ",text, &mycolor);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<mycolor<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<mycolor<<endl;
                 refhistlinecolor[igrid]=mycolor;
             } else if (strstr(line,"datascalex")!=0) {
                 double sx;
                 sscanf(line," %s %lf ",text, &sx);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<sx<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<sx<<endl;
                 datascalex[igrid]=sx;
             } else if (strstr(line,"mcscalex")!=0) {
                 double sx;
                 sscanf(line," %s %lf ",text, &sx);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<sx<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<sx<<endl;
                 mcscalex[igrid]=sx;
             } else if (strstr(line,"scaley")!=0) {
                 double sy;
                 sscanf(line," %s %lf ",text, &sy);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<sy<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<sy<<endl;
                 scaley[igrid]=sy;
             } else if (strstr(line,"frameid")!=0) {
                 int frid;
                 sscanf(line," %s %d ",text, &frid);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<frid<<" igrid= "<<igrid<<" frameid= "<<frid<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<frid<<" igrid= "<<igrid<<" frameid= "<<frid<<endl;
                 frameid[igrid]=frid;
             } else if (strstr(line,"divideid")!=0) {
                 int did;
                 sscanf(line," %s %d ",text, &did);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<did<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<did<<endl;
                 divideid[igrid]=did;
             } else if (strstr(line,"vardesc")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection:ReadSteering "<<text<<" "<<name<<endl;
+                if (debug) cout<<" MyCrossSection:ReadSteering: "<<text<<" "<<name<<endl;
                 if(debug ) std::cout << "Filling vardesc" << std::endl;
                 string myname=name;
                 vardesc.push_back(myname);
             } else if (strstr(line,"dataname")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection::ReadSteering "<<text<<" "<<name<<endl;
+                if (debug) cout<<" MyCrossSection::ReadSteering: "<<text<<" "<<name<<endl;
                 string myname=name;
                 dataname.push_back(myname);
             } else if (strstr(line,"corrname")!=0) {
                 sscanf(line," %s %[^\n] ",text, name);
-                if (debug) cout<<" MyCrossSection:ReadSteering our name: "<<text<<" "<<name<<endl;
+                if (debug) cout<<" MyCrossSection:ReadSteering: our name: "<<text<<" "<<name<<endl;
                 string myname=name;
                 corrname.push_back(myname);
             } else if (strstr(line,"pdfdata")!=0) {
@@ -362,8 +362,8 @@ void MyCrossSection::ReadSteering(char fname[100]) {
                 std::string pdfSteeringFileNames = name;
                 char delimeter = ',';
                 parsedNames = ParseString(pdfSteeringFileNames, delimeter);
-                std::cout<<"TEST: parsedNames: "<<parsedNames->size()<<std::endl;
-                if (debug) cout<<" MyCrossSection:ReadSteering pdfsteering for grid: '"<<pdfSteeringFileNames<<"'"<<endl;
+                if (debug) std::cout<<" MyCrossSection:ReadSteering: found this many pdfs: "<<parsedNames->size()<<std::endl;
+                if (debug) cout<<" MyCrossSection:ReadSteering: pdfsteering for grid: '"<<pdfSteeringFileNames<<"'"<<endl;
                 //string myname=name;
                 pdfdata.push_back(*parsedNames);
             }
@@ -1284,25 +1284,21 @@ void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
     else{
         if(ipdf==-1) { //no pdf index was NOT provided, so GetRatioToTH all pdfs for the given grid
             int numPDFsForGrid = GetNPDF(igrid); 
-            std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors: numPDFsForGrid: "<<numPDFsForGrid<<std::endl;
             
             for(int ipdf=0; ipdf< numPDFsForGrid; ipdf++) {
+                /*
                 std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors:\n"
                     <<"\tigrid: "<<igrid
-                    <<"\t  ipdf: "<<ipdf
+                    <<"\tipdf: "<<ipdf
                     <<"\tt_mypdf.size(): "<<(int)t_mypdf.size()
                     <<"\tt_mypdf.at("<<igrid<<").size(): "<<(int)t_mypdf.at(igrid).size()<<std::endl;
                     
                  std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors:\n"
                     <<"\tIS ("<<igrid<<") > ("<<(int)t_mypdf.size()<<") || ("<<ipdf<<") > ("<<(int)t_mypdf.at(igrid).size()<<") ?"<<std::endl;
-                
-                std::cout<<"test1"<<std::endl;
+                */
                 t_mypdf.at(igrid);
-                std::cout<<"test2"<<std::endl;
                 t_mypdf.at(igrid).at(ipdf);
-                std::cout<<"test3"<<std::endl;
                 t_mypdf.at(igrid).at(ipdf)->CalcSystErrors(); 
-                std::cout<<"test4"<<std::endl;
             }
         }
         else { //a pdf index was provided, so ONLY GetRatioToTH the pdf for that given grid and given pdf
