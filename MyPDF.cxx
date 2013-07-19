@@ -389,7 +389,7 @@ void MyPDF::Initialize()
                 if( pdferri <= 20 ) {
                     LHAPDF::initPDF(pdferri);
                 } else if( pdferri == 21 ) {
-                    LHAPDF::initPDFSet("PDFsets/HERAPDF15NLO_VAR.LHgrid", 0);
+                    LHAPDF::initPDFSet(pdfSetPath+"/HERAPDF15NLO_VAR.LHgrid", 0);
                 } else if( pdferri > 21 ) {
                     LHAPDF::initPDF(pdferri - 21);
                 }
