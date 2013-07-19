@@ -1203,7 +1203,6 @@ void MyPDF::ReadSteering(const string _fileName)
                 facScaleNames[DOWN]="FacScale("+facScaleNameDown+")";
             } else if (optionName.compare("pdfSetPath")==0) {
                 pdfSetPath=text;
-                std::cout<<"TEST: text: "<<text<<std::endl;
                 if(pdfSetPath.find_last_of("/") == pdfSetPath.size()-1)
                     pdfSetPath = pdfSetPath.substr(0,pdfSetPath.size()-1); //remove trailing slashes if there are any
         
