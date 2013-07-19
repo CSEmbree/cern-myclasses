@@ -623,6 +623,8 @@ void MyCrossSection::DrawError(int igrid, int ipdf, TString x_title, float x_min
 
     std::cout << " MyCrossSection::DrawError: DrawErrors 2" << std::endl;
     bool first_time_pdf = true;
+    
+    
 
     float min_y = 99999;
     float max_y = 0.;
@@ -633,6 +635,7 @@ void MyCrossSection::DrawError(int igrid, int ipdf, TString x_title, float x_min
         if( y_val > max_y ) max_y = y_val;
         if( y_val < min_y ) min_y = y_val;
     }
+    
     max_y *= 40.;
     min_y *= 0.2;
     std::cout << " MyCrossSection::DrawError: DrawErrors 2.1, ipdf = " << ipdf << std::endl;
