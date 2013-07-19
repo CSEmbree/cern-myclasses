@@ -134,12 +134,12 @@ void MyCrossSection::Initialize() {
 
         if(debug) std::cout<<"MyCrossSection::Initialize: Created mypdf instance with GridName: "<<GetGridName(igrid)<<", PDFData: "<<GetPDFData(igrid)<<std::endl;
 
-        std::vector<MyPDF*> pdfStorage;
+        std::vector<MyPDF*> pdfStorage; //container for mypdf instances per grid type. Each grid can have multiple pdfs
         t_mypdf.push_back(pdfStorage);
 
         for(int ipdf=0; ipdf<pdfdata.at(igrid).size(); ipdf++)
         {
-            MyPDF *newpdf = new MyPDF(GetGridName(igrid), GetMyData(igrid)->GetUnitGeVFactor(), pdfdata.at(igrid).at(ipdf), false);
+            MyPDF *newpdf = new MyPDF(GetGridName(igrid), GetMyData(igrid)->GetUnitGeVFactor(), pdfdata.at(igrid).at(ipdf), true);
             std::cout<<" MyCrossSection::Initialize: Printing new mypdf num: "<<(ipdf+1)
                                 <<" of "<<pdfdata.at(igrid).size()
                                 <<" for grid: "<<GetGridName(igrid)<<std::endl;
@@ -397,53 +397,46 @@ void MyCrossSection::ReadSteering(char fname[100]) {
 
 
 void MyCrossSection::Print() {
+    int w=30;               //arbitrary size that makes the formatting look pretty
 
-    cout<<" MyCrossSection::Print >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<endl;
-    cout<<" MyCrossSection::Print steering: "<<steername<<endl;
-    cout<<" MyCrossSection::Print subprocesssteername: "<<subprocesssteername<<endl;
-    cout<<" MyCrossSection::Print pdf_function=  "<<pdf_function<<endl;
-    //cout<<" ntupdir= "<<ntupdirinput<<" ntupoutput= "<<ntupdiroutput<<endl;
-    cout<<" MyCrossSection::Print directory for gridname=  "<<gridnamedir<<endl;
-    cout<<" MyCrossSection::Print directory for datanamedir=  "<<datanamedir<<endl;
+    cout<<" MyCrossSection::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
+        <<"\n"<<setw(w)<<"steering:"<<setw(w)<<steername
+        <<"\n"<<setw(w)<<"subprocesssteername:"<<setw(w)<<subprocesssteername
+        <<"\n"<<setw(w)<<"pdf_function:"<<setw(w)<<pdf_function
+        //<<"\n"<<setw(w)<<"ntupdir= "<<ntupdirinput<<" ntupoutput= "<<ntupdiroutput
+        <<"\n"<<setw(w)<<"Dir of grids:"<<setw(w)<<gridnamedir
+        <<"\n"<<setw(w)<<"Dir of data:"<<setw(w)<<datanamedir
+        <<"\n"<<setw(w)<<"Num of grids:"<<setw(w)<<gridname.size()<<endl;
 
-    cout<<" MyCrossSection::Print Number of grids N= "<<gridname.size()<<endl;
-
-    for (int  i = 0; i <   gridname.size(); i++)
-    {
+    for (int  i = 0; i <   gridname.size(); i++) {
         if (this->GetDataOk(i)) {
-            if (debug) cout<<" print i= "<<i
-                               <<" dataname.size()= "<<dataname.size()
-                               <<" events.size()=   "<<events.size()
-                               <<" gridname.size()= "<<gridname.size()<<endl;
-
-            cout<<i
-                <<" grid= "         <<gridname[i]
-                <<" data= "         <<dataname[i]
-                <<" events= "       <<events[i]
-                <<" style: "        <<this->GetMarkerStyle(i)
-                <<" color: "        <<this->GetMarkerColor(i)
-                <<" datascalex: "   <<this->GetDataScaleX(i)
-                <<" mcscalex: "     <<this->GetMCScaleX(i)
-                <<" scaley: "       <<this->GetScaleY(i)
-                <<" frameid: "      <<this->GetFrameID(i)
-                <<" divideid: "     <<this->GetDivideID(i)
-                <<endl;
-            //mydata[i]->Print();
+            cout<<"\n"<<setw(w)<<"INFO FOR GRID NUM:"<<setw(w)<<i
+                <<"\n"<<setw(w)<<"dataname.size():"<<setw(w)<<dataname.size()
+                <<"\n"<<setw(w)<<"events.size():"<<setw(w)<<events.size()
+                <<"\n"<<setw(w)<<"gridname.size():"<<setw(w)<<gridname.size()
+                
+                <<"\n"<<setw(w)<<"grid:"         <<setw(w)<<gridname[i]
+                <<"\n"<<setw(w)<<"data:"         <<setw(w)<<dataname[i]
+                <<"\n"<<setw(w)<<"events:"       <<setw(w)<<events[i]
+                <<"\n"<<setw(w)<<"style:"        <<setw(w)<<this->GetMarkerStyle(i)
+                <<"\n"<<setw(w)<<"color:"        <<setw(w)<<this->GetMarkerColor(i)
+                <<"\n"<<setw(w)<<"datascalex:"   <<setw(w)<<this->GetDataScaleX(i)
+                <<"\n"<<setw(w)<<"mcscalex:"     <<setw(w)<<this->GetMCScaleX(i)
+                <<"\n"<<setw(w)<<"scaley:"       <<setw(w)<<this->GetScaleY(i)
+                <<"\n"<<setw(w)<<"frameid:"      <<setw(w)<<this->GetFrameID(i)
+                <<"\n"<<setw(w)<<"divideid:"     <<setw(w)<<this->GetDivideID(i)<<endl;
         } else {
-            cout<<i
-                <<" grid= "<<gridname[i]
-                //<<" events= "<<events[i]
-                <<" datascalex: "   <<this->GetDataScaleX(i)
-                <<" mcscalex: "     <<this->GetMCScaleX(i)
-                <<" scaley: "       <<this->GetScaleY(i)
-                <<" frameid: "      <<this->GetFrameID(i)
-                <<" divideid: "     <<this->GetDivideID(i)
-                <<endl;
+            cout<<"\n"<<setw(w)<<"INFO FOR GRID NUM:"<<setw(w)<<i
+                <<"\n"<<setw(w)<<"grid:"            <<setw(w)<<gridname[i]
+                <<"\n"<<setw(w)<<"datascalex: "   <<setw(w)<<this->GetDataScaleX(i)
+                <<"\n"<<setw(w)<<"mcscalex: "     <<setw(w)<<this->GetMCScaleX(i)
+                <<"\n"<<setw(w)<<"scaley: "       <<setw(w)<<this->GetScaleY(i)
+                <<"\n"<<setw(w)<<"frameid: "      <<setw(w)<<this->GetFrameID(i)
+                <<"\n"<<setw(w)<<"divideid: "     <<setw(w)<<this->GetDivideID(i)<<endl;
         }
     }
-
-    cout<<" MyCrossSection <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<endl;
-
+    
+    cout<<" MyCrossSection::Print: <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<endl;
 }
 
 bool MyCrossSection::file_exists(const string& s) {
@@ -1255,11 +1248,11 @@ std::vector<string>* MyCrossSection::ParseString(std::string rawData, char delim
 
 void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
 
-    if(igrid>t_mypdf.size() || ipdf> (int)t_mypdf.at(igrid).size()) {
+    if(igrid>(int)t_mypdf.size() || ipdf> (int)t_mypdf.at(igrid).size()) {
         std::cout<<" MyCrossSection::mypdfInitializeErrorGraphs: ERROR: t_mypdf not found for igrid: "<<igrid
                 <<", and ipdf: "<<ipdf
-                <<"; Num grids is: "<<t_mypdf.size()
-                <<", Num pdfs for igrid("<<igrid<<"): "<<t_mypdf.at(igrid).size()<<std::endl;
+                <<"; Num grids is: "<<(int)t_mypdf.size()
+                <<", Num pdfs for igrid("<<igrid<<"): "<<(int)t_mypdf.at(igrid).size()<<std::endl;
         exit(0); //TEST
     }
     else {
@@ -1278,11 +1271,11 @@ void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
   void MyCrossSection::mypdfCalcSystErrors(int igrid, int ipdf) {
     std::cout<<" MyCrossSection::mypdfCalcSystErrors: called with igrid: "<<igrid<<", ipdf: "<<ipdf<<std::endl;
           
-    if(igrid>t_mypdf.size() || ipdf> (int) t_mypdf.at(igrid).size()) {
+    if(igrid> (int) t_mypdf.size() || ipdf> (int) t_mypdf.at(igrid).size()) {
         std::cout<<" MyCrossSection::mypdfCalcSystErrors: ERROR: t_mypdf not found for igrid: "<<igrid
                 <<", and ipdf: "<<ipdf
-                <<"; Num grids is: "<<t_mypdf.size()
-                <<", Num pdfs for igrid("<<igrid<<"): "<<t_mypdf.at(igrid).size()<<std::endl;
+                <<"; Num grids is: "<<(int)t_mypdf.size()
+                <<", Num pdfs for igrid("<<igrid<<"): "<<(int)t_mypdf.at(igrid).size()<<std::endl;
         exit(0); //TEST
     }
     else{
@@ -1292,11 +1285,21 @@ void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
             
             for(int ipdf=0; ipdf< numPDFsForGrid; ipdf++) {
                 std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors:\n"
-                    <<"\tigrid: "<<igrid<<", ipdf: "<<ipdf
+                    <<"\tigrid: "<<igrid
+                    <<"\t  ipdf: "<<ipdf
                     <<"\tt_mypdf.size(): "<<(int)t_mypdf.size()
-                    <<"\tt_mypdf.at("<<igrid<<").size(): "<<t_mypdf.at(igrid).size()<<std::endl;
+                    <<"\tt_mypdf.at("<<igrid<<").size(): "<<(int)t_mypdf.at(igrid).size()<<std::endl;
+                    
+                 std::cout<<" TEST: MyCrossSection::mypdfCalcSystErrors:\n"
+                    <<"\tIS ("<<igrid<<") > ("<<(int)t_mypdf.size()<<") || ("<<ipdf<<") > ("<<(int)t_mypdf.at(igrid).size()<<") ?"<<std::endl;
+                
+                std::cout<<"test1"<<std::endl;
+                t_mypdf.at(igrid);
+                std::cout<<"test2"<<std::endl;
+                t_mypdf.at(igrid).at(ipdf);
+                std::cout<<"test3"<<std::endl;
                 t_mypdf.at(igrid).at(ipdf)->CalcSystErrors(); 
-                std::cout<<"test"<<std::endl;
+                std::cout<<"test4"<<std::endl;
             }
         }
         else { //a pdf index was provided, so ONLY GetRatioToTH the pdf for that given grid and given pdf
@@ -1308,11 +1311,11 @@ void MyCrossSection::mypdfInitializeErrorGraphs(int igrid, int ipdf) {
   
   
   void MyCrossSection::mypdfGetRatioToTH1(TH1D* href, int igrid, int ipdf) {
-    if(igrid>t_mypdf.size() || ipdf> (int) t_mypdf.at(igrid).size()) {
+    if(igrid> (int) t_mypdf.size() || ipdf> (int) t_mypdf.at(igrid).size()) {
         std::cout<<" MyCrossSection::mypdfGetRatioToTH1: ERROR: t_mypdf not found for igrid: "<<igrid
                 <<", and ipdf: "<<ipdf
-                <<"; Num grids is: "<<t_mypdf.size()
-                <<", Num pdfs for igrid("<<igrid<<"): "<<t_mypdf.at(igrid).size()<<std::endl;
+                <<"; Num grids is: "<<(int)t_mypdf.size()
+                <<", Num pdfs for igrid("<<igrid<<"): "<<(int)t_mypdf.at(igrid).size()<<std::endl;
         exit(0); //TEST
     }
     else {
