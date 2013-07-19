@@ -31,6 +31,7 @@ using namespace std;
 //TEMP delcared in Variables.h file needed for stand alone myPDF use but not when using older MyCrossSection file
 enum enum_RenScales {e_RenScale0p5, e_RenScale1p0, e_RenScale2p0, e_n_RenScaleVals}; //e_n_* dictates future size
 enum enum_FacScales {e_FacScale0p5, e_FacScale1p0, e_FacScale2p0, e_n_FacScaleVals};
+enum scales{UP=0, DEF, DOWN, n_SCALES};
 
 
 class MyPDF {
@@ -96,10 +97,20 @@ class MyPDF {
         string getPDFBandType() const{return PDFBandType;};
         string getPDFErrorType() const{return PDFErrorType;};
         string getPDFErrorSize() const{return PDFErrorSize;};
-        string getRenScaleName() const{return renScaleName;};
-        double getRenScaleVal() const{return renScaleVal;};
-        string getFacScaleName() const{return facScaleName;};
-        double getFacScaleVal() const{return facScaleVal;};
+        
+        string getRenScaleNameUp() const{return renScaleNameUp;};
+        string getRenScaleNameDefault() const{return renScaleNameDefault;};
+        string getRenScaleNameDown() const{return renScaleNameDown;};
+        double getRenScaleValUp() const{return renScaleValUp;};
+        double getRenScaleValDefault() const{return renScaleValDefault;};
+        double getRenScaleValDown() const{return renScaleValDown;};
+        string getFacScaleNameUp() const{return facScaleNameUp;};
+        string getFacScaleNameDefault() const{return facScaleNameDefault;};
+        string getFacScaleNameDown() const{return facScaleNameDown;};
+        double getFacScaleValUp() const{return facScaleValUp;};
+        double getFacScaleValDefault() const{return facScaleValDefault;};
+        double getFacScaleValDown() const{return facScaleValDown;};
+        
         int getNumPDFtypes() const{return n_PDFtypes;};
         bool getDoPDFBand() const{return do_PDFBand;};
         bool getDoAlphaS() const{return do_AlphaS;};
@@ -121,10 +132,12 @@ class MyPDF {
         void setPDFBandType(string _PDFBandType);
         void setPDFErrorType(string _PDFErrorType);
         void setPDFErrorSize(string _PDFErrorSize);
-        void setRenScaleName(string _renScaleName);
-        void setRenScaleVal(double _renScaleVal);
-        void setFacScaleName(string _facScaleName);
-        void setFacScaleVal(double _facScaleVal);
+        void setRenScaleValUp(double _renScaleVal);
+        void setRenScaleValDefault(double _renScaleVal);
+        void setRenScaleValDown(double _renScaleVal);
+        void setFacScaleValUp(double _facScaleVal);
+        void setFacScaleValDefault(double _facScaleVal);
+        void setFacScaleValDown(double _facScaleVal);
         void setOptionsFileName(string _optionsFileName);
 
     private:
@@ -142,10 +155,22 @@ class MyPDF {
         string PDFBandType;
         string PDFErrorType;
         string PDFErrorSize;
-        string renScaleName;
-        double renScaleVal;
-        string facScaleName;
-        double facScaleVal;
+        string renScaleNameUp;
+        string renScaleNameDefault;
+        string renScaleNameDown;
+        string renScaleNames[n_SCALES];
+        double renScaleValUp;
+        double renScaleValDefault;
+        double renScaleValDown;
+        double renScaleVals[n_SCALES];
+        string facScaleNameUp;
+        string facScaleNameDefault;
+        string facScaleNameDown;
+        string facScaleNames[n_SCALES];
+        double facScaleValUp;
+        double facScaleValDefault;
+        double facScaleValDown;
+        double facScaleVals[n_SCALES];
         OptionHandler *myOptions;
         bool f_PDFBandType;
         bool f_PDFErrorSize;

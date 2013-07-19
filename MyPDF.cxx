@@ -186,19 +186,23 @@ void MyPDF::Initialize()
 
 
     if( do_RenormalizationScale ) {
-        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renScaleVal, 1.);
-        temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + renScaleName));
-        temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
-        temp_hist->SetName((TString) ("h_xsec_rscale_" + renScaleName + "_norm"));
-        h_errors_RenormalizationScale.push_back(temp_hist);
+        for(int i_renScale = 0; i_renScale < n_SCALES; i_renScale++) {
+            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renScaleVals[i_renScale], 1.);
+            temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + renScaleNames[i_renScale]));
+            temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
+            temp_hist->SetName((TString) ("h_xsec_rscale_" + renScaleNames[i_renScale] + "_norm"));
+            h_errors_RenormalizationScale.push_back(temp_hist);
+        }
     }
 
     if( do_FactorizationScale ) {
-        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, 1., facScaleVal);
-        temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + facScaleName));
-        temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
-        temp_hist->SetName((TString) ("h_xsec_rscale_" + facScaleName + "_norm"));
-        h_errors_FactorizationScale.push_back(temp_hist);
+        for(int i_facScale = 0; i_facScale < n_SCALES; i_facScale++) {
+            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, 1., facScaleVals[i_facScale]);
+            temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + facScaleNames[i_facScale]));
+            temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
+            temp_hist->SetName((TString) ("h_xsec_rscale_" + facScaleNames[i_facScale] + "_norm"));
+            h_errors_FactorizationScale.push_back(temp_hist);
+        }
     }
 
     if( do_AlphaS ) {
@@ -468,12 +472,17 @@ void MyPDF::InitializeErrorGraphs()
 
     if(debug) std::cout<<" MyPDF::InitializeErrorGraphs: PDFtype: "<<PDFtype<<", do_AlphaS: "<<do_AlphaS<<", do_PDFBand: "<<do_PDFBand<<std::endl;
     int n_bins = 0;
-    if(debug)  std::cout<<"MyPDF::InitializeErrorGraphs: Initialize PDFBand_results TGraphs. "
-                        <<" Size of AlphaS = "<<h_errors_AlphaS.size()
-                        <<", RenScale size = "<<h_errors_RenormalizationScale.size()
-                        <<", FactScale size = "<<h_errors_FactorizationScale.size()
-                        <<", PDFBand size = "<<h_errors_PDFBand.size()<<std::endl;
-
+    Print();
+    if(debug)  std::cout<<"MyPDF::InitializeErrorGraphs: Init PDFBand_results TGraphs. "
+                        <<" AlphaS size: "<<h_errors_AlphaS.size()
+                        <<", RenScale size: "<<h_errors_RenormalizationScale.size()
+                        <<", FactScale size: "<<h_errors_FactorizationScale.size()
+                        <<", PDFBand size: "<<h_errors_PDFBand.size()<<std::endl;
+    if(debug)  std::cout<<"MyPDF::InitializeErrorGraphs: errors on: "
+                        <<" AlphaS: "<<do_AlphaS
+                        <<", RenScale: "<<do_RenormalizationScale
+                        <<", FactScale: "<<do_FactorizationScale
+                        <<", PDFBand: "<<do_PDFBand<<std::endl;
 
     if( do_AlphaS ) n_bins = h_errors_AlphaS.at(0)->GetNbinsX();
     else if( do_RenormalizationScale ) n_bins = h_errors_RenormalizationScale.at(0)->GetNbinsX();
@@ -554,7 +563,11 @@ void MyPDF::InitializeErrorGraphs()
 
 void MyPDF::CalcSystErrors()
 {
-    if(debug) std::cout<<" MyPDF::CalcSystErrors: Start syst error calc for: "<<PDFtype<< std::endl;
+    std::cout<<" MyPDF::CalcSystErrors: Start syst error calc for: "<<PDFtype
+        <<"\n\tPDFBand: "<<do_PDFBand
+        <<", do_AlphaS: "<<do_AlphaS
+        <<", do_RenScale: "<<do_RenormalizationScale
+        <<", FacScale: "<<do_FactorizationScale<<std::endl;
 
     if( do_PDFBand ) CalcPDFBandErrors();
     if( do_AlphaS ) CalcAlphaSErrors();
@@ -704,9 +717,12 @@ void MyPDF::CalcRenormalizationScaleErrors()
     //assert(h_errors_RenormalizationScale.size() >= 3);
 
     for(int bi = 1; bi <= h_errors_RenormalizationScale.at(0)->GetNbinsX(); bi++) {
-        double this_default_val = h_errors_RenormalizationScale.at(e_RenScale1p0)->GetBinContent(bi);
-        double this_err_down = h_errors_RenormalizationScale.at(e_RenScale0p5)->GetBinContent(bi);
-        double this_err_up = h_errors_RenormalizationScale.at(e_RenScale2p0)->GetBinContent(bi);
+        std::cout<<"test1, h_errors_RenormalizationScale.size(): "<<h_errors_RenormalizationScale.size()<<std::endl;
+        double this_default_val = h_errors_RenormalizationScale.at(DEF)->GetBinContent(bi);
+        std::cout<<"test2"<<std::endl;
+        double this_err_down = h_errors_RenormalizationScale.at(DOWN)->GetBinContent(bi);
+        std::cout<<"test3"<<std::endl;
+        double this_err_up = h_errors_RenormalizationScale.at(UP)->GetBinContent(bi);
         if(debug)std::cout<<" MyPDF::CalcRenormalizationScaleErrors: bi = "<<bi<<", default val = "<<this_default_val<<" +"<<this_err_up  <<" -"<<this_err_down<<"\n";
         
         double error = 0.5*fabs(this_err_up-this_err_down);
@@ -938,11 +954,11 @@ TGraphAsymmErrors* MyPDF::myTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymm
                 else        dy2l  = 0.;
 
                 if (debug) {
-                    std::cout<<"\n\tMyPDF::myTGraphErrorsDivide: "
-                       <<"\n\ti: "    <<i1<<" "<<i2
-                       <<"\n\tdy1: "  <<dy1l<<" "<<dy1h
-                       <<"\n\tdy2: "  <<dy2l<<" "<<dy2h
-                       <<"\n\tsqrt: " <<sqrt(dy1l*dy1l+dy2l*dy2l)<<" "<<sqrt(dy1h*dy1h+dy2h*dy2h)<<std::endl;
+                    std::cout<<"MyPDF::myTGraphErrorsDivide: "
+                       <<"\n\ti1: "    <<i1<<", i2: "<<i2
+                       <<"\n\tdy1l: "  <<dy1l<<", dy1h: "<<dy1h
+                       <<"\n\tdy2l: "  <<dy2l<<", dy2h "<<dy2h
+                       <<"\n\tsqrt: " <<sqrt(dy1l*dy1l+dy2l*dy2l)<<", "<<sqrt(dy1h*dy1h+dy2h*dy2h)<<std::endl;
                 }
 
                 if (y2!=0.) g3->SetPoint(iv, x1,y1/y2);
@@ -1155,14 +1171,36 @@ void MyPDF::ReadSteering(const string _fileName)
                 }
             } else if (optionName.compare("PDFErrorSize")==0) {
                 PDFErrorSize=text;
-            } else if (optionName.compare("renScaleName")==0) {
-                renScaleName=text;
-            } else if (optionName.compare("renScaleVal")==0) {
-                sscanf(text.c_str(), "%lf", &renScaleVal);
-            } else if (optionName.compare("facScaleName")==0) {
-                facScaleName=text;
-            } else if (optionName.compare("facScaleVal")==0) {
-                sscanf(text.c_str(), "%lf", &facScaleVal);
+            } else if (optionName.compare("renScaleValUp")==0) {
+                sscanf(text.c_str(), "%lf", &renScaleValUp);
+                renScaleNameUp=text;
+                renScaleVals[UP]=renScaleValUp;
+                renScaleNames[UP]="RenScale("+renScaleNameUp+")";
+            } else if (optionName.compare("renScaleValDefault")==0) {
+                sscanf(text.c_str(), "%lf", &renScaleValDefault);
+                renScaleNameDefault=text;
+                renScaleVals[DEF]=renScaleValDefault;
+                renScaleNames[DEF]="RenScale("+renScaleNameDefault+")";
+            } else if (optionName.compare("renScaleValDown")==0) {
+                sscanf(text.c_str(), "%lf", &renScaleValDown);
+                renScaleNameDown=text;
+                renScaleVals[DOWN]=renScaleValDown;
+                renScaleNames[DOWN]="RenScale("+renScaleNameDown+")";
+            } else if (optionName.compare("facScaleValUp")==0) {
+                sscanf(text.c_str(), "%lf", &facScaleValUp);
+                facScaleNameUp=text;
+                facScaleVals[UP]=facScaleValUp;
+                facScaleNames[UP]="FacScale("+facScaleNameUp+")";
+            } else if (optionName.compare("facScaleValDefault")==0) {
+                sscanf(text.c_str(), "%lf", &facScaleValDefault);
+                facScaleNameDefault=text;
+                facScaleVals[DEF]=facScaleValDefault;
+                facScaleNames[DEF]="FacScale("+facScaleNameDefault+")";
+            } else if (optionName.compare("facScaleValDown")==0) {
+                sscanf(text.c_str(), "%lf", &facScaleValDown);
+                facScaleNameDown=text;
+                facScaleVals[DOWN]=facScaleValDown;
+                facScaleNames[DOWN]="FacScale("+facScaleNameDown+")";
             } else if (optionName.compare("numPDFTypes")==0) {
                 sscanf(text.c_str(), "%d", &n_PDFtypes);
             }else if (optionName.compare("pdfSetPath")==0) {
@@ -1172,39 +1210,49 @@ void MyPDF::ReadSteering(const string _fileName)
                     pdfSetPath = pdfSetPath.substr(0,pdfSetPath.size()-1); //remove trailing slashes if there are any
         
                 std::cout<<" MyPDF::ReadSteering: new PDF set path found! Now path is: "<<pdfSetPath<<std::endl;
-                //exit(0);
             }    
         }
     }
 }
 
 
-//Print all internal variable values
+//Print all relevant internal variable values
 void MyPDF::Print()
 {
     int w=30;               //arbitrary size that makes the formatting look pretty
     string empty="<empty>"; //print this if no input has been provided for that variable
+    string ON="ON";         //bool true
+    string OFF="OFF";       //bool false
 
     std::cout<<" MyPDF::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-       <<"\n"<<setw(w)<<"debug:"            <<setw(w)<<(debug? "ON":"OFF")
-       <<"\n"<<setw(w)<<"steeringFilePath:" <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
-       <<"\n"<<setw(w)<<"steeringFileDir:"  <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
-       <<"\n"<<setw(w)<<"steeringFileName:" <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
-       <<"\n"<<setw(w)<<"optionsFile:"      <<setw(w)<<(optionsFileName.size()>0? optionsFileName:empty)
-       <<"\n"<<setw(w)<<"gridName:"         <<setw(w)<<(gridName.size()>0? gridName:empty)
+       <<"\n"<<setw(w)<<"debug:"                <<setw(w)<<(debug? "ON":"OFF")
+       <<"\n"<<setw(w)<<"steeringFilePath:"     <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
+       <<"\n"<<setw(w)<<"steeringFileDir:"      <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
+       <<"\n"<<setw(w)<<"steeringFileName:"     <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
+       <<"\n"<<setw(w)<<"optionsFile:"          <<setw(w)<<(optionsFileName.size()>0? optionsFileName:empty)
+       <<"\n"<<setw(w)<<"gridName:"             <<setw(w)<<(gridName.size()>0? gridName:empty)
        <<"\n"
-       <<"\n"<<setw(w)<<"PDFtype:"        <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
-       <<"\n"<<setw(w)<<"PDFname:"        <<setw(w)<<(PDFname.size()>0? PDFname:empty)
-       <<"\n"<<setw(w)<<"numPDFMembers:"  <<setw(w)<<(n_PDFMembers!=DEFAULT? to_string(n_PDFMembers):empty)
-       <<"\n"<<setw(w)<<"fillStyleCode:"  <<setw(w)<<(fillStyleCode!=DEFAULT? to_string(fillStyleCode):empty)
-       <<"\n"<<setw(w)<<"fillColorCode:"  <<setw(w)<<(fillColorCode!=DEFAULT? to_string(fillColorCode):empty)
-       <<"\n"<<setw(w)<<"PDFBandType:"    <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
-       <<"\n"<<setw(w)<<"PDFErrorType:"   <<setw(w)<<(PDFErrorType.size()>0? PDFErrorType:empty)
-       <<"\n"<<setw(w)<<"PDFErrorSize:"   <<setw(w)<<(PDFErrorSize.size()>0? PDFErrorSize:empty)
-       <<"\n"<<setw(w)<<"renScaleName:"   <<setw(w)<<(renScaleName.size()>0? renScaleName:empty)
-       <<"\n"<<setw(w)<<"renScaleVal:"    <<setw(w)<<(renScaleVal!=DEFAULT? to_string(renScaleVal):empty)
-       <<"\n"<<setw(w)<<"facScaleName:"   <<setw(w)<<(facScaleName.size()>0? facScaleName:empty)
-       <<"\n"<<setw(w)<<"facScaleVal:"    <<setw(w)<<(facScaleVal!=DEFAULT? to_string(facScaleVal):empty)
+       <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
+       <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
+       <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? to_string(n_PDFMembers):empty)
+       <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? to_string(fillStyleCode):empty)
+       <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? to_string(fillColorCode):empty)
+       <<"\n"<<setw(w)<<"PDFBandType:"          <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
+       <<"\n"<<setw(w)<<"**PDF ERROR TYPE(s) ACTIVE**"
+       <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
+       <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
+       <<"\n"<<setw(w)<<"RenScale:"             <<setw(w)<<(do_RenormalizationScale? ON:OFF)
+       <<"\n"<<setw(w)<<"FactScale:"            <<setw(w)<<(do_FactorizationScale? ON:OFF)
+       <<"\n"<<setw(w)<<"TotError:"             <<setw(w)<<(do_TotError? ON:OFF)
+       <<"\n"<<setw(w)<<"PDFErrorSize:"         <<setw(w)<<(PDFErrorSize.size()>0? PDFErrorSize:empty)
+       <<"\n"<<setw(w)<<"**REN SCALE VALS**"   
+       <<"\n"<<setw(w)<<"renScaleVal-Up:"       <<setw(w)<<(renScaleValUp!=DEFAULT? to_string(renScaleValUp):empty)
+       <<"\n"<<setw(w)<<"renScaleVal-Default:"  <<setw(w)<<(renScaleValDefault!=DEFAULT? to_string(renScaleValDefault):empty)
+       <<"\n"<<setw(w)<<"renScaleVal-Down:"     <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)
+       <<"\n"<<setw(w)<<"**FAC SCALE VALS**"
+       <<"\n"<<setw(w)<<"facScaleVals-Up:"      <<setw(w)<<(renScaleValUp!=DEFAULT? to_string(renScaleValUp):empty)
+       <<"\n"<<setw(w)<<"facScaleVals-Default:" <<setw(w)<<(renScaleValDefault!=DEFAULT? to_string(renScaleValDefault):empty)
+       <<"\n"<<setw(w)<<"facScaleVals-Down:"    <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)
        <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
 }
 
@@ -1247,10 +1295,25 @@ void MyPDF::setVariablesDefault()
     PDFBandType=defaultString;
     PDFErrorType=defaultString;
     PDFErrorSize=defaultString;
-    renScaleName=defaultString;
-    renScaleVal=DEFAULT;
-    facScaleName=defaultString;
-    facScaleVal=DEFAULT;
+    
+    renScaleNameUp=defaultString;
+    renScaleNameDefault=defaultString;
+    renScaleNameDown=defaultString;
+    renScaleValUp=DEFAULT;
+    renScaleValDefault=DEFAULT;
+    renScaleValDown=DEFAULT;
+    facScaleNameUp=defaultString;
+    facScaleNameDefault=defaultString;
+    facScaleNameDown=defaultString;
+    facScaleValUp=DEFAULT;
+    facScaleValDefault=DEFAULT;
+    facScaleValDown=DEFAULT;
+    for(int i=0; i<n_SCALES; i++) {
+        renScaleNames[i] = defaultString;
+        facScaleNames[i] = defaultString;
+        renScaleVals[i] = DEFAULT;
+        renScaleVals[i] = DEFAULT;
+    }
 
     do_PDFBand=false;
     do_AlphaS=false;
@@ -1371,17 +1434,35 @@ void MyPDF::setPDFErrorType(string _PDFErrorType) {
 void MyPDF::setPDFErrorSize(string _PDFErrorSize) {
     PDFErrorSize=_PDFErrorSize;
 }
-void MyPDF::setRenScaleName(string _renScaleName) {
-    renScaleName=_renScaleName;
+void MyPDF::setRenScaleValUp(double _renScaleVal) {
+    renScaleValUp=_renScaleVal;
+    renScaleVals[UP]=_renScaleVal;
+    renScaleNames[UP]="RenScale("+to_string(_renScaleVal)+")";
 }
-void MyPDF::setRenScaleVal(double _renScaleVal) {
-    renScaleVal=_renScaleVal;
+void MyPDF::setRenScaleValDefault(double _renScaleVal) {
+    renScaleValDefault=_renScaleVal;
+    renScaleVals[DEF]=_renScaleVal;
+    renScaleNames[DEF]="RenScale("+to_string(_renScaleVal)+")";
 }
-void MyPDF::setFacScaleName(string _facScaleName) {
-    facScaleName=_facScaleName;
+void MyPDF::setRenScaleValDown(double _renScaleVal) {
+    renScaleValDown=_renScaleVal;
+    renScaleVals[DOWN]=_renScaleVal;
+    renScaleNames[DOWN]="RenScale("+to_string(_renScaleVal)+")";
 }
-void MyPDF::setFacScaleVal(double _facScaleVal) {
-    facScaleVal=_facScaleVal;
+void MyPDF::setFacScaleValUp(double _facScaleVal) {
+    facScaleValUp=_facScaleVal;
+    facScaleVals[UP]=_facScaleVal;
+    facScaleNames[UP]="FacScale("+to_string(_facScaleVal)+")";
+}
+void MyPDF::setFacScaleValDefault(double _facScaleVal) {
+    facScaleValDefault=_facScaleVal;
+    facScaleVals[DEF]=_facScaleVal;
+    facScaleNames[DEF]="FacScale("+to_string(_facScaleVal)+")";
+}
+void MyPDF::setFacScaleValDown(double _facScaleVal) {
+    facScaleValDown=_facScaleVal;
+    facScaleVals[DOWN]=_facScaleVal;
+    facScaleNames[DOWN]="FacScale("+to_string(_facScaleVal)+")";
 }
 void MyPDF::setOptionsFileName(string _optionsFileName) {
     optionsFileName=_optionsFileName;
