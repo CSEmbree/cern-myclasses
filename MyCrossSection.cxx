@@ -34,6 +34,15 @@ MyCrossSection::MyCrossSection(char name[100])
     gridnamedir="";
     datanamedir="";
     ntupname="";
+    
+    /*
+    renScaleValUp=0;
+    renScaleValDefault=0;
+    renScaleValDown=0;
+    facScaleValUp=0;
+    facScaleValDefault=0;
+    facScaleValDown=0;
+    */
     //ntupdiroutput="";
     //ntupdirinput="";
 
@@ -145,6 +154,32 @@ void MyCrossSection::Initialize() {
                                 <<" for grid: "<<GetGridName(igrid)<<std::endl;
             newpdf->Print();
             /*
+            //should be put outside the loop. Only need to check validity once at start
+            if(renScaleValUp<=renScaleValDefault || renScaleValDown>=renScaleValDefault) {
+                std::cout<<" MyCrossSection::Initialize: ERROR: Renormilization scales are inappropreate:"
+                <<"\n\trenScaleValUp: "<<renScaleValUp
+                <<"\n\trenScaleValDefault: "<<renScaleValDefault
+                <<"\n\trenScaleValDown: "<<renScaleValDown<<std::endl;
+                exit(0); //TEST
+            }
+            
+            if(facScaleValUp<=facScaleValDefault || facScaleValDown>=facScaleValDefault) {
+                std::cout<<" MyCrossSection::Initialize: ERROR: Factorization scales are inappropreate:"
+                <<"\n\tfacScaleValUp: "<<facScaleValUp
+                <<"\n\tfacScaleValDefault: "<<facScaleValDefault
+                <<"\n\tfacScaleValDown: "<<facScaleValDown<<std::endl;
+                exit(0); //TEST
+            }
+            
+            
+            newpdf->SetRenScaleValUp( );
+            newpdf->SetRenScaleValDefault( );
+            newpdf->SetRenScaleValDown( );
+            
+            newpdf->SetFacScaleValUp(double _facScaleVal);
+            newpdf->SetFacScaleValDefault(double _facScaleVal);
+            newpdf->SetFacScaleValDown(double _facScaleVal);
+            
             newpdf->SetDoPDFBand                (do_PDFBand);
             newpdf->SetDoAplphaS                (do_AlphaS);
             newpdf->SetDoRenormalizationScale   (do_RenormalizationScale);
@@ -398,13 +433,25 @@ void MyCrossSection::ReadSteering(char fname[100]) {
             }
             */
             
-            
+            /*
             if( cpp_line == "PDFErrorBand" )            do_PDFBand = true;
             if( cpp_line == "AlphaS" )                  do_AlphaS = true;
             if( cpp_line == "RenormalizationScale" )    do_RenormalizationScale = true;
             if( cpp_line == "FactorizationScale" )      do_FactorizationScale = true;
             
-
+            if( cpp_line == "renScaleValUp")
+                sscanf(line," %s %lf ",text, &renScaleValUp);
+            if( cpp_line == "renScaleValDefault")
+                sscanf(line," %s %lf ",text, &renScaleValDefault);
+            if( cpp_line == "renScaleValDown")
+                sscanf(line," %s %lf ",text, &renScaleValDown);
+            if( cpp_line == "refScaleValUp")
+                sscanf(line," %s %lf ",text, &refScaleValUp);
+            if( cpp_line == "refScaleValDefault")
+                sscanf(line," %s %lf ",text, &refScaleValDefault);
+            if( cpp_line == "refScaleValDown")
+                sscanf(line," %s %lf ",text, &refScaleValDown); 
+            */ 
         }
     }
 }

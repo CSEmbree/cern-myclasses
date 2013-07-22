@@ -38,6 +38,14 @@ class MyCrossSection {
   string glabel;
   string subprocesssteername;
 
+
+            
+  double renScaleValUp;
+  double renScaleValDefault;
+  double renScaleValDown;
+  double facScaleValUp;
+  double facScaleValDefault;
+  double facScaleValDown;
   //string ntupdirinput;
   //string ntupdiroutput;
 
