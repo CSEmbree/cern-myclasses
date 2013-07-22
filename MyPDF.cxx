@@ -49,7 +49,7 @@ MyPDF::MyPDF(bool _debug)
     if(debug)std::cout<<" MyPDF::MyPDF: start"<<std::endl;
     
     //no values are being set for default, so assign default values to avoid crashes
-    setVariablesDefault();
+    SetVariablesDefault();
 
     debug=_debug;
     if(debug) std::cout<<"MyPDF::MyPDF: Debug is: "<<std::endl;
@@ -63,7 +63,7 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _d
 {
     if(debug)std::cout<<" MyPDF::MyPDF: Start overloaded constructor"<<std::endl;
     
-    setVariablesDefault();
+    SetVariablesDefault();
     debug=_debug;
     gridName=_gridName;
     xscale=_xscale;
@@ -77,13 +77,13 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _d
            <<"\n\tOptionsFile: "<<optionsFileName
            <<"\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
 
-    if(fileExists(_steeringFileName)==true) {
+    if(FileExists(_steeringFileName)==true) {
         ReadSteering(_steeringFileName);
         Initialize();
     }
     else {
         std::cout<<"MyPDF::MyPDF: WARNING: Couldn't find file names: "<<_steeringFileName<<std::endl;
-        setVariablesDefault();
+        SetVariablesDefault();
     }
     
     if(debug)std::cout<<" MyPDF::MyPDF: End overloaded constructor"<<std::endl;
@@ -95,7 +95,7 @@ void MyPDF::Initialize()
 {
     if (debug) std::cout<<" MyPDF::Initialize: Performing Initialization"<<std::endl;
 
-    if(steeringFilePath.size()>0) setSteeringFileNameAndDir(steeringFilePath);
+    if(steeringFilePath.size()>0) SetSteeringFileNameAndDir(steeringFilePath);
     else std::cout<<" MyPDF::Initialize: ERROR: No steering file was provided!"<<std::endl;
 
 
@@ -821,35 +821,35 @@ void MyPDF::GetRatioToTH1(TH1D* href)
     TGraphAsymmErrors* tgraph_href = TH1TOTGraphAsymm(href);
     TString ratio_to_ref_name = (TString) h_PDFBand_results->GetName();
     ratio_to_ref_name += "_ratio_to_ref";
-    h_PDFBand_results_ratio_to_ref = myTGraphErrorsDivide(h_PDFBand_results, tgraph_href);
+    h_PDFBand_results_ratio_to_ref = MyTGraphErrorsDivide(h_PDFBand_results, tgraph_href);
     h_PDFBand_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_PDFBand_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_PDFBand_results_ratio_to_ref->SetFillStyle(fillStyleCode);
     
     ratio_to_ref_name = (TString) h_AlphaS_results->GetName();
     ratio_to_ref_name += "_ratio_to_ref";
-    h_AlphaS_results_ratio_to_ref = myTGraphErrorsDivide(h_AlphaS_results, tgraph_href);
+    h_AlphaS_results_ratio_to_ref = MyTGraphErrorsDivide(h_AlphaS_results, tgraph_href);
     h_AlphaS_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_AlphaS_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_AlphaS_results_ratio_to_ref->SetFillStyle(fillStyleCode);
     
     ratio_to_ref_name = (TString) h_RenormalizationScale_results->GetName();
     ratio_to_ref_name += "_ratio_to_ref";
-    h_RenormalizationScale_results_ratio_to_ref = myTGraphErrorsDivide(h_RenormalizationScale_results, tgraph_href);
+    h_RenormalizationScale_results_ratio_to_ref = MyTGraphErrorsDivide(h_RenormalizationScale_results, tgraph_href);
     h_RenormalizationScale_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_RenormalizationScale_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_RenormalizationScale_results_ratio_to_ref->SetFillStyle(fillStyleCode);
     
     ratio_to_ref_name = (TString) h_FactorizationScale_results->GetName();
     ratio_to_ref_name += "_ratio_to_ref";
-    h_FactorizationScale_results_ratio_to_ref = myTGraphErrorsDivide(h_FactorizationScale_results, tgraph_href);
+    h_FactorizationScale_results_ratio_to_ref = MyTGraphErrorsDivide(h_FactorizationScale_results, tgraph_href);
     h_FactorizationScale_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_FactorizationScale_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_FactorizationScale_results_ratio_to_ref->SetFillStyle(fillStyleCode);
     
     ratio_to_ref_name = (TString) h_TotError_results->GetName();
     ratio_to_ref_name += "_ratio_to_ref";
-    h_TotError_results_ratio_to_ref = myTGraphErrorsDivide(h_TotError_results, tgraph_href);
+    h_TotError_results_ratio_to_ref = MyTGraphErrorsDivide(h_TotError_results, tgraph_href);
     h_TotError_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_TotError_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_TotError_results_ratio_to_ref->SetFillStyle(fillStyleCode);
@@ -892,22 +892,22 @@ TGraphAsymmErrors* MyPDF::TH1TOTGraphAsymm(TH1 *h1)
 // noerr=0: put all errors to zero
 //       1: add errors from two graph quadrically
 //       2: set errors from graph 2 to zero
-TGraphAsymmErrors* MyPDF::myTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr) {
-    if(debug) std::cout<<" MyPDF::myTGraphErrorsDivide: started"<<std::endl;
-    if (!g1) std::cout<<" MyPDF::myTGraphErrorsDivide: g1 does not exist ! "<<std::endl;
-    if (!g2) std::cout<<" MyPDF::myTGraphErrorsDivide: g2 does not exist ! "<<std::endl;
+TGraphAsymmErrors* MyPDF::MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr) {
+    if(debug) std::cout<<" MyPDF::MyTGraphErrorsDivide: started"<<std::endl;
+    if (!g1) std::cout<<" MyPDF::MyTGraphErrorsDivide: g1 does not exist ! "<<std::endl;
+    if (!g2) std::cout<<" MyPDF::MyTGraphErrorsDivide: g2 does not exist ! "<<std::endl;
 
     Int_t n1=g1->GetN();
     Int_t n2=g2->GetN();
 
     if (n1!=n2) {
-        std::cout<<" MyPDF::myTGraphErrorsDivide: vector do not have the same number of entries!"
+        std::cout<<" MyPDF::MyTGraphErrorsDivide: vector do not have the same number of entries!"
            <<"\n\tg1: "<<g1->GetName()<<" n1= "<<n1
            <<"\n\tg2: "<<g2->GetName()<<" n2= "<<n2<<std::endl;
     }
 
     TGraphAsymmErrors* g3= new TGraphAsymmErrors();
-    if (!g3) std::cout<<" MyPDF::myTGraphErrorsDivide: problem to make new vector ! "<<std::endl;
+    if (!g3) std::cout<<" MyPDF::MyTGraphErrorsDivide: problem to make new vector ! "<<std::endl;
     g3->SetName       (g1->GetName());
     g3->SetMarkerStyle(g1->GetMarkerStyle());
     g3->SetMarkerColor(g1->GetMarkerColor());
@@ -936,10 +936,10 @@ TGraphAsymmErrors* MyPDF::myTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymm
             g2->GetPoint(i2,x2,y2);
             Double_t emean=(EXhigh1[i1]+EXhigh2[i2]+EXlow1[i1]+EXlow2[i2])/4.;
             if (fabs(x1-x2)>emean) {
-                //std::cout<<" MyPDF::myTGraphErrorsDivide: x1 and x2 not the same x1= "<<x1<<" x2= "<<x2<<std::endl;
+                //std::cout<<" MyPDF::MyTGraphErrorsDivide: x1 and x2 not the same x1= "<<x1<<" x2= "<<x2<<std::endl;
             } else { // do something only if x1=x2
                 matchcount++;
-                //std::cout<<" MyPDF::myTGraphErrorsDivide: x1 and x2 match x1= "<<x1<<" x2= "<<x2<<std::endl;
+                //std::cout<<" MyPDF::MyTGraphErrorsDivide: x1 and x2 match x1= "<<x1<<" x2= "<<x2<<std::endl;
                 dx1h  = EXhigh1[i1];
                 dx1l  = EXlow1[i1];
                 if (y1!=0.) dy1h  = EYhigh1[i1]/y1;
@@ -952,7 +952,7 @@ TGraphAsymmErrors* MyPDF::myTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymm
                 else        dy2l  = 0.;
 
                 if (debug) {
-                    std::cout<<"MyPDF::myTGraphErrorsDivide: "
+                    std::cout<<"MyPDF::MyTGraphErrorsDivide: "
                        <<"\n\ti1: "    <<i1<<", i2: "<<i2
                        <<"\n\tdy1l: "  <<dy1l<<", dy1h: "<<dy1h
                        <<"\n\tdy2l: "  <<dy2l<<", dy2h "<<dy2h
@@ -981,12 +981,12 @@ TGraphAsymmErrors* MyPDF::myTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymm
             }
         }
         if (matchcount>1) {
-            std::cout<<" MyPDF::myTGraphErrorsDivide: too many x-points matched ! "<<std::endl;
+            std::cout<<" MyPDF::MyTGraphErrorsDivide: too many x-points matched ! "<<std::endl;
             exit (1);
         }
     }
 
-    if(debug) std::cout<<" MyPDF::myTGraphErrorsDivide: End"<<std::endl;
+    if(debug) std::cout<<" MyPDF::MyTGraphErrorsDivide: End"<<std::endl;
     return g3;
 }
 
@@ -1253,7 +1253,7 @@ void MyPDF::Print()
 
 
 //always check for file existence before usage
-bool MyPDF::fileExists(const string _fileName)
+bool MyPDF::FileExists(const string _fileName)
 {
     bool exists;
     
@@ -1269,7 +1269,7 @@ bool MyPDF::fileExists(const string _fileName)
 
 
 //default values for variables to avoid crashes by checking for these default values and from accidental un-initilaization use
-void MyPDF::setVariablesDefault()
+void MyPDF::SetVariablesDefault()
 {
     if(debug) std::cout<<" MyPDF::setVariablesDefault: Start default values being set."<<std::endl;
     string defaultString="";
@@ -1320,7 +1320,7 @@ void MyPDF::setVariablesDefault()
 
 
 //determine the steering file name and directory from the provided path
-void MyPDF::setSteeringFileNameAndDir(const string _path)
+void MyPDF::SetSteeringFileNameAndDir(const string _path)
 {
     if(debug) std::cout<<" MyPDF::setSteeringFileNameAndDir: Start extracting file name and directory name from path: "<<_path<<std::endl;
     int pathLength=_path.length();
@@ -1387,79 +1387,99 @@ void MyPDF::PrintFoundOptionsFromSteering()
 
 
 //mutator methods
-void MyPDF::setDebug(bool _debug) {
+void MyPDF::SetDebug(bool _debug) {
     debug=_debug;
 }
-void MyPDF::setGridName(string _gridName) {
+void MyPDF::SetGridName(string _gridName) {
     gridName=_gridName;
 }
-void MyPDF::setSteeringFilePath(string _steeringFilePath) {
+void MyPDF::SetSteeringFilePath(string _steeringFilePath) {
     steeringFilePath=_steeringFilePath;
     //udate the Dir location and file name of the steering file if the path is changed
-    setSteeringFileNameAndDir(steeringFilePath); 
+    SetSteeringFileNameAndDir(steeringFilePath); 
 }
-void MyPDF::setSteeringFileDir(string _steeringFileDir) {
+void MyPDF::SetSteeringFileDir(string _steeringFileDir) {
     steeringFileDir=_steeringFileDir;
 }
-void MyPDF::setSteeringFileName(string _steeringFileName) {
+void MyPDF::SetSteeringFileName(string _steeringFileName) {
     steeringFileName=_steeringFileName;
 }
-void MyPDF::setPDFtype(string _PDFtype) {
+void MyPDF::SetPDFtype(string _PDFtype) {
     PDFtype=_PDFtype;
 }
-void MyPDF::setPDFname(string _PDFname) {
+void MyPDF::SetPDFname(string _PDFname) {
     PDFname=_PDFname;
 }
-void MyPDF::setNumPDFMembers(int _n_PDFMembers) {
+void MyPDF::SetNumPDFMembers(int _n_PDFMembers) {
     n_PDFMembers=_n_PDFMembers;
 }
-void MyPDF::setFillStyleCode(int _fillStyleCode) {
+void MyPDF::SetFillStyleCode(int _fillStyleCode) {
     fillStyleCode=_fillStyleCode;
 }
-void MyPDF::setFillColorCode(int _fillColorCode) {
+void MyPDF::SetFillColorCode(int _fillColorCode) {
     fillColorCode=_fillColorCode;
 }
-void MyPDF::setPDFBandType(string _PDFBandType) {
+void MyPDF::SetPDFBandType(string _PDFBandType) {
     PDFBandType=_PDFBandType;
 }
-void MyPDF::setPDFErrorType(string _PDFErrorType) {
+void MyPDF::SetPDFErrorType(string _PDFErrorType) {
     PDFErrorType=_PDFErrorType;
 }
-void MyPDF::setPDFErrorSize(string _PDFErrorSize) {
+void MyPDF::SetPDFErrorSize(string _PDFErrorSize) {
     PDFErrorSize=_PDFErrorSize;
 }
-void MyPDF::setRenScaleValUp(double _renScaleVal) {
+void MyPDF::SetRenScaleValUp(double _renScaleVal) {
     renScaleValUp=_renScaleVal;
     renScaleVals[UP]=_renScaleVal;
     renScaleNames[UP]="RenScale("+to_string(_renScaleVal)+")";
 }
-void MyPDF::setRenScaleValDefault(double _renScaleVal) {
+void MyPDF::SetRenScaleValDefault(double _renScaleVal) {
     renScaleValDefault=_renScaleVal;
     renScaleVals[DEF]=_renScaleVal;
     renScaleNames[DEF]="RenScale("+to_string(_renScaleVal)+")";
 }
-void MyPDF::setRenScaleValDown(double _renScaleVal) {
+void MyPDF::SetRenScaleValDown(double _renScaleVal) {
     renScaleValDown=_renScaleVal;
     renScaleVals[DOWN]=_renScaleVal;
     renScaleNames[DOWN]="RenScale("+to_string(_renScaleVal)+")";
 }
-void MyPDF::setFacScaleValUp(double _facScaleVal) {
+void MyPDF::SetFacScaleValUp(double _facScaleVal) {
     facScaleValUp=_facScaleVal;
     facScaleVals[UP]=_facScaleVal;
     facScaleNames[UP]="FacScale("+to_string(_facScaleVal)+")";
 }
-void MyPDF::setFacScaleValDefault(double _facScaleVal) {
+void MyPDF::SetFacScaleValDefault(double _facScaleVal) {
     facScaleValDefault=_facScaleVal;
     facScaleVals[DEF]=_facScaleVal;
     facScaleNames[DEF]="FacScale("+to_string(_facScaleVal)+")";
 }
-void MyPDF::setFacScaleValDown(double _facScaleVal) {
+void MyPDF::SetFacScaleValDown(double _facScaleVal) {
     facScaleValDown=_facScaleVal;
     facScaleVals[DOWN]=_facScaleVal;
     facScaleNames[DOWN]="FacScale("+to_string(_facScaleVal)+")";
 }
-void MyPDF::setOptionsFileName(string _optionsFileName) {
+void MyPDF::SetOptionsFileName(string _optionsFileName) {
     optionsFileName=_optionsFileName;
+};
+
+void MyPDF::SetDoPDFBand(bool _doit) {
+    do_PDFBand = _doit;
+};
+
+void MyPDF::SetDoAplphaS(bool _doit) {
+    do_AlphaS = _doit;
+};
+
+void MyPDF::SetDoRenormalizationScale(bool _doit) {
+    do_RenormalizationScale = _doit;
+};
+
+void MyPDF::SetDoFactorizationScale(bool _doit) {
+    do_FactorizationScale = _doit;
+};
+
+void MyPDF::SetDoTotError(bool _doit) {
+    do_TotError = _doit;
 };
 
 void MyPDF::CleanUpMyPDF() {

@@ -79,65 +79,70 @@ class MyPDF {
         void CalcFactorizationScaleErrors();
         void CalcTotErrors();
         void GetRatioToTH1(TH1D* href);
-        TGraphAsymmErrors* myTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr=1);
+        TGraphAsymmErrors* MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymmErrors* g2, Int_t noerr=1);
         TGraphAsymmErrors* TH1TOTGraphAsymm(TH1 *h1);
         void CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMatrixT<double> data_cov_matrix, double &chi2);
         
         
         //accessor methods
-        bool isDebugOn() const{return debug;};
-        string getSteeringFilePath() const{return steeringFilePath;};
-        string getSteeringFileDir() const{return steeringFileDir;};
-        string getSteeringFileName() const{return steeringFileName;};
-        string getPDFtype() const{return PDFtype;};
-        string getPDFname() const{return PDFname;};
-        int getNumPDFMembers() const{return n_PDFMembers;};
-        int getFillStyleCode() const{return fillStyleCode;};
-        int getFillColorCode() const{return fillColorCode;};
-        string getPDFBandType() const{return PDFBandType;};
-        string getPDFErrorType() const{return PDFErrorType;};
-        string getPDFErrorSize() const{return PDFErrorSize;};
+        bool IsDebugOn() const{return debug;};
+        string GetSteeringFilePath() const{return steeringFilePath;};
+        string GetSteeringFileDir() const{return steeringFileDir;};
+        string GetSteeringFileName() const{return steeringFileName;};
+        string GetPDFtype() const{return PDFtype;};
+        string GetPDFname() const{return PDFname;};
+        int GetNumPDFMembers() const{return n_PDFMembers;};
+        int GetFillStyleCode() const{return fillStyleCode;};
+        int GetFillColorCode() const{return fillColorCode;};
+        string GetPDFBandType() const{return PDFBandType;};
+        string GetPDFErrorType() const{return PDFErrorType;};
+        string GetPDFErrorSize() const{return PDFErrorSize;};
         
-        string getRenScaleNameUp() const{return renScaleNameUp;};
-        string getRenScaleNameDefault() const{return renScaleNameDefault;};
-        string getRenScaleNameDown() const{return renScaleNameDown;};
-        double getRenScaleValUp() const{return renScaleValUp;};
-        double getRenScaleValDefault() const{return renScaleValDefault;};
-        double getRenScaleValDown() const{return renScaleValDown;};
-        string getFacScaleNameUp() const{return facScaleNameUp;};
-        string getFacScaleNameDefault() const{return facScaleNameDefault;};
-        string getFacScaleNameDown() const{return facScaleNameDown;};
-        double getFacScaleValUp() const{return facScaleValUp;};
-        double getFacScaleValDefault() const{return facScaleValDefault;};
-        double getFacScaleValDown() const{return facScaleValDown;};
+        string GetRenScaleNameUp() const{return renScaleNameUp;};
+        string GetRenScaleNameDefault() const{return renScaleNameDefault;};
+        string GetRenScaleNameDown() const{return renScaleNameDown;};
+        double GetRenScaleValUp() const{return renScaleValUp;};
+        double GetRenScaleValDefault() const{return renScaleValDefault;};
+        double GetRenScaleValDown() const{return renScaleValDown;};
+        string GetFacScaleNameUp() const{return facScaleNameUp;};
+        string GetFacScaleNameDefault() const{return facScaleNameDefault;};
+        string GetFacScaleNameDown() const{return facScaleNameDown;};
+        double GetFacScaleValUp() const{return facScaleValUp;};
+        double GetFacScaleValDefault() const{return facScaleValDefault;};
+        double GetFacScaleValDown() const{return facScaleValDown;};
         
-        bool getDoPDFBand() const{return do_PDFBand;};
-        bool getDoAlphaS() const{return do_AlphaS;};
-        bool getDoRenormalizationScale() const{return do_RenormalizationScale;};
-        bool getDoFactorizationScale() const{return do_FactorizationScale;};
-        bool getDoTotError() const{return do_TotError;};
+        bool GetDoPDFBand() const{return do_PDFBand;};
+        bool GetDoAlphaS() const{return do_AlphaS;};
+        bool GetDoRenormalizationScale() const{return do_RenormalizationScale;};
+        bool GetDoFactorizationScale() const{return do_FactorizationScale;};
+        bool GetDoTotError() const{return do_TotError;};
         
         //mutator methods
-        void setDebug(bool _debug);
-        void setGridName(string _gridName);
-        void setSteeringFilePath(string _steeringFilePath);
-        void setSteeringFileDir(string _steeringFileDir);
-        void setSteeringFileName(string _steeringFileName);
-        void setPDFtype(string _PDFtype);
-        void setPDFname(string _PDFname);
-        void setNumPDFMembers(int _n_PDFMembers);
-        void setFillStyleCode(int _fillStyleCode);
-        void setFillColorCode(int _fillColorCode);
-        void setPDFBandType(string _PDFBandType);
-        void setPDFErrorType(string _PDFErrorType);
-        void setPDFErrorSize(string _PDFErrorSize);
-        void setRenScaleValUp(double _renScaleVal);
-        void setRenScaleValDefault(double _renScaleVal);
-        void setRenScaleValDown(double _renScaleVal);
-        void setFacScaleValUp(double _facScaleVal);
-        void setFacScaleValDefault(double _facScaleVal);
-        void setFacScaleValDown(double _facScaleVal);
-        void setOptionsFileName(string _optionsFileName);
+        void SetDebug(bool _debug);
+        void SetGridName(string _gridName);
+        void SetSteeringFilePath(string _steeringFilePath);
+        void SetSteeringFileDir(string _steeringFileDir);
+        void SetSteeringFileName(string _steeringFileName);
+        void SetPDFtype(string _PDFtype);
+        void SetPDFname(string _PDFname);
+        void SetNumPDFMembers(int _n_PDFMembers);
+        void SetFillStyleCode(int _fillStyleCode);
+        void SetFillColorCode(int _fillColorCode);
+        void SetPDFBandType(string _PDFBandType);
+        void SetPDFErrorType(string _PDFErrorType);
+        void SetPDFErrorSize(string _PDFErrorSize);
+        void SetRenScaleValUp(double _renScaleVal);
+        void SetRenScaleValDefault(double _renScaleVal);
+        void SetRenScaleValDown(double _renScaleVal);
+        void SetFacScaleValUp(double _facScaleVal);
+        void SetFacScaleValDefault(double _facScaleVal);
+        void SetFacScaleValDown(double _facScaleVal);
+        void SetOptionsFileName(string _optionsFileName);
+        void SetDoPDFBand(bool _doit);
+        void SetDoAplphaS(bool _doit);
+        void SetDoRenormalizationScale(bool _doit);
+        void SetDoFactorizationScale(bool _doit);
+        void SetDoTotError(bool _doit);
 
     private:
         //VARIABLES
@@ -194,9 +199,9 @@ class MyPDF {
         //end old from therory_error_info/calc
         
         //METHODS
-        bool fileExists(const string _fileName);
-        void setVariablesDefault();
-        void setSteeringFileNameAndDir(const string _path);
+        bool FileExists(const string _fileName);
+        void SetVariablesDefault();
+        void SetSteeringFileNameAndDir(const string _path);
         string GetEnv( const string & var);
 };
 

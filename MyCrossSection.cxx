@@ -144,6 +144,13 @@ void MyCrossSection::Initialize() {
                                 <<" of "<<pdfdata.at(igrid).size()
                                 <<" for grid: "<<GetGridName(igrid)<<std::endl;
             newpdf->Print();
+            /*
+            newpdf->SetDoPDFBand                (do_PDFBand);
+            newpdf->SetDoAplphaS                (do_AlphaS);
+            newpdf->SetDoRenormalizationScale   (do_RenormalizationScale);
+            newpdf->SetDoFactorizationScale     (do_FactorizationScale);
+            newpdf->SetDoTotError               (do_TotError);
+            */
             t_mypdf.at(igrid).push_back(newpdf);
             
             pdfCount++;
@@ -390,6 +397,12 @@ void MyCrossSection::ReadSteering(char fname[100]) {
                 }
             }
             */
+            
+            
+            if( cpp_line == "PDFErrorBand" )            do_PDFBand = true;
+            if( cpp_line == "AlphaS" )                  do_AlphaS = true;
+            if( cpp_line == "RenormalizationScale" )    do_RenormalizationScale = true;
+            if( cpp_line == "FactorizationScale" )      do_FactorizationScale = true;
 
         }
     }
@@ -516,25 +529,25 @@ void MyCrossSection::DrawErrors(TString x_title, float x_min, float x_max, bool 
     for(int ipdf = 0; ipdf < numPDFtypes; ipdf++) {
         std::cout << " MyCrossSection::DrawErrors: ipdf: " << ipdf << " of numPDFTypes: "<<numPDFtypes<<", error code = " << error_code <<std::endl;
 
-        std::cout << "\t MyCrossSection::DrawErrors: PDFType = " << t_mypdf.at(igrid).at(ipdf)->getPDFtype() << std::endl;
+        std::cout << "\t MyCrossSection::DrawErrors: PDFType = " << t_mypdf.at(igrid).at(ipdf)->GetPDFtype() << std::endl;
         std::cout << "\t MyCrossSection::DrawErrors: calc desc = " << t_mypdf.at(igrid).at(ipdf)->calc_desc << std::endl;
         //std::cout << "\tPDFBand name = " << t_mypdf.at(ipdf)->h_PDFBand_results->GetName() << std::endl;
 
-        if( t_mypdf.at(igrid).at(ipdf)->getDoPDFBand() ) {
+        if( t_mypdf.at(igrid).at(ipdf)->GetDoPDFBand() ) {
             std::cout << "\t MyCrossSection::DrawErrors: DoPDFBand" << std::endl;
-            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_PDFBand_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph")));
-        } else if( t_mypdf.at(igrid).at(ipdf)->getDoAlphaS() ) {
+            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_PDFBand_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph")));
+        } else if( t_mypdf.at(igrid).at(ipdf)->GetDoAlphaS() ) {
             std::cout << "\t MyCrossSection::DrawErrors: DoAlphaS" << std::endl;
-            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_AlphaS_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph")));
-        } else if( t_mypdf.at(igrid).at(ipdf)->getDoRenormalizationScale() ) {
+            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_AlphaS_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph")));
+        } else if( t_mypdf.at(igrid).at(ipdf)->GetDoRenormalizationScale() ) {
             std::cout << "\t MyCrossSection::DrawErrors: DoRenormalizationScale" << std::endl;
-            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_RenormalizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph")));
-        } else if( t_mypdf.at(igrid).at(ipdf)->getDoFactorizationScale() ) {
+            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_RenormalizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph")));
+        } else if( t_mypdf.at(igrid).at(ipdf)->GetDoFactorizationScale() ) {
             std::cout << "\t MyCrossSection::DrawErrors: DoFactorizationScale" << std::endl;
-            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_FactorizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph")));
-        } else if( t_mypdf.at(igrid).at(ipdf)->getDoTotError() ) {
+            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_FactorizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph")));
+        } else if( t_mypdf.at(igrid).at(ipdf)->GetDoTotError() ) {
             std::cout << "\t MyCrossSection::DrawErrors: DoTotError" << std::endl;
-            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_TotError_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph")));
+            Theory_graph_for_draw.at(igrid).push_back((TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_TotError_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph")));
         }
     }
     }
@@ -564,8 +577,8 @@ void MyCrossSection::DrawErrors(TString x_title, float x_min, float x_max, bool 
         Theory_graph_for_draw.at(igrid).at(ipdf)->SetTitle("");
 
         std::cout << " MyCrossSection::DrawErrors: Setting fill color and style, igrid: "<<igrid<<"ipdf: " <<ipdf<< std::endl;
-        Theory_graph_for_draw.at(igrid).at(ipdf)->SetFillColor(t_mypdf.at(igrid).at(ipdf)->getFillColorCode());
-        Theory_graph_for_draw.at(igrid).at(ipdf)->SetFillStyle(t_mypdf.at(igrid).at(ipdf)->getFillStyleCode());
+        Theory_graph_for_draw.at(igrid).at(ipdf)->SetFillColor(t_mypdf.at(igrid).at(ipdf)->GetFillColorCode());
+        Theory_graph_for_draw.at(igrid).at(ipdf)->SetFillStyle(t_mypdf.at(igrid).at(ipdf)->GetFillStyleCode());
 
         if( first_time_pdf && first_of_canv ) Theory_graph_for_draw.at(igrid).at(ipdf)->Draw("A E2");
         else Theory_graph_for_draw.at(igrid).at(ipdf)->Draw("E2 same");
@@ -599,24 +612,24 @@ void MyCrossSection::DrawError(int igrid, int ipdf, TString x_title, float x_min
     double x=0.75, y=0.8;
 
 
-    std::cout << "\t MyCrossSection::DrawError: PDFType = " << t_mypdf.at(igrid).at(ipdf)->getPDFtype() << std::endl;
+    std::cout << "\t MyCrossSection::DrawError: PDFType = " << t_mypdf.at(igrid).at(ipdf)->GetPDFtype() << std::endl;
     std::cout << "\t MyCrossSection::DrawError: calc desc = " << t_mypdf.at(igrid).at(ipdf)->calc_desc << std::endl;
 
-    if( t_mypdf.at(igrid).at(ipdf)->getDoPDFBand() ) {
+    if( t_mypdf.at(igrid).at(ipdf)->GetDoPDFBand() ) {
         std::cout << "\t MyCrossSection::DrawError: DoPDFBand" << std::endl;
-        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_PDFBand_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph"));
-    } else if( t_mypdf.at(igrid).at(ipdf)->getDoAlphaS() ) {
+        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_PDFBand_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(igrid).at(ipdf)->GetDoAlphaS() ) {
         std::cout << "\t MyCrossSection::DrawError: DoAlphaS" << std::endl;
-        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_AlphaS_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph"));
-    } else if( t_mypdf.at(igrid).at(ipdf)->getDoRenormalizationScale() ) {
+        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_AlphaS_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(igrid).at(ipdf)->GetDoRenormalizationScale() ) {
         std::cout << "\t MyCrossSection::DrawError: DoRenormalizationScale" << std::endl;
-        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_RenormalizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph"));
-    } else if( t_mypdf.at(igrid).at(ipdf)->getDoFactorizationScale() ) {
+        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_RenormalizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(igrid).at(ipdf)->GetDoFactorizationScale() ) {
         std::cout << "\t MyCrossSection::DrawError: DoFactorizationScale" << std::endl;
-        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_FactorizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph"));
-    } else if( t_mypdf.at(igrid).at(ipdf)->getDoTotError() ) {
+        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_FactorizationScale_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph"));
+    } else if( t_mypdf.at(igrid).at(ipdf)->GetDoTotError() ) {
         std::cout << "\t MyCrossSection::DrawError: DoTotError" << std::endl;
-        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_TotError_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->getPDFtype() + "_error_bar_graph"));
+        Theory_graph_for_draw = (TGraphAsymmErrors*) t_mypdf.at(igrid).at(ipdf)->h_TotError_results->Clone((TString) (t_mypdf.at(igrid).at(ipdf)->GetPDFtype() + "_error_bar_graph"));
     }
 
 
@@ -645,8 +658,8 @@ void MyCrossSection::DrawError(int igrid, int ipdf, TString x_title, float x_min
     Theory_graph_for_draw->SetTitle("");
 
     std::cout << " MyCrossSection::DrawError: Setting fill color and style, ipdf = " <<ipdf<< std::endl;
-    Theory_graph_for_draw->SetFillColor(t_mypdf.at(igrid).at(ipdf)->getFillColorCode());
-    Theory_graph_for_draw->SetFillStyle(t_mypdf.at(igrid).at(ipdf)->getFillStyleCode());
+    Theory_graph_for_draw->SetFillColor(t_mypdf.at(igrid).at(ipdf)->GetFillColorCode());
+    Theory_graph_for_draw->SetFillStyle(t_mypdf.at(igrid).at(ipdf)->GetFillStyleCode());
 
     if( first_time_pdf && first_of_canv ) Theory_graph_for_draw->Draw("A E2");
     else Theory_graph_for_draw->Draw("E2 same");
