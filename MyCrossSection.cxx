@@ -50,10 +50,10 @@ MyCrossSection::MyCrossSection(char name[100])
     mydata.clear();
 
     //PDFSetCodes_vec.clear();
-    //do_PDFBand = false;
-    //do_AlphaS = false;
-    //do_RenormalizationScale = false;
-    //do_FactorizationScale = false;
+    do_PDFBand = false;
+    do_AlphaS = false;
+    do_RenormalizationScale = false;
+    do_FactorizationScale = false;
     //ErrorSize = -999;
     //PDFBandType_vec.clear();
 // PDFErrorSize_vec.clear();
@@ -403,6 +403,7 @@ void MyCrossSection::ReadSteering(char fname[100]) {
             if( cpp_line == "AlphaS" )                  do_AlphaS = true;
             if( cpp_line == "RenormalizationScale" )    do_RenormalizationScale = true;
             if( cpp_line == "FactorizationScale" )      do_FactorizationScale = true;
+            
 
         }
     }
