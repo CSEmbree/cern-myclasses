@@ -4,7 +4,7 @@
  * Contact:  CSEmbree@gmail.com
  * Created:  01-Jun-2013
  * Edited:   22-Jun-2013
- * Notes:    Class implimentation suggested by Dr. Carli based on the "theory_error_info.cxx/h" class
+ * Notes:    Class implimentation suggested by Dr. Carli based on the "theory_error_info.{cxx,h}" class
  */
 
 /*
@@ -52,13 +52,12 @@ double alphasPDF(const double& Q) {
 //default constructor
 MyPDF::MyPDF(bool _debug)
 {
+    debug=_debug;
+    
     if(debug)std::cout<<" MyPDF::MyPDF: start"<<std::endl;
 
     //no values are being set for default, so assign default values to avoid crashes
     SetVariablesDefault();
-
-    debug=_debug;
-    if(debug) std::cout<<"MyPDF::MyPDF: Debug is: "<<std::endl;
 
     if(debug)std::cout<<" MyPDF::MyPDF: End"<<std::endl;
 }
@@ -67,10 +66,10 @@ MyPDF::MyPDF(bool _debug)
 //overloaded constructor
 MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _debug)
 {
+    debug=_debug;
     if(debug)std::cout<<" MyPDF::MyPDF: Start overloaded constructor"<<std::endl;
 
-    SetVariablesDefault();
-    debug=_debug;
+    SetVariablesDefault();   
     gridName=_gridName;
     xscale=_xscale;
     steeringFilePath=_steeringFileName;
@@ -1238,7 +1237,7 @@ bool MyPDF::FileExists(const string _fileName)
 }
 
 
-//default values for variables to avoid crashes by checking for these default values and from accidental un-initilaization use
+//default values for variables to avoid crashes and check for proper setup before doing anything
 void MyPDF::SetVariablesDefault()
 {
     if(debug) std::cout<<" MyPDF::setVariablesDefault: Start default values being set."<<std::endl;
