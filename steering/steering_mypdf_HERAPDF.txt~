@@ -23,7 +23,7 @@ numPDFMembers 33
 fillStyleCode 3004
 %
 %%fillColorCode: kWhite=0, kBlack=1, kGray=920, kRed=632, kGreen=416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432, kOrange=800 
-fillColorCode 416
+fillColorCode 418
 %
 %%PDFBandType: UseAlphaS, UseErrorBand
 PDFBandType UseAlphaS
@@ -46,3 +46,22 @@ renScaleValDown 0.5
 facScaleValUp 2.0
 facScaleValDefault 1.0
 facScaleValDown 0.5
+%
+%%memberNumDown
+AlphaSmemberNumDown 9
+%
+%%memberNumUp
+AlphaSmemberNumUp 11
+%
+%%PDFSetNameDown
+AlphaSPDFSetNameDown HERAPDF15NLO_ALPHAS
+%
+%%PDFSetNameUp
+AlphaSPDFSetNameUp HERAPDF15NLO_ALPHAS
+%
+%%PDFSetHistNameDown
+AlphaSPDFSetHistNameDown HERAPDF15NLOas1156_prenorm
+%        
+%%PDFSetHistNameUp 
+%PDFSetHistNameUp NNPDF23as1196_prenorm
+%

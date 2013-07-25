@@ -46,3 +46,22 @@ renScaleValDown 0.5
 facScaleValUp 2.0
 facScaleValDefault 1.0
 facScaleValDown 0.5
+%
+%%memberNumDown
+AlphaSmemberNumDown 0
+%
+%%memberNumUp
+AlphaSmemberNumUp 0
+%
+%%PDFSetNameDown
+AlphaSPDFSetNameDown NNPDF23_nlo_as_0116
+%
+%%PDFSetNameUp
+AlphaSPDFSetNameUp NNPDF23_nlo_as_0120
+%
+%%PDFSetHistNameDown
+AlphaSPDFSetHistNameDown NNPDF23as117_prenorm
+%        
+%%PDFSetHistNameUp 
+AlphaSPDFSetHistNameUp NNPDF23as123_prenorm
+%

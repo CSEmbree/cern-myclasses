@@ -18,3 +18,9 @@ renScaleValDown
 facScaleValUp
 facScaleValDefault
 facScaleValDown
+AlphaSmemberNumDown
+AlphaSmemberNumUp
+AlphaSPDFSetNameDown
+AlphaSPDFSetNameUp
+AlphaSPDFSetHistNameDown
+AlphaSPDFSetHistNameUp

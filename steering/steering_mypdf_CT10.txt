@@ -46,3 +46,22 @@ renScaleValDown 0.5
 facScaleValUp 2.0
 facScaleValDefault 1.0
 facScaleValDown 0.5
+%
+%%memberNumDown
+AlphaSmemberNumDown 3
+%
+%%memberNumUp
+AlphaSmemberNumUp 7
+%
+%%PDFSetNameUp
+AlphaSPDFSetNameUp none
+%
+%%PDFSetNameDown
+AlphaSPDFSetNameDown CT10as
+%        
+%%PDFSetHistNameUp 
+AlphaSPDFSetHistNameUp CT10as120_prenorm
+%
+%%PDFSetHistNameDown
+AlphaSPDFSetHistNameDown CT10as116_prenorm
+%

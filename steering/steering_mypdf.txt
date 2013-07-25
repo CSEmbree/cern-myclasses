@@ -1,46 +1,58 @@
 %myPDF steeringfile
 %
-%saying debug turns on the debug facilities of MyPDF
+%Activate debug facilities by removing the comment '%' in front of debug
 %debug
-%providing optionFileName lets you choose your own options file and path
+%
 %
 %%optionsFileName: name a *.txt file with path (if not in current directory)
+%%providing optionFileName lets you choose your own options file and path
 optionsFileName options_mypdf.txt
 %
-%%pdfSetPath: optional option for overwriting the default location (ENV VAR PDFPATH) where this PDF is located
+%
+%%pdfSetPath: optional option for overwriting the default location to the PDFsets to use. 
+%%Note: Path to PDFsets is first the environment variable PDFPATH, then this steering file, then a folder called PDFsets in the current directory
 %pdfSetPath /home/admin/Documents/pdfdata/
 %
-%%numPDFTypes: number of possible pdf types: 1=CT10, 2=MSTW2008nlo, 3=NNPDF23nlo, 4=HERAPDF15NLO_EIG, ...
-numPDFTypes 4
 %
-%%PDFtype: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO
+%%PDFtype: is the name used when printing and drawing information about the PDF. These can be arbitrary but should be descriptive.
+%%Currently supported: CT10, MSTW2008nlo, NNPDF23nlo, HERAPDF15NLO
 PDFtype CT10
 %
-%%PDFname: CT10, MSTW2008nlo68cl, NNPDF23_nlo_as_0118, HERAPDF15NLO_EIG
+%
+%%PDFname: The actual name of the PDF that will be looked up and used
+%%Currently supported: CT10, MSTW2008nlo68cl, NNPDF23_nlo_as_0118, HERAPDF15NLO_EIG
 PDFname CT10
+%
 %
 %%numPDFMembers: 53, 41, 101, 33
 numPDFMembers 53
 %
+%
 %%fillStyleCode: 3005, 3004, 3002, 3021
 fillStyleCode 3005
+%
 %
 %%fillColorCode: kWhite=0, kBlack=1, kGray=920, kRed=632, kGreen=416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432, kOrange=800 
 fillColorCode 416
 %
+%
 %%PDFBandType: UseAlphaS, UseErrorBand
 PDFBandType UseAlphaS
+%
 %
 %%PDFErrorType: PDFBand, AlphaS, RenormalizationScale, FactorizationScale, TotError
 PDFErrorType AlphaS
 %
+%
 %%PDFErrorSize: OneSigma, 90Percent
 PDFErrorSize OneSigma
+%
 %
 %%renScaleVal: 0.5, 1., 2.
 renScaleValUp 2.0
 renScaleValDefault 1.0
 renScaleValDown 0.5
+%
 %
 %%facScaleVal: 0.5, 1., 2.
 facScaleValUp 2.0

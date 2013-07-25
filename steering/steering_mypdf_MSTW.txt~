@@ -23,7 +23,7 @@ numPDFMembers 41
 fillStyleCode 3002
 %
 %%fillColorCode: kWhite=0, kBlack=1, kGray=920, kRed=632, kGreen=416, kBlue=600, kYellow=400, kMagenta=616, kCyan=432, kOrange=800 
-fillColorCode 600
+fillColorCode 634
 %
 %%PDFBandType: UseAlphaS, UseErrorBand
 PDFBandType UseAlphaS
@@ -46,3 +46,22 @@ renScaleValDown 0.5
 facScaleValUp 2.0
 facScaleValDefault 1.0
 facScaleValDown 0.5
+%
+%%memberNumDown
+AlphaSmemberNumDown 0
+%
+%%memberNumUp
+AlphaSmemberNumUp 0
+%
+%%PDFSetNameDown
+AlphaSPDFSetNameDown MSTW2008nlo68cl_asmz-68cl
+%
+%%PDFSetNameUp
+AlphaSPDFSetNameUp MSTW2008nlo68cl_asmz+68cl
+%
+%%PDFSetHistNameDown
+AlphaSPDFSetHistNameDown MSTW2008nloAsDown_prenorm
+%        
+%%PDFSetHistNameUp 
+AlphaPDFSetHistNameUp MSTW2008nloAsUp_prenorm
+%
