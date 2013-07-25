@@ -158,7 +158,7 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
 
     for(int ipdf = 0; ipdf < numPDFtypes; ipdf++)
     {
-        std::cout << " plot_new::SaveSubprocessResults: Get inclusive cross-section for " << var_desc << ", PDF: " << mycross->GetMyPDF(igrid, ipdf)->getPDFBandType() << ": " << std::endl;
+        std::cout << " plot_new::SaveSubprocessResults: Get inclusive cross-section for " << var_desc << ", PDF: " << mycross->GetMyPDF(igrid, ipdf)->GetPDFBandType() << ": " << std::endl;
         float inclusive_cross_section = 0.;
         for(int bi = 1; bi <= hists_to_plot_tot_prenorm.at(ipdf)->GetNbinsX(); bi++) {
             float bin_width = hists_to_plot_tot_prenorm.at(ipdf)->GetBinWidth(bi) / 1000.;
@@ -171,7 +171,7 @@ void SaveSubprocessResults(MyCrossSection *mycross, int igrid, TString var_desc,
                     << ", Add " << (bin_width*bin_content) 
                     << ", cross-section now is " << inclusive_cross_section <<std::endl;
         }
-        std::cout << " plot_new::SaveSubprocessResults: For " << mycross->GetMyPDF(igrid, ipdf)->getPDFBandType() << ", inclusive cross-section  is " << inclusive_cross_section <<std::endl;
+        std::cout << " plot_new::SaveSubprocessResults: For " << mycross->GetMyPDF(igrid, ipdf)->GetPDFBandType() << ", inclusive cross-section  is " << inclusive_cross_section <<std::endl;
     }
 }
 
@@ -196,7 +196,7 @@ void SaveThisSubprocess(int igrid, std::vector<TH1D*> hists_to_plot, MyCrossSect
 
     for(int ipdf=0; ipdf<numPDFtypes; ipdf++)
     {
-        std::cout << " plot_new::SaveThisSubprocess: PDF: " << mycross->GetMyPDF(igrid, ipdf)->getPDFname() << ": "<<endl;
+        std::cout << " plot_new::SaveThisSubprocess: PDF: " << mycross->GetMyPDF(igrid, ipdf)->GetPDFname() << ": "<<endl;
         std::cout << " plot_new::SaveThisSubprocess: Number of hists to plot: "<<hists_to_plot.size()<<std::endl;
 
         for(int bi = 1; bi <= hists_to_plot.at(ipdf)->GetNbinsX(); bi++) {
@@ -232,7 +232,7 @@ void SaveThisSubprocess(int igrid, std::vector<TH1D*> hists_to_plot, MyCrossSect
 
     for(int ipdf=0; ipdf<numPDFtypes; ipdf++) {
         hists_to_plot.at(ipdf)->Draw("same");
-        my_leg_sp->AddEntry(hists_to_plot.at(ipdf), mycross->GetMyPDF(igrid, ipdf)->getPDFname().c_str());
+        my_leg_sp->AddEntry(hists_to_plot.at(ipdf), mycross->GetMyPDF(igrid, ipdf)->GetPDFname().c_str());
     }
     my_leg_sp->Draw();
 
@@ -311,7 +311,7 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
     TString the_desc = "";
     for(int ipdf = 0; ipdf < numPDFtypes; ipdf++) {
         the_desc = mycross->GetMyPDF(igrid, ipdf)->calc_desc;
-        the_desc += (TString) ("_" + mycross->GetMyPDF(igrid, ipdf)->getPDFErrorType() + "_");
+        the_desc += (TString) ("_" + mycross->GetMyPDF(igrid, ipdf)->GetPDFErrorType() + "_");
         the_desc += mycross->GetVarDesc(igrid);
     }
     std::cout << " plot_new::DrawAndSaveResults: Draw and save results for " << the_desc << std::endl;
@@ -358,21 +358,21 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
         MyPDF *current_pdf = mycross->GetMyPDF(igrid, ipdf);
         chi2[igrid] = -999;
         //std::cout << "For " << the_desc << ", " << mypdf[igrid]->getPDFBandType() << ", determine chi2 to the data:" << std::endl;
-        std::cout << " plot_new::DrawAndSaveResults: For " << the_desc << ", " << current_pdf->getPDFBandType() << ", at: "<<igrid<<", determine chi2 to the data:" << std::endl;
+        std::cout << " plot_new::DrawAndSaveResults: For " << the_desc << ", " << current_pdf->GetPDFBandType() << ", at: "<<igrid<<", determine chi2 to the data:" << std::endl;
         std::cout << " plot_new::DrawAndSaveResults: PDFBand results has name: "<< current_pdf->h_PDFBand_results << std::endl;
         std::cout << " plot_new::DrawAndSaveResults: data has name: "<< (mycross->GetMyData(igrid)->GetTGraphTotErr())->GetName() << std::endl;
         std::cout << " plot_new::DrawAndSaveResults: Covariance matrix ncols: " << ( mycross->GetMyData(igrid)->GetCovarianceMatrix()).GetNcols() << std::endl;
         std::cout << " plot_new::DrawAndSaveResults: chi2: " << chi2[igrid] << std::endl;
 
-        if( current_pdf->getDoPDFBand() )
+        if( current_pdf->GetDoPDFBand() )
             current_pdf->CalcChi2(current_pdf->h_PDFBand_results, mycross->GetMyData(igrid)->GetTGraphTotErr(), mycross->GetMyData(igrid)->GetCovarianceMatrix(), chi2[igrid]);
-        if( current_pdf->getDoAlphaS() )
+        if( current_pdf->GetDoAlphaS() )
             current_pdf->CalcChi2(current_pdf->h_AlphaS_results, mycross->GetMyData(igrid)->GetTGraphTotErr(), mycross->GetMyData(igrid)->GetCovarianceMatrix(), chi2[igrid]);
-        if( current_pdf->getDoRenormalizationScale() )
+        if( current_pdf->GetDoRenormalizationScale() )
             current_pdf->CalcChi2(current_pdf->h_RenormalizationScale_results, mycross->GetMyData(igrid)->GetTGraphTotErr(), mycross->GetMyData(igrid)->GetCovarianceMatrix(), chi2[igrid]);
-        if( current_pdf->getDoFactorizationScale() )
+        if( current_pdf->GetDoFactorizationScale() )
             current_pdf->CalcChi2(current_pdf->h_FactorizationScale_results, mycross->GetMyData(igrid)->GetTGraphTotErr(), mycross->GetMyData(igrid)->GetCovarianceMatrix(), chi2[igrid]);
-        if( current_pdf->getDoTotError() )
+        if( current_pdf->GetDoTotError() )
             current_pdf->CalcChi2(current_pdf->h_TotError_results, mycross->GetMyData(igrid)->GetTGraphTotErr(), mycross->GetMyData(igrid)->GetCovarianceMatrix(), chi2[igrid]);
 
         chi2perdof[igrid] = chi2[igrid] / current_pdf->h_TotError_results->GetN();
@@ -382,8 +382,8 @@ void DrawAndSaveResults(MyCrossSection *mycross, int igrid, int error_code)
         std::string cpp_format = strstream.str();
         chi2prob_str[igrid] = "";
         chi2prob_str[igrid] += cpp_format;
-        my_leg_res->AddEntry(current_pdf->h_TotError_results, (TString) (current_pdf->getPDFBandType()+", #chi^{2} prob = "+chi2prob_str[igrid]), "f");
-        std::cout << " plot_new::DrawAndSaveResults: For " << the_desc << ", " << current_pdf->getPDFBandType() << ", chi2 = " << chi2[igrid] << ", / dof = " << chi2perdof[igrid] << ", prob = " << chi2prob[igrid] << ", string format: " << chi2prob_str[igrid] << std::endl;
+        my_leg_res->AddEntry(current_pdf->h_TotError_results, (TString) (current_pdf->GetPDFBandType()+", #chi^{2} prob = "+chi2prob_str[igrid]), "f");
+        std::cout << " plot_new::DrawAndSaveResults: For " << the_desc << ", " << current_pdf->GetPDFBandType() << ", chi2 = " << chi2[igrid] << ", / dof = " << chi2perdof[igrid] << ", prob = " << chi2prob[igrid] << ", string format: " << chi2prob_str[igrid] << std::endl;
 
 
         my_leg_res->Draw();
@@ -467,23 +467,23 @@ void DrawRatioPlot(MyFrameData *myframe, TGraphAsymmErrors* reference_ratio, MyC
 
         MyPDF *current_pdf = mycross->GetMyPDF(igrid, ipdf);
 
-        if( current_pdf->getDoPDFBand() ) {
+        if( current_pdf->GetDoPDFBand() ) {
             if( first_time_pdf.at(igrid) )      current_pdf->h_PDFBand_results_ratio_to_ref->Draw("e2");
             else                                current_pdf->h_PDFBand_results_ratio_to_ref->Draw("e2 same");
         }
-        else if( current_pdf->getDoAlphaS() ) {
+        else if( current_pdf->GetDoAlphaS() ) {
             if( first_time_pdf.at(igrid) )      current_pdf->h_AlphaS_results_ratio_to_ref->Draw("e2");
             else                                current_pdf->h_AlphaS_results_ratio_to_ref->Draw("e2 same");
         }
-        else if( current_pdf->getDoRenormalizationScale() ) {
+        else if( current_pdf->GetDoRenormalizationScale() ) {
             if( first_time_pdf.at(igrid) )      current_pdf->h_RenormalizationScale_results_ratio_to_ref->Draw("e2");
             else                                current_pdf->h_RenormalizationScale_results_ratio_to_ref->Draw("e2 same");
         }
-        else if( current_pdf->getDoFactorizationScale() ) {
+        else if( current_pdf->GetDoFactorizationScale() ) {
             if( first_time_pdf.at(igrid) )      current_pdf->h_FactorizationScale_results_ratio_to_ref->Draw("e2");
             else                                current_pdf->h_FactorizationScale_results_ratio_to_ref->Draw("e2 same");
         }
-        else if( current_pdf->getDoTotError() ) {
+        else if( current_pdf->GetDoTotError() ) {
             if( first_time_pdf.at(igrid) )      current_pdf->h_TotError_results_ratio_to_ref->Draw("e2");
             else                                current_pdf->h_TotError_results_ratio_to_ref->Draw("e2 same");
         }

@@ -52,7 +52,7 @@ OFILETEST= MyFrame.o MyFrameData.o MyData.o MyCrossSection.o AtlasStyle.o lhapdf
 
 
 install : all
-all : plot_old
+all : plot_new
 
 
 plot_gpp: plot_gpp.o $(OFILE) 
