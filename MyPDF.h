@@ -1,3 +1,12 @@
+/*
+ * Title:    MyPDF
+ * Author:   Cameron S. Embree
+ * Contact:  CSEmbree@gmail.com
+ * Created:  01-Jun-2013
+ * Edited:   22-Jun-2013
+ * Notes:    Class implimentation suggested by Dr. Carli based on the "theory_error_info.cxx/h" class
+ */
+
 #ifndef __MY_PDF_H
 #define __MY_PDF_H
 
@@ -178,6 +187,13 @@ class MyPDF {
         bool f_PDFBandType;
         bool f_PDFErrorSize;
         string pdfSetPath;
+        
+        int AlphaSmemberNumDown;
+        int AlphaSmemberNumUp;
+        string AlphaSPDFSetNameDown;
+        string AlphaSPDFSetNameUp;
+        string AlphaSPDFSetHistNameDown;
+        string AlphaSPDFSetHistNameUp;
         
         //start old from therory_error_info/calc
         appl::grid *my_grid;

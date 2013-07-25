@@ -2,15 +2,21 @@
  * Title:    MyPDF
  * Author:   Cameron S. Embree
  * Contact:  CSEmbree@gmail.com
- * Created:  1-Jun-2013
- * Edited:   5-Jun-2013
+ * Created:  01-Jun-2013
+ * Edited:   22-Jun-2013
  * Notes:    Class implimentation suggested by Dr. Carli based on the "theory_error_info.cxx/h" class
  */
- 
+
 /*
     TEST AND RUN WITH:
+
     make testmypdf
     ./testmypdf
+
+    OR
+
+    make plot_new
+    ./plot_new
 */
 
 #include "MyPDF.h"
@@ -47,7 +53,7 @@ double alphasPDF(const double& Q) {
 MyPDF::MyPDF(bool _debug)
 {
     if(debug)std::cout<<" MyPDF::MyPDF: start"<<std::endl;
-    
+
     //no values are being set for default, so assign default values to avoid crashes
     SetVariablesDefault();
 
@@ -62,7 +68,7 @@ MyPDF::MyPDF(bool _debug)
 MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _debug)
 {
     if(debug)std::cout<<" MyPDF::MyPDF: Start overloaded constructor"<<std::endl;
-    
+
     SetVariablesDefault();
     debug=_debug;
     gridName=_gridName;
@@ -71,11 +77,11 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _d
 
     if(debug)
         std::cout<<"Setting up MyPDF with:<<<<<<<<<<<<<<<<<<<<<<<<<<"
-           <<"\n\tDebug: "<<(debug? "ON":"OFF")
-           <<"\n\tGridName: "<<gridName
-           <<"\n\tSteeringFile: "<<steeringFilePath
-           <<"\n\tOptionsFile: "<<optionsFileName
-           <<"\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
+                 <<"\n\tDebug: "<<(debug? "ON":"OFF")
+                 <<"\n\tGridName: "<<gridName
+                 <<"\n\tSteeringFile: "<<steeringFilePath
+                 <<"\n\tOptionsFile: "<<optionsFileName
+                 <<"\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
 
     if(FileExists(_steeringFileName)==true) {
         ReadSteering(_steeringFileName);
@@ -85,7 +91,7 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _d
         std::cout<<"MyPDF::MyPDF: WARNING: Couldn't find file names: "<<_steeringFileName<<std::endl;
         SetVariablesDefault();
     }
-    
+
     if(debug)std::cout<<" MyPDF::MyPDF: End overloaded constructor"<<std::endl;
 }
 
@@ -126,24 +132,18 @@ void MyPDF::Initialize()
     double stev=1000.;
     TH1D* temp_hist;
     TH1D* temp_hist_prenorm;
-    
-  
-    
+
+
+
     std::cout<<" MyPDF::Initialize: Fill PDF errors for PDFType: "<<PDFtype<<", PDFName: "<<PDFname<<", from PDFPath: "<<pdfSetPath<<std::endl;
     string default_pdf_set_name = (std::string) (pdfSetPath+"/"+PDFname+".LHgrid");
     if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name =pdfSetPath+"/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
     std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
-/*
-    std::cout<<" MyPDF::Initialize: Fill PDF errors for "<<PDFtype<<std::endl;
-    string default_pdf_set_name = (std::string) ("PDFsets/"+PDFname+".LHgrid");
-    if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name ="PDFsets/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
-    std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
-*/
 
 
-    
+
     LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
-    
+
     h_qqbar_prenorm = (TH1D*)my_grid->convolute_subproc(6, getPDF, alphasPDF, nLoops);      ///// maybe also subprocess 5?
     h_qqbar_prenorm->SetName((TString) ("h_qqbar_prenorm_" + calc_desc));
 
@@ -205,165 +205,117 @@ void MyPDF::Initialize()
         }
     }
 
+    /*
+        if( do_AlphaS ) {
+            LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
+            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+            temp_hist_prenorm->SetName((TString) ("h_xsec_default"));
+            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+            if(PDFtype.compare("CT10")==0) {
+                LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/CT10as.LHgrid")).c_str(), 3);  //// alphaS down
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_CT10as116_prenorm"));
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+                LHAPDF::initPDF(7);    /// alphaS up
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_CT10as120_prenorm"));
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+            }
+            else if(PDFtype.compare("MSTW2008nlo")==0) {
+                LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/MSTW2008nlo68cl_asmz-68cl.LHgrid")).c_str(), 0);   //// alphaS down
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_MSTW2008nloAsDown_prenorm"));
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+                LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/MSTW2008nlo68cl_asmz+68cl.LHgrid")).c_str(), 0);   //// alphaS up
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_MSTW2008nloAsUp_prenorm"));
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+            }
+            else if(PDFtype.compare("NNPDF23nlo")==0) {
+                LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/NNPDF23_nlo_as_0116.LHgrid")).c_str(), 0);  //// alphaS down
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as117_prenorm"));
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+                LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/NNPDF23_nlo_as_0120.LHgrid")).c_str(), 0);  //// alphaS up
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as123_prenorm"));
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+            }
+            else if(PDFtype.compare("HERAPDF15NLO")==0) {
+                LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 9);  //// alphaS down
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_HERAPDF15NLOas1156_prenorm"));
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+                LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 11);  //// alphaS up
+                temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+                temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as1196_prenorm")); //looks wrong? copied from previous incorrectly??
+                h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+            }
+            else {
+                std::cout<<" MyPDF::Initialize: unsupported pdfCode '"<<PDFtype<<"' encountered."<<std::endl;
+                exit(0);
+            }
+    */
+
+
+
+
+
+
+
+
     if( do_AlphaS ) {
-        LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
-        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-        temp_hist_prenorm->SetName((TString) ("h_xsec_default"));
-        h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-        if(PDFtype.compare("CT10")==0) {
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/CT10as.LHgrid")).c_str(), 3);  //// alphaS down
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_CT10as116_prenorm"));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDF(7);    /// alphaS up
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_CT10as120_prenorm"));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-        }
-        else if(PDFtype.compare("MSTW2008nlo")==0) {
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/MSTW2008nlo68cl_asmz-68cl.LHgrid")).c_str(), 0);   //// alphaS down
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_MSTW2008nloAsDown_prenorm"));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/MSTW2008nlo68cl_asmz+68cl.LHgrid")).c_str(), 0);   //// alphaS up
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_MSTW2008nloAsUp_prenorm"));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-        }
-        else if(PDFtype.compare("NNPDF23nlo")==0) {
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/NNPDF23_nlo_as_0116.LHgrid")).c_str(), 0);  //// alphaS down
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as117_prenorm"));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/NNPDF23_nlo_as_0120.LHgrid")).c_str(), 0);  //// alphaS up
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as123_prenorm"));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-        }
-        else if(PDFtype.compare("HERAPDF15NLO")==0) {
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 9);  //// alphaS down
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_HERAPDF15NLOas1156_prenorm"));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/HERAPDF15NLO_ALPHAS.LHgrid")).c_str(), 11);  //// alphaS up
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_NNPDF23as1196_prenorm")); //looks wrong? copied from previous incorrectly??
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-        }
-        else {
-            std::cout<<" MyPDF::Initialize: unsupported pdfCode '"<<PDFtype<<"' encountered."<<std::endl;
+        //check for necessary names before continuing
+        if(AlphaSmemberNumDown==DEFAULT) {
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFilePath<<std::endl;
             exit(0);
         }
-        
-        
-        
-        
-        
-    
-    /*
-    string pdfSetPath = "PDFsets";
-    string pdfSetDefaultPath = GetEnv("LHAPATH");
-
-    if(pdfSetDefaultPath.size()>0) {
-        pdfSetPath=pdfSetDefaultPath;
-        cout<<" makegridfromsherpa::main: LHAPATH environment varaible found, using path: "<<pdfSetPath<<endl;
-    }
-    else {
-        cout<<" makegridfromsherpa::main: LHAPATH environment varaible not set, using default: "<<pdfSetPath<<endl;
-    }
-    
-    
-    std::cout<<" MyPDF::Initialize: Fill PDF errors for PDFType: "<<PDFtype<<"PDFName: "<<PDFname<<std::endl;
-    string default_pdf_set_name = (std::string) (pdfSetPath+"/"+PDFname+".LHgrid");
-    if (PDFtype.compare("HERAPDF15NLO")==0) default_pdf_set_name =pdfSetPath+"/"+PDFtype+"_EIG.LHgrid"; //neededs the extra "_EIG"???
-    std::cout<<" MyPDF::Initialize: init PDF set called: "<<default_pdf_set_name.c_str()<<std::endl;
-    LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
+        if(AlphaSmemberNumUp==DEFAULT) {
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFilePath<<std::endl;
+            exit(0);
+        }
+        if(AlphaSPDFSetNameUp.compare("")==0) {
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFilePath<<std::endl;
+            exit(0);
+        }
+        if(AlphaSPDFSetNameDown.compare("")==0) {
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFilePath<<std::endl;
+            exit(0);
+        }
+        if(AlphaSPDFSetHistNameUp.compare("")==0) {
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetHistNameUp' not provided in steer file: "<<steeringFilePath<<std::endl;
+            exit(0);
+        }
+        if(AlphaSPDFSetHistNameDown.compare("")==0) {
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetHistNameDown' not provided in steer file: "<<steeringFilePath<<std::endl;
+            exit(0);
+        }
 
 
-    h_qqbar_prenorm = (TH1D*)my_grid->convolute_subproc(6, getPDF, alphasPDF, nLoops);      ///// maybe also subprocess 5?
-    h_qqbar_prenorm->SetName((TString) ("h_qqbar_prenorm_" + calc_desc));
-
-    TH1D* h_qqbar_prenorm2 = (TH1D*) my_grid->convolute_subproc(5, getPDF, alphasPDF, nLoops);
-    h_qqbar_prenorm2->SetName((TString) ("h_qqbar_prenorm_" + calc_desc));
-    h_qqbar_prenorm->Add(h_qqbar_prenorm2);
-    h_qqbar_prenorm->SetLineColor(fillColorCode);
-    h_qqbar_prenorm->SetMarkerColor(fillColorCode);
-
-    h_qqbar = (TH1D*) TH1NormToTot(h_qqbar_prenorm, 1. / 1000., 1000.*xscale/stev);
-    h_qqbar->SetName((TString) ("h_qqbar_" + calc_desc));
-    h_qqbar->SetLineColor(fillColorCode);
-    h_qqbar->SetMarkerColor(fillColorCode);
-
-    h_gg_prenorm = (TH1D*) my_grid->convolute_subproc(0, getPDF, alphasPDF, nLoops);
-    h_gg_prenorm->SetName((TString) ("h_gg_prenorm_" + calc_desc));
-    h_gg_prenorm->SetLineColor(fillColorCode);
-    h_gg_prenorm->SetMarkerColor(fillColorCode);
-
-    h_gg = (TH1D*) TH1NormToTot(h_gg_prenorm, 1. / 1000., 1000.*xscale/stev);
-    h_gg->SetName((TString) ("h_gg_" + calc_desc));
-    h_gg->SetLineColor(fillColorCode);
-    h_gg->SetMarkerColor(fillColorCode);
-
-    h_tot_prenorm = (TH1D*) my_grid->convolute(getPDF, alphasPDF, nLoops);
-    h_tot_prenorm->SetName((TString) ("h_tot_prenorm_" + calc_desc));
-    h_tot_prenorm->SetLineColor(fillColorCode);
-    h_tot_prenorm->SetMarkerColor(fillColorCode);
-
-    h_tot = (TH1D*) TH1NormToTot(h_tot_prenorm, 1. / 1000., 1000.*xscale/stev);
-    h_tot->SetName((TString) ("h_tot_" + calc_desc));
-    h_tot->SetLineColor(fillColorCode);
-    h_tot->SetMarkerColor(fillColorCode);
-
-    h_gg_frac = (TH1D*) h_gg_prenorm->Clone((TString) ("h_gg_frac_" + calc_desc));
-    h_gg_frac->Divide(h_tot_prenorm);
-
-    h_qqbar_frac = (TH1D*) h_qqbar_prenorm->Clone((TString) ("h_qqbar_frac_" + calc_desc));
-    h_qqbar_frac->Divide(h_tot_prenorm);
-
-
-    if( do_RenormalizationScale ) {
-        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renScaleVal, 1.);
-        temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + renScaleName));
-        temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
-        temp_hist->SetName((TString) ("h_xsec_rscale_" + renScaleName + "_norm"));
-        h_errors_RenormalizationScale.push_back(temp_hist);
-    }
-
-    if( do_FactorizationScale ) {
-        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, 1., facScaleVal);
-        temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + facScaleName));
-        temp_hist = (TH1D*) TH1NormToTot(temp_hist_prenorm, 1. / 1000., 1000.*xscale/stev);
-        temp_hist->SetName((TString) ("h_xsec_rscale_" + facScaleName + "_norm"));
-        h_errors_FactorizationScale.push_back(temp_hist);
-    }
-        
-        
-    if( do_AlphaS ) {
         LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
         temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
         temp_hist_prenorm->SetName((TString) ("h_xsec_default"));
         h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-        
-        int memberNumFirst;     // would need to be read from steering file
-        int memberNumSecond;    // would need to be read from steering file
-        int PDFnameFirst;       // would need to be read from steering file
-        int PDFnameSecond;      // would need to be read from steering file
-        
-        LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+PDFnameFirst+".LHgrid")).c_str(), memberNumFirst);  //// alphaS down
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_"+PDFnameFirst));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+PDFnameSecond+".LHgrid")).c_str(), memberNumSecond);  //// alphaS up
-            temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
-            temp_hist_prenorm->SetName((TString) ("h_xsec_"+PDFnameSecond));
-            h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
-    }
-    */
-        
-        
-        
-        
-        
+
+        LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameDown+".LHgrid")).c_str(), AlphaSmemberNumDown);  //// alphaS down
+        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+        temp_hist_prenorm->SetName((TString) ("h_xsec_"+AlphaSPDFSetHistNameDown));
+        h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+
+        if(PDFtype.compare("CT10")==0)
+            LHAPDF::initPDF(7);    /// alphaS up
+        else
+            LHAPDF::initPDFSet(((std::string) (pdfSetPath+"/"+AlphaSPDFSetNameUp+".LHgrid")).c_str(), AlphaSmemberNumUp);  //// alphaS up
+        temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
+        temp_hist_prenorm->SetName((TString) ("h_xsec_"+AlphaSPDFSetHistNameUp));
+        h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
+
+
+
+
+
+
+
 
         for(int alphai = 0; alphai < h_errors_AlphaS_prenorm.size(); alphai++) {
             double stev=1000.;
@@ -418,11 +370,11 @@ void MyPDF::Initialize()
 // assumes that histogram is divided by bin-width
 TH1 *MyPDF::TH1NormToTot (TH1 *h1, double _yscale, double _xscale)
 {
-    if(debug){
+    if(debug) {
         std::cout<<" MyPDF::TH1NormToTot: Start"<<std::endl;
         std::cout<<" MyPDF::TH1NormToTot: renormalize with xscale = "<<_xscale<<", yscale = "<<_yscale<<std::endl;
     }
-    
+
     if (!h1) std::cout<<" MyPDF::TH1NormToTot: TH1NormTotot h1 not found "<<std::endl;
     TH1D* h1new=(TH1D*) h1->Clone(h1->GetName());
 
@@ -460,7 +412,7 @@ TH1 *MyPDF::TH1NormToTot (TH1 *h1, double _yscale, double _xscale)
         integral_so_far += y*x;
         if(debug) cout<<" MyPDF::TH1NormToTot: i:"<<i<<" bincenter= "<<h1new->GetBinCenter(i)<<" Binw = "<<x<<" y= "<<y<<", integral so far: "<<integral_so_far<<std::endl;
     }
-    
+
     if(debug) std::cout<<" MyPDF::TH1NormToTot: End"<<std::endl;
     return h1new;
 }
@@ -475,15 +427,15 @@ void MyPDF::InitializeErrorGraphs()
     int n_bins = 0;
     Print();
     if(debug)  std::cout<<"MyPDF::InitializeErrorGraphs: Init PDFBand_results TGraphs. "
-                        <<" AlphaS size: "<<h_errors_AlphaS.size()
-                        <<", RenScale size: "<<h_errors_RenormalizationScale.size()
-                        <<", FactScale size: "<<h_errors_FactorizationScale.size()
-                        <<", PDFBand size: "<<h_errors_PDFBand.size()<<std::endl;
+                            <<" AlphaS size: "<<h_errors_AlphaS.size()
+                            <<", RenScale size: "<<h_errors_RenormalizationScale.size()
+                            <<", FactScale size: "<<h_errors_FactorizationScale.size()
+                            <<", PDFBand size: "<<h_errors_PDFBand.size()<<std::endl;
     if(debug)  std::cout<<"MyPDF::InitializeErrorGraphs: errors on: "
-                        <<" AlphaS: "<<do_AlphaS
-                        <<", RenScale: "<<do_RenormalizationScale
-                        <<", FactScale: "<<do_FactorizationScale
-                        <<", PDFBand: "<<do_PDFBand<<std::endl;
+                            <<" AlphaS: "<<do_AlphaS
+                            <<", RenScale: "<<do_RenormalizationScale
+                            <<", FactScale: "<<do_FactorizationScale
+                            <<", PDFBand: "<<do_PDFBand<<std::endl;
 
     if( do_AlphaS ) n_bins = h_errors_AlphaS.at(0)->GetNbinsX();
     else if( do_RenormalizationScale ) n_bins = h_errors_RenormalizationScale.at(0)->GetNbinsX();
@@ -536,22 +488,22 @@ void MyPDF::InitializeErrorGraphs()
     h_PDFBand_results->SetName((TString) (this_name + "_PDFBand_results"));
     h_PDFBand_results->SetFillColor(fillColorCode);
     h_PDFBand_results->SetFillStyle(fillStyleCode);
-    
+
     h_AlphaS_results = new TGraphAsymmErrors(n_bins, x_vals, y_vals, x_errs_low, x_errs_high, y_errs_low, y_errs_high);
     h_AlphaS_results->SetName((TString) (this_name + "_AlphaS_results"));
     h_AlphaS_results->SetFillColor(fillColorCode);
     h_AlphaS_results->SetFillStyle(fillStyleCode);
-    
+
     h_RenormalizationScale_results = new TGraphAsymmErrors(n_bins, x_vals, y_vals, x_errs_low, x_errs_high, y_errs_low, y_errs_high);
     h_RenormalizationScale_results->SetName((TString) (this_name + "_RenormalizationScale_results"));
     h_RenormalizationScale_results->SetFillColor(fillColorCode);
     h_RenormalizationScale_results->SetFillStyle(fillStyleCode);
-    
+
     h_FactorizationScale_results = new TGraphAsymmErrors(n_bins, x_vals, y_vals, x_errs_low, x_errs_high, y_errs_low, y_errs_high);
     h_FactorizationScale_results->SetName((TString) (this_name + "_FactorizationScale_results"));
     h_FactorizationScale_results->SetFillColor(fillColorCode);
     h_FactorizationScale_results->SetFillStyle(fillStyleCode);
-    
+
     h_TotError_results = new TGraphAsymmErrors(n_bins, x_vals, y_vals, x_errs_low, x_errs_high, y_errs_low, y_errs_high);
     h_TotError_results->SetName((TString) (this_name + "_TotError_results"));
     h_TotError_results->SetFillColor(fillColorCode);
@@ -565,10 +517,10 @@ void MyPDF::InitializeErrorGraphs()
 void MyPDF::CalcSystErrors()
 {
     std::cout<<" MyPDF::CalcSystErrors: Start syst error calc for: "<<PDFtype
-        <<"\n\tPDFBand: "<<do_PDFBand
-        <<", do_AlphaS: "<<do_AlphaS
-        <<", do_RenScale: "<<do_RenormalizationScale
-        <<", FacScale: "<<do_FactorizationScale<<std::endl;
+             <<"\n\tPDFBand: "<<do_PDFBand
+             <<", do_AlphaS: "<<do_AlphaS
+             <<", do_RenScale: "<<do_RenormalizationScale
+             <<", FacScale: "<<do_FactorizationScale<<std::endl;
 
     if( do_PDFBand ) CalcPDFBandErrors();
     if( do_AlphaS ) CalcAlphaSErrors();
@@ -722,12 +674,12 @@ void MyPDF::CalcRenormalizationScaleErrors()
         double this_err_down = h_errors_RenormalizationScale.at(DOWN)->GetBinContent(bi);
         double this_err_up = h_errors_RenormalizationScale.at(UP)->GetBinContent(bi);
         if(debug)std::cout<<" MyPDF::CalcRenormalizationScaleErrors: bi = "<<bi<<", default val = "<<this_default_val<<" +"<<this_err_up  <<" -"<<this_err_down<<"\n";
-        
+
         double error = 0.5*fabs(this_err_up-this_err_down);
         if( PDFErrorSize.compare("90Percent")==0 ) error *= 1.645;
         Double_t init_x_val;
         Double_t init_y_val;
-        
+
         h_RenormalizationScale_results->GetPoint(bi-1, init_x_val, init_y_val);
         h_RenormalizationScale_results->SetPoint(bi-1, init_x_val, this_default_val);
         h_RenormalizationScale_results->SetPointEYhigh(bi-1, error);
@@ -754,7 +706,7 @@ void MyPDF::CalcFactorizationScaleErrors()
         if( PDFErrorSize.compare("90Percent")==0 ) error *= 1.645;
         Double_t init_x_val;
         Double_t init_y_val;
-        
+
         h_FactorizationScale_results->GetPoint(bi-1, init_x_val, init_y_val);
         h_FactorizationScale_results->SetPoint(bi-1, init_x_val, this_default_val);
         h_FactorizationScale_results->SetPointEYhigh(bi-1, error);
@@ -771,13 +723,13 @@ void MyPDF::CalcTotErrors()
     if(debug) std::cout<<" MyPDF::CalcTotErrors: Start of calc for total errors for: "<<PDFtype<<std::endl;
 
     double PDFBand_err_high = 0.;
-    double PDFBand_err_low = 0.;
-    double AlphaS_err_high = 0.;
-    double AlphaS_err_low = 0.;
-    double RenormalizationScale_err_high = 0.;
-    double RenormalizationScale_err_low = 0.;
-    double FactorizationScale_err_high = 0.;
-    double FactorizationScale_err_low = 0.;
+    double PDFBand_err_low  = 0.;
+    double AlphaS_err_high  = 0.;
+    double AlphaS_err_low   = 0.;
+    double RenormalizationScale_err_high    = 0.;
+    double RenormalizationScale_err_low     = 0.;
+    double FactorizationScale_err_high      = 0.;
+    double FactorizationScale_err_low       = 0.;
 
     for(int pi = 0; pi < h_TotError_results->GetN(); pi++) {
         Double_t x_val=-999;
@@ -819,36 +771,31 @@ void MyPDF::GetRatioToTH1(TH1D* href)
     if(debug) std::cout<<" MyPDF::GetRatioToTH1: start"<<std::endl;
 
     TGraphAsymmErrors* tgraph_href = TH1TOTGraphAsymm(href);
-    TString ratio_to_ref_name = (TString) h_PDFBand_results->GetName();
-    ratio_to_ref_name += "_ratio_to_ref";
+    TString ratio_to_ref_name = (TString) h_PDFBand_results->GetName() + "_ratio_to_ref";
     h_PDFBand_results_ratio_to_ref = MyTGraphErrorsDivide(h_PDFBand_results, tgraph_href);
     h_PDFBand_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_PDFBand_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_PDFBand_results_ratio_to_ref->SetFillStyle(fillStyleCode);
-    
-    ratio_to_ref_name = (TString) h_AlphaS_results->GetName();
-    ratio_to_ref_name += "_ratio_to_ref";
+
+    ratio_to_ref_name = (TString) h_AlphaS_results->GetName() + "_ratio_to_ref";
     h_AlphaS_results_ratio_to_ref = MyTGraphErrorsDivide(h_AlphaS_results, tgraph_href);
     h_AlphaS_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_AlphaS_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_AlphaS_results_ratio_to_ref->SetFillStyle(fillStyleCode);
-    
-    ratio_to_ref_name = (TString) h_RenormalizationScale_results->GetName();
-    ratio_to_ref_name += "_ratio_to_ref";
+
+    ratio_to_ref_name = (TString) h_RenormalizationScale_results->GetName() + "_ratio_to_ref";
     h_RenormalizationScale_results_ratio_to_ref = MyTGraphErrorsDivide(h_RenormalizationScale_results, tgraph_href);
     h_RenormalizationScale_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_RenormalizationScale_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_RenormalizationScale_results_ratio_to_ref->SetFillStyle(fillStyleCode);
-    
-    ratio_to_ref_name = (TString) h_FactorizationScale_results->GetName();
-    ratio_to_ref_name += "_ratio_to_ref";
+
+    ratio_to_ref_name = (TString) h_FactorizationScale_results->GetName() + "_ratio_to_ref";
     h_FactorizationScale_results_ratio_to_ref = MyTGraphErrorsDivide(h_FactorizationScale_results, tgraph_href);
     h_FactorizationScale_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_FactorizationScale_results_ratio_to_ref->SetFillColor(fillColorCode);
     h_FactorizationScale_results_ratio_to_ref->SetFillStyle(fillStyleCode);
-    
-    ratio_to_ref_name = (TString) h_TotError_results->GetName();
-    ratio_to_ref_name += "_ratio_to_ref";
+
+    ratio_to_ref_name = (TString) h_TotError_results->GetName() + "_ratio_to_ref";
     h_TotError_results_ratio_to_ref = MyTGraphErrorsDivide(h_TotError_results, tgraph_href);
     h_TotError_results_ratio_to_ref->SetName(ratio_to_ref_name);
     h_TotError_results_ratio_to_ref->SetFillColor(fillColorCode);
@@ -902,8 +849,8 @@ TGraphAsymmErrors* MyPDF::MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymm
 
     if (n1!=n2) {
         std::cout<<" MyPDF::MyTGraphErrorsDivide: vector do not have the same number of entries!"
-           <<"\n\tg1: "<<g1->GetName()<<" n1= "<<n1
-           <<"\n\tg2: "<<g2->GetName()<<" n2= "<<n2<<std::endl;
+                 <<"\n\tg1: "<<g1->GetName()<<" n1= "<<n1
+                 <<"\n\tg2: "<<g2->GetName()<<" n2= "<<n2<<std::endl;
     }
 
     TGraphAsymmErrors* g3= new TGraphAsymmErrors();
@@ -953,10 +900,10 @@ TGraphAsymmErrors* MyPDF::MyTGraphErrorsDivide(TGraphAsymmErrors* g1,TGraphAsymm
 
                 if (debug) {
                     std::cout<<"MyPDF::MyTGraphErrorsDivide: "
-                       <<"\n\ti1: "    <<i1<<", i2: "<<i2
-                       <<"\n\tdy1l: "  <<dy1l<<", dy1h: "<<dy1h
-                       <<"\n\tdy2l: "  <<dy2l<<", dy2h "<<dy2h
-                       <<"\n\tsqrt: " <<sqrt(dy1l*dy1l+dy2l*dy2l)<<", "<<sqrt(dy1h*dy1h+dy2h*dy2h)<<std::endl;
+                             <<"\n\ti1: "    <<i1<<", i2: "<<i2
+                             <<"\n\tdy1l: "  <<dy1l<<", dy1h: "<<dy1h
+                             <<"\n\tdy2l: "  <<dy2l<<", dy2h "<<dy2h
+                             <<"\n\tsqrt: " <<sqrt(dy1l*dy1l+dy2l*dy2l)<<", "<<sqrt(dy1h*dy1h+dy2h*dy2h)<<std::endl;
                 }
 
                 if (y2!=0.) g3->SetPoint(iv, x1,y1/y2);
@@ -1010,7 +957,7 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
             }
         }
     }
-    
+
     if(debug)std::cout<<" MyPDF::CalcChi2: At Start, dump contents of data cov matrix: "<<std::endl;
     for(int pi = 0; pi < g_theory->GetN(); pi++) {
         for(int pi2 = 0; pi2 < g_theory->GetN(); pi2++) {
@@ -1027,7 +974,7 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
         }
         std::cout<<"\n";
     }
-    
+
     TMatrixT<double> invertex_cov_matrix = tot_cov_matrix.Invert();    //// Now it includes the theory errors in the diagonal elements ...
     if(debug)std::cout<<" MyPDF::CalcChi2: After inversion, dump contents of cov matrix: "<<std::endl;
     for(int pi = 0; pi < g_theory->GetN(); pi++) {
@@ -1044,7 +991,7 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
         Double_t data_val;
         Double_t theory_val;
         Double_t x_val;
-        
+
         g_theory->GetPoint(pi, x_val, theory_val);
         g_data->GetPoint(pi, x_val, data_val);
         row_data_minus_theory(0,pi) = data_val - theory_val;
@@ -1078,7 +1025,7 @@ void MyPDF::ReadSteering(const string _fileName)
         fName=_fileName;
     else
         fName=steeringFilePath;
-        
+
     if (debug) std::cout<<" MyPDF::ReadSteering: reading steering file named: "<<fName<<std::endl;
 
     //Open the file for reading if it can be read/found
@@ -1090,17 +1037,17 @@ void MyPDF::ReadSteering(const string _fileName)
     } else {
         if (debug) std::cout<<" MyPDF::ReadSteering: Steering file named successfuly opened."<<std::endl;
     }
-    
-    
+
+
     pdfSetPath = deafultPDFSetPath;
     string pdfSetDefaultPath = GetEnv("LHAPATH");
 
     if(pdfSetDefaultPath.size()>0) {
         if(pdfSetDefaultPath.find_last_of("/") == pdfSetDefaultPath.size()-1)
             pdfSetDefaultPath = pdfSetDefaultPath.substr(0,pdfSetDefaultPath.size()-1); //remove trailing slashes if there are any
-        
+
         pdfSetPath=pdfSetDefaultPath;
-        
+
         cout<<" makegridfromsherpa::main: LHAPATH environment varaible found, using path: "<<pdfSetPath<<endl;
     }
     else {
@@ -1126,10 +1073,10 @@ void MyPDF::ReadSteering(const string _fileName)
 
         if(debug) {
             std::cout<<"\n MyPDF::ReadSteering: Read in:<<<<<<<<<<<<<<<<<<<"
-               <<"\n"<<setw(w)<<"line:"<<line
-               <<"\n"<<setw(w)<<"optionName:"<<optionName
-               <<"\n"<<setw(w)<<"text:"<<text
-               <<"\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
+                     <<"\n"<<setw(w)<<"line:"<<line
+                     <<"\n"<<setw(w)<<"optionName:"<<optionName
+                     <<"\n"<<setw(w)<<"text:"<<text
+                     <<"\n<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"<<std::endl;
         }
         if(line[0] != '%') { //ignore comments
             if(myOptions->isKnownOption(optionName)==false) {
@@ -1146,7 +1093,6 @@ void MyPDF::ReadSteering(const string _fileName)
                 sscanf(text.c_str(), "%d", &fillStyleCode);
             } else if (optionName.compare("fillColorCode")==0) {
                 sscanf(text.c_str(), "%d", &fillColorCode);
-                //fillColorCode=text;
             } else if (optionName.compare("PDFBandType")==0) {
                 PDFBandType=text;
             } else if (optionName.compare("PDFErrorType")==0) {
@@ -1154,17 +1100,13 @@ void MyPDF::ReadSteering(const string _fileName)
                 //possible error types: PDFBand, AlphaS, RenormalizationScale, FactorizationScale, TotError
                 if(PDFErrorType.compare("PDFBand")==0) {
                     do_PDFBand=true;
-                }
-                else if(PDFErrorType.compare("AlphaS")==0) {
+                } else if(PDFErrorType.compare("AlphaS")==0) {
                     do_AlphaS=true;
-                }
-                else if(PDFErrorType.compare("RenormalizationScale")==0) {
+                } else if(PDFErrorType.compare("RenormalizationScale")==0) {
                     do_RenormalizationScale=true;
-                }
-                else if(PDFErrorType.compare("FactorizationScale")==0) {
+                } else if(PDFErrorType.compare("FactorizationScale")==0) {
                     do_FactorizationScale=true;
-                }
-                else if(PDFErrorType.compare("TotError")==0) {
+                } else if(PDFErrorType.compare("TotError")==0) {
                     do_TotError=true;
                 }
             } else if (optionName.compare("PDFErrorSize")==0) {
@@ -1203,9 +1145,20 @@ void MyPDF::ReadSteering(const string _fileName)
                 pdfSetPath=text;
                 if(pdfSetPath.find_last_of("/") == pdfSetPath.size()-1)
                     pdfSetPath = pdfSetPath.substr(0,pdfSetPath.size()-1); //remove trailing slashes if there are any
-        
                 std::cout<<" MyPDF::ReadSteering: new PDF set path found! Now path is: "<<pdfSetPath<<std::endl;
-            }    
+            } else if (optionName.compare("AlphaSmemberNumDown")==0) {
+                sscanf(text.c_str(), "%d", &AlphaSmemberNumDown);
+            } else if (optionName.compare("AlphaSmemberNumUp")==0) {
+                sscanf(text.c_str(), "%d", &AlphaSmemberNumUp);
+            } else if (optionName.compare("AlphaSPDFSetNameDown")==0) {
+                AlphaSPDFSetNameDown = text;
+            } else if (optionName.compare("AlphaSPDFSetNameUp")==0) {
+                AlphaSPDFSetNameUp = text;
+            } else if (optionName.compare("AlphaSPDFSetHistNameDown")==0) {
+                AlphaSPDFSetHistNameDown = text;
+            } else if (optionName.compare("AlphaSPDFSetHistNameUp")==0) {
+                AlphaSPDFSetHistNameUp = text;
+            }
         }
     }
 }
@@ -1220,35 +1173,35 @@ void MyPDF::Print()
     string OFF="OFF";       //bool false
 
     std::cout<<" MyPDF::Print: >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
-       <<"\n"<<setw(w)<<"debug:"                <<setw(w)<<(debug? "ON":"OFF")
-       <<"\n"<<setw(w)<<"steeringFilePath:"     <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
-       <<"\n"<<setw(w)<<"steeringFileDir:"      <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
-       <<"\n"<<setw(w)<<"steeringFileName:"     <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
-       <<"\n"<<setw(w)<<"optionsFile:"          <<setw(w)<<(optionsFileName.size()>0? optionsFileName:empty)
-       <<"\n"<<setw(w)<<"gridName:"             <<setw(w)<<(gridName.size()>0? gridName:empty)
-       <<"\n"
-       <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
-       <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
-       <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? to_string(n_PDFMembers):empty)
-       <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? to_string(fillStyleCode):empty)
-       <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? to_string(fillColorCode):empty)
-       <<"\n"<<setw(w)<<"PDFBandType:"          <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
-       <<"\n"<<setw(w)<<"**PDF ERROR TYPE(s) ACTIVE**"
-       <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
-       <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
-       <<"\n"<<setw(w)<<"RenScale:"             <<setw(w)<<(do_RenormalizationScale? ON:OFF)
-       <<"\n"<<setw(w)<<"FactScale:"            <<setw(w)<<(do_FactorizationScale? ON:OFF)
-       <<"\n"<<setw(w)<<"TotError:"             <<setw(w)<<(do_TotError? ON:OFF)
-       <<"\n"<<setw(w)<<"PDFErrorSize:"         <<setw(w)<<(PDFErrorSize.size()>0? PDFErrorSize:empty)
-       <<"\n"<<setw(w)<<"**REN SCALE VALS**"   
-       <<"\n"<<setw(w)<<"renScaleVal-Up:"       <<setw(w)<<(renScaleValUp!=DEFAULT? to_string(renScaleValUp):empty)
-       <<"\n"<<setw(w)<<"renScaleVal-Default:"  <<setw(w)<<(renScaleValDefault!=DEFAULT? to_string(renScaleValDefault):empty)
-       <<"\n"<<setw(w)<<"renScaleVal-Down:"     <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)
-       <<"\n"<<setw(w)<<"**FAC SCALE VALS**"
-       <<"\n"<<setw(w)<<"facScaleVals-Up:"      <<setw(w)<<(renScaleValUp!=DEFAULT? to_string(renScaleValUp):empty)
-       <<"\n"<<setw(w)<<"facScaleVals-Default:" <<setw(w)<<(renScaleValDefault!=DEFAULT? to_string(renScaleValDefault):empty)
-       <<"\n"<<setw(w)<<"facScaleVals-Down:"    <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)
-       <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
+             <<"\n"<<setw(w)<<"debug:"                <<setw(w)<<(debug? "ON":"OFF")
+             <<"\n"<<setw(w)<<"steeringFilePath:"     <<setw(w)<<(steeringFilePath.size()>0? steeringFilePath:empty)
+             <<"\n"<<setw(w)<<"steeringFileDir:"      <<setw(w)<<(steeringFileDir.size()>0? steeringFileDir:empty)
+             <<"\n"<<setw(w)<<"steeringFileName:"     <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
+             <<"\n"<<setw(w)<<"optionsFile:"          <<setw(w)<<(optionsFileName.size()>0? optionsFileName:empty)
+             <<"\n"<<setw(w)<<"gridName:"             <<setw(w)<<(gridName.size()>0? gridName:empty)
+             <<"\n"
+             <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
+             <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
+             <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? to_string(n_PDFMembers):empty)
+             <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? to_string(fillStyleCode):empty)
+             <<"\n"<<setw(w)<<"fillColorCode:"        <<setw(w)<<(fillColorCode!=DEFAULT? to_string(fillColorCode):empty)
+             <<"\n"<<setw(w)<<"PDFBandType:"          <<setw(w)<<(PDFBandType.size()>0? PDFBandType:empty)
+             <<"\n"<<setw(w)<<"**PDF ERROR TYPE(s) ACTIVE**"
+             <<"\n"<<setw(w)<<"PDFBand:"              <<setw(w)<<(do_PDFBand? ON:OFF)
+             <<"\n"<<setw(w)<<"AlphaS:"               <<setw(w)<<(do_AlphaS? ON:OFF)
+             <<"\n"<<setw(w)<<"RenScale:"             <<setw(w)<<(do_RenormalizationScale? ON:OFF)
+             <<"\n"<<setw(w)<<"FactScale:"            <<setw(w)<<(do_FactorizationScale? ON:OFF)
+             <<"\n"<<setw(w)<<"TotError:"             <<setw(w)<<(do_TotError? ON:OFF)
+             <<"\n"<<setw(w)<<"PDFErrorSize:"         <<setw(w)<<(PDFErrorSize.size()>0? PDFErrorSize:empty)
+             <<"\n"<<setw(w)<<"**REN SCALE VALS**"
+             <<"\n"<<setw(w)<<"renScaleVal-Up:"       <<setw(w)<<(renScaleValUp!=DEFAULT? to_string(renScaleValUp):empty)
+             <<"\n"<<setw(w)<<"renScaleVal-Default:"  <<setw(w)<<(renScaleValDefault!=DEFAULT? to_string(renScaleValDefault):empty)
+             <<"\n"<<setw(w)<<"renScaleVal-Down:"     <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)
+             <<"\n"<<setw(w)<<"**FAC SCALE VALS**"
+             <<"\n"<<setw(w)<<"facScaleVals-Up:"      <<setw(w)<<(renScaleValUp!=DEFAULT? to_string(renScaleValUp):empty)
+             <<"\n"<<setw(w)<<"facScaleVals-Default:" <<setw(w)<<(renScaleValDefault!=DEFAULT? to_string(renScaleValDefault):empty)
+             <<"\n"<<setw(w)<<"facScaleVals-Down:"    <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)
+             <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
 }
 
 
@@ -1256,13 +1209,13 @@ void MyPDF::Print()
 bool MyPDF::FileExists(const string _fileName)
 {
     bool exists;
-    
+
     if ( FILE* file=fopen(_fileName.c_str(),"r") ) {
         fclose(file);
         exists = true;
     }
     else exists = false;
-    
+
     std::cout<<"Does this file: '"<<_fileName<<"' exist? "<<exists<<std::endl;
     return exists;
 }
@@ -1289,7 +1242,7 @@ void MyPDF::SetVariablesDefault()
     PDFBandType=defaultString;
     PDFErrorType=defaultString;
     PDFErrorSize=defaultString;
-    
+
     renScaleNameUp=defaultString;
     renScaleNameDefault=defaultString;
     renScaleNameDown=defaultString;
@@ -1314,7 +1267,14 @@ void MyPDF::SetVariablesDefault()
     do_RenormalizationScale=false;
     do_FactorizationScale=false;
     do_TotError=false;
-        
+
+    AlphaSmemberNumDown=DEFAULT;
+    AlphaSmemberNumUp=DEFAULT;
+    AlphaSPDFSetNameDown=defaultString;
+    AlphaSPDFSetNameUp=defaultString;
+    AlphaSPDFSetHistNameDown=defaultString;
+    AlphaSPDFSetHistNameUp=defaultString;
+
     if(debug) std::cout<<" MyPDF::setVariablesDefault: End default values are set."<<std::endl;
 }
 
@@ -1338,9 +1298,9 @@ void MyPDF::SetSteeringFileNameAndDir(const string _path)
 
         if(debug) {
             std::cout<<" MyPDF::setSteeringFileNameAndPath:"
-               <<" \n\tSplitting: '"<<_path<<"'"
-               <<" \n\tpath: '"<<_path.substr(0,found)<<"'"
-               <<" \n\tfile: '"<<_path.substr(found+1)<<"'"<<std::endl;
+                     <<" \n\tSplitting: '"<<_path<<"'"
+                     <<" \n\tpath: '"<<_path.substr(0,found)<<"'"
+                     <<" \n\tfile: '"<<_path.substr(found+1)<<"'"<<std::endl;
         }
     }
     else {
@@ -1350,7 +1310,7 @@ void MyPDF::SetSteeringFileNameAndDir(const string _path)
 
 
 //Print out all known supported options that could be read from the steeting file, if they have been read
-void MyPDF::PrintKnownOptionsForSteering() 
+void MyPDF::PrintKnownOptionsForSteering()
 {
     vector<string> *knownOptions;
     int w=25;               //arbitrary size that makes the formatting look pretty
@@ -1368,7 +1328,7 @@ void MyPDF::PrintKnownOptionsForSteering()
 }
 
 //Print out all found options read from the steeting file, if they have been read
-void MyPDF::PrintFoundOptionsFromSteering() 
+void MyPDF::PrintFoundOptionsFromSteering()
 {
     vector<string> *foundOptions;
     int w=25;               //arbitrary size that makes the formatting look pretty
@@ -1396,7 +1356,7 @@ void MyPDF::SetGridName(string _gridName) {
 void MyPDF::SetSteeringFilePath(string _steeringFilePath) {
     steeringFilePath=_steeringFilePath;
     //udate the Dir location and file name of the steering file if the path is changed
-    SetSteeringFileNameAndDir(steeringFilePath); 
+    SetSteeringFileNameAndDir(steeringFilePath);
 }
 void MyPDF::SetSteeringFileDir(string _steeringFileDir) {
     steeringFileDir=_steeringFileDir;
@@ -1484,37 +1444,37 @@ void MyPDF::SetDoTotError(bool _doit) {
 
 void MyPDF::CleanUpMyPDF() {
     if(debug) std::cout<<"MyPDF::CleanUpMyPDF: Starting to clean up..."<<std::endl;
-    
+
     if(h_errors_RenormalizationScale.size()>0) {
         for(int i=0; i<h_errors_RenormalizationScale.size(); ++i) {
             delete h_errors_RenormalizationScale.at(i);
         }
     }
-    
+
     if(h_errors_FactorizationScale.size()>0) {
         for(int i=0; i<h_errors_FactorizationScale.size(); ++i) {
             delete h_errors_FactorizationScale.at(i);
         }
     }
-    
+
     if(h_errors_PDFBand.size()>0) {
         for(int i=0; i<h_errors_PDFBand.size(); ++i) {
             delete h_errors_PDFBand.at(i);
         }
     }
-    
+
     if(h_errors_prenorm.size()>0) {
         for(int i=0; i<h_errors_prenorm.size(); ++i) {
             delete h_errors_prenorm.at(i);
         }
     }
-    
+
     if(h_errors_AlphaS.size()>0) {
         for(int i=0; i<h_errors_AlphaS.size(); ++i) {
             delete h_errors_AlphaS.at(i);
         }
     }
-    
+
     if(h_errors_AlphaS_prenorm.size()>0) {
         for(int i=0; i<h_errors_AlphaS_prenorm.size(); ++i) {
             delete h_errors_AlphaS_prenorm.at(i);

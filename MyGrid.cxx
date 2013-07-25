@@ -403,7 +403,7 @@ void MyGrid::ReadSteering(string fname) {
     char text[100];
     char name[100];
     float mys;
-    string OptionsFileName = "MyGridOptions.txt"; //<--could be made readable from steering file
+    string OptionsFileName = "options_mygrid.txt"; //<--could be made readable from steering file
     OptionHandler *mygridoptions= new OptionHandler(OptionsFileName);
     //mygridoptions->generateResultFile("output/test.txt"); //method currently not implimented, use debug=true instead
 

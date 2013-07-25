@@ -170,8 +170,8 @@ void MyCrossSection::Initialize() {
                 <<"\n\tfacScaleValDown: "<<facScaleValDown<<std::endl;
                 exit(0); //TEST
             }
-            
-            
+            */
+            /*
             newpdf->SetRenScaleValUp( );
             newpdf->SetRenScaleValDefault( );
             newpdf->SetRenScaleValDown( );
@@ -185,6 +185,11 @@ void MyCrossSection::Initialize() {
             newpdf->SetDoRenormalizationScale   (do_RenormalizationScale);
             newpdf->SetDoFactorizationScale     (do_FactorizationScale);
             newpdf->SetDoTotError               (do_TotError);
+            
+            std::cout<<" MyCrossSection::Initialize: Printing updated mypdf num: "<<(ipdf+1)
+                                <<" of "<<pdfdata.at(igrid).size()
+                                <<" for grid: "<<GetGridName(igrid)<<std::endl;
+            newpdf->Print();
             */
             t_mypdf.at(igrid).push_back(newpdf);
             
@@ -439,18 +444,12 @@ void MyCrossSection::ReadSteering(char fname[100]) {
             if( cpp_line == "RenormalizationScale" )    do_RenormalizationScale = true;
             if( cpp_line == "FactorizationScale" )      do_FactorizationScale = true;
             
-            if( cpp_line == "renScaleValUp")
-                sscanf(line," %s %lf ",text, &renScaleValUp);
-            if( cpp_line == "renScaleValDefault")
-                sscanf(line," %s %lf ",text, &renScaleValDefault);
-            if( cpp_line == "renScaleValDown")
-                sscanf(line," %s %lf ",text, &renScaleValDown);
-            if( cpp_line == "refScaleValUp")
-                sscanf(line," %s %lf ",text, &refScaleValUp);
-            if( cpp_line == "refScaleValDefault")
-                sscanf(line," %s %lf ",text, &refScaleValDefault);
-            if( cpp_line == "refScaleValDown")
-                sscanf(line," %s %lf ",text, &refScaleValDown); 
+            if( cpp_line == "renScaleValUp")            sscanf(line," %s %lf ",text, &renScaleValUp);
+            if( cpp_line == "renScaleValDefault")       sscanf(line," %s %lf ",text, &renScaleValDefault);
+            if( cpp_line == "renScaleValDown")          sscanf(line," %s %lf ",text, &renScaleValDown);
+            if( cpp_line == "refScaleValUp")            sscanf(line," %s %lf ",text, &refScaleValUp);
+            if( cpp_line == "refScaleValDefault")       sscanf(line," %s %lf ",text, &refScaleValDefault);
+            if( cpp_line == "refScaleValDown")          sscanf(line," %s %lf ",text, &refScaleValDown); 
             */ 
         }
     }

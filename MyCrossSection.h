@@ -39,13 +39,7 @@ class MyCrossSection {
   string subprocesssteername;
 
 
-            
-  double renScaleValUp;
-  double renScaleValDefault;
-  double renScaleValDown;
-  double facScaleValUp;
-  double facScaleValDefault;
-  double facScaleValDown;
+           
   //string ntupdirinput;
   //string ntupdiroutput;
 
@@ -99,6 +93,12 @@ class MyCrossSection {
 
  public:
   //std::vector<int> PDFSetCodes_vec;
+  double renScaleValUp;
+  double renScaleValDefault;
+  double renScaleValDown;
+  double facScaleValUp;
+  double facScaleValDefault;
+  double facScaleValDown;
   bool do_PDFBand;
   bool do_AlphaS;
   bool do_RenormalizationScale;
