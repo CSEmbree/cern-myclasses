@@ -93,6 +93,7 @@ class MyCrossSection {
 
  public:
   //std::vector<int> PDFSetCodes_vec;
+  string PDFErrorSize;
   double renScaleValUp;
   double renScaleValDefault;
   double renScaleValDown;
@@ -103,6 +104,7 @@ class MyCrossSection {
   bool do_AlphaS;
   bool do_RenormalizationScale;
   bool do_FactorizationScale;
+  bool do_TotError;
   int ErrorSize;
 
   MyCrossSection(char name[100]);

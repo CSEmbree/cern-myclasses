@@ -119,7 +119,7 @@ MyPDF::MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS
 
     if(FileExists(_steeringFile)==true) {
         ReadSteering(_steeringFile);
-        //Initialize();
+        //Initialize(); //User needs to call Initialize() explicitly after they have set all variables they want explictly
     } else {
         std::cout<<"MyPDF::MyPDF: WARNING: Couldn't find file names: "<<_steeringFile<<std::endl;
         SetVariablesDefault();

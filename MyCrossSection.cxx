@@ -35,14 +35,14 @@ MyCrossSection::MyCrossSection(char name[100])
     datanamedir="";
     ntupname="";
     
-    /*
-    renScaleValUp=0;
-    renScaleValDefault=0;
-    renScaleValDown=0;
-    facScaleValUp=0;
-    facScaleValDefault=0;
-    facScaleValDown=0;
-    */
+    
+    renScaleValUp=0.;
+    renScaleValDefault=0.;
+    renScaleValDown=0.;
+    facScaleValUp=0.;
+    facScaleValDefault=0.;
+    facScaleValDown=0.;
+    
     //ntupdiroutput="";
     //ntupdirinput="";
 
@@ -63,6 +63,9 @@ MyCrossSection::MyCrossSection(char name[100])
     do_AlphaS = false;
     do_RenormalizationScale = false;
     do_FactorizationScale = false;
+    do_TotError = false;
+    
+    PDFErrorSize ="";
     //ErrorSize = -999;
     //PDFBandType_vec.clear();
 // PDFErrorSize_vec.clear();
@@ -172,24 +175,32 @@ void MyCrossSection::Initialize() {
             }
             */
             /*
-            newpdf->SetRenScaleValUp( );
-            newpdf->SetRenScaleValDefault( );
-            newpdf->SetRenScaleValDown( );
+            MyPDF *newpdf = new MyPDF(GetGridName(igrid), 
+                                        GetMyData(igrid)->GetUnitGeVFactor(), 
+                                        do_PDFBand,
+                                        do_AlphaS,
+                                        do_RenormalizationScale,
+                                        do_FactorizationScale,
+                                        do_TotError,
+                                        pdfdata.at(igrid).at(ipdf), 
+                                        true);
+                                        
+            newpdf->SetPDFErrorSize         (errorSize);
             
-            newpdf->SetFacScaleValUp(double _facScaleVal);
-            newpdf->SetFacScaleValDefault(double _facScaleVal);
-            newpdf->SetFacScaleValDown(double _facScaleVal);
+            newpdf->SetRenScaleValUp        (renScaleValUp);
+            newpdf->SetRenScaleValDefault   (renScaleValDefault);
+            newpdf->SetRenScaleValDown      (renScaleValDown);
             
-            newpdf->SetDoPDFBand                (do_PDFBand);
-            newpdf->SetDoAplphaS                (do_AlphaS);
-            newpdf->SetDoRenormalizationScale   (do_RenormalizationScale);
-            newpdf->SetDoFactorizationScale     (do_FactorizationScale);
-            newpdf->SetDoTotError               (do_TotError);
+            newpdf->SetFacScaleValUp        (facScaleValUp);
+            newpdf->SetFacScaleValDefault   (facScaleValDefault);
+            newpdf->SetFacScaleValDown      (facScaleValDown);
+            
             
             std::cout<<" MyCrossSection::Initialize: Printing updated mypdf num: "<<(ipdf+1)
                                 <<" of "<<pdfdata.at(igrid).size()
                                 <<" for grid: "<<GetGridName(igrid)<<std::endl;
             newpdf->Print();
+            newpdf->Initialize(); //need to explicitly initialize when all parameters are set
             */
             t_mypdf.at(igrid).push_back(newpdf);
             
@@ -439,17 +450,23 @@ void MyCrossSection::ReadSteering(char fname[100]) {
             */
             
             /*
+            if( cpp_line.compare("OneSigma")==0){    
+                sscanf(line,"%s", name);
+                PDFErrorSize=name;    
+            }
+            
             if( cpp_line == "PDFErrorBand" )            do_PDFBand = true;
             if( cpp_line == "AlphaS" )                  do_AlphaS = true;
             if( cpp_line == "RenormalizationScale" )    do_RenormalizationScale = true;
-            if( cpp_line == "FactorizationScale" )      do_FactorizationScale = true;
+            if( cpp_line == "FactorizationScale" )      do_FactorizationScale = true; 
+            if( cpp_line == "TotError" )                do_TotError = true;
             
-            if( cpp_line == "renScaleValUp")            sscanf(line," %s %lf ",text, &renScaleValUp);
-            if( cpp_line == "renScaleValDefault")       sscanf(line," %s %lf ",text, &renScaleValDefault);
-            if( cpp_line == "renScaleValDown")          sscanf(line," %s %lf ",text, &renScaleValDown);
-            if( cpp_line == "refScaleValUp")            sscanf(line," %s %lf ",text, &refScaleValUp);
-            if( cpp_line == "refScaleValDefault")       sscanf(line," %s %lf ",text, &refScaleValDefault);
-            if( cpp_line == "refScaleValDown")          sscanf(line," %s %lf ",text, &refScaleValDown); 
+            if( strstr(line,"renScaleValUp")!=0)        sscanf(line," %s %lf ",text, &renScaleValUp);
+            if( strstr(line,"renScaleValDefault")!=0)   sscanf(line," %s %lf ",text, &renScaleValDefault);
+            if( strstr(line,"renScaleValDown")!=0)      sscanf(line," %s %lf ",text, &renScaleValDown);
+            if( strstr(line,"facScaleValUp")!=0)        sscanf(line," %s %lf ",text, &facScaleValUp);
+            if( strstr(line,"facScaleValDefault")!=0)   sscanf(line," %s %lf ",text, &facScaleValDefault);
+            if( strstr(line,"facScaleValDown")!=0)      sscanf(line," %s %lf ",text, &facScaleValDown);  
             */ 
         }
     }
