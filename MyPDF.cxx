@@ -186,6 +186,14 @@ void MyPDF::Initialize()
 
 
     if( do_RenormalizationScale ) {
+        //check for used vars before continuing
+        for(int icheck=0; icheck<n_SCALES; icheck++) {
+            if(renScaleVals[icheck]==DEFAULT) {
+                std::cout<<" MyPDF::Initialize: ERROR: A factorisation scale was not provided in steer file: "<<steeringFilePath<<std::endl;
+                exit(0);
+            }
+        }
+        
         for(int i_renScale = 0; i_renScale < n_SCALES; i_renScale++) {
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, renScaleVals[i_renScale], 1.);
             temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + renScaleNames[i_renScale]));
@@ -196,6 +204,15 @@ void MyPDF::Initialize()
     }
 
     if( do_FactorizationScale ) {
+        //check for used vars before continuing
+        for(int icheck=0; icheck<n_SCALES; icheck++) {
+            if(facScaleVals[icheck]==DEFAULT) {
+                std::cout<<" MyPDF::Initialize: ERROR: A factorisation scale was not provided in steer file: "<<steeringFilePath<<std::endl;
+                exit(0);
+            }
+        }
+        
+    
         for(int i_facScale = 0; i_facScale < n_SCALES; i_facScale++) {
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, 1., facScaleVals[i_facScale]);
             temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + facScaleNames[i_facScale]));
