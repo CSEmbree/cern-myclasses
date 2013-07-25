@@ -1420,27 +1420,40 @@ void MyPDF::SetFacScaleValDown(double _facScaleVal) {
 }
 void MyPDF::SetOptionsFileName(string _optionsFileName) {
     optionsFileName=_optionsFileName;
-};
-
+}
 void MyPDF::SetDoPDFBand(bool _doit) {
     do_PDFBand = _doit;
-};
-
+}
 void MyPDF::SetDoAplphaS(bool _doit) {
     do_AlphaS = _doit;
-};
-
+}
 void MyPDF::SetDoRenormalizationScale(bool _doit) {
     do_RenormalizationScale = _doit;
-};
-
+}
 void MyPDF::SetDoFactorizationScale(bool _doit) {
     do_FactorizationScale = _doit;
-};
-
+}
 void MyPDF::SetDoTotError(bool _doit) {
     do_TotError = _doit;
-};
+}
+void MyPDF::SetAlphaSmemberNumDown(int _memberNum) {
+    AlphaSmemberNumDown=_memberNum;
+}
+void MyPDF::SetAlphaSmemberNumUp(int _memberNum) {
+    AlphaSmemberNumUp=_memberNum;
+}
+void MyPDF::SetAlphaSPDFSetNameDown(string _name) {
+    AlphaSPDFSetNameDown= _name;
+}
+void MyPDF::SetAlphaSPDFSetNameUp(string _name) {
+    AlphaSPDFSetNameUp= _name;
+}
+void MyPDF::SetAlphaSPDFSetHistNameDown(string _name) {
+    AlphaSPDFSetHistNameDown= _name;
+}
+void MyPDF::SetAlphaSPDFSetHistNameUp(string _name) {
+    AlphaSPDFSetHistNameUp= _name;
+}
 
 void MyPDF::CleanUpMyPDF() {
     if(debug) std::cout<<"MyPDF::CleanUpMyPDF: Starting to clean up..."<<std::endl;

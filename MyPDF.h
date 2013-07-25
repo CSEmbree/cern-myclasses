@@ -37,9 +37,7 @@
 using namespace std;
 
 
-//TEMP delcared in Variables.h file needed for stand alone myPDF use but not when using older MyCrossSection file
-//enum enum_RenScales {e_RenScale0p5, e_RenScale1p0, e_RenScale2p0, e_n_RenScaleVals}; //e_n_* dictates future size
-//enum enum_FacScales {e_FacScale0p5, e_FacScale1p0, e_FacScale2p0, e_n_FacScaleVals};
+//used for indexing through renScale and facScale names and vals
 enum scales{UP=0, DEF, DOWN, n_SCALES};
 
 
@@ -126,6 +124,13 @@ class MyPDF {
         bool GetDoFactorizationScale() const{return do_FactorizationScale;};
         bool GetDoTotError() const{return do_TotError;};
         
+        int GetAlphaSmemberNumDown() const{return AlphaSmemberNumDown;};
+        int GetAlphaSmemberNumUp() const{return AlphaSmemberNumUp;};
+        string GetAlphaSPDFSetNameDown() const{return AlphaSPDFSetNameDown;};
+        string GetAlphaSPDFSetNameUp() const{return AlphaSPDFSetNameUp;};
+        string GetAlphaSPDFSetHistNameDown() const{return AlphaSPDFSetHistNameDown;};
+        string GetAlphaSPDFSetHistNameUp() const{return AlphaSPDFSetHistNameUp;};
+        
         //mutator methods
         void SetDebug(bool _debug);
         void SetGridName(string _gridName);
@@ -140,6 +145,7 @@ class MyPDF {
         void SetPDFBandType(string _PDFBandType);
         void SetPDFErrorType(string _PDFErrorType);
         void SetPDFErrorSize(string _PDFErrorSize);
+        
         void SetRenScaleValUp(double _renScaleVal);
         void SetRenScaleValDefault(double _renScaleVal);
         void SetRenScaleValDown(double _renScaleVal);
@@ -147,11 +153,19 @@ class MyPDF {
         void SetFacScaleValDefault(double _facScaleVal);
         void SetFacScaleValDown(double _facScaleVal);
         void SetOptionsFileName(string _optionsFileName);
+        
         void SetDoPDFBand(bool _doit);
         void SetDoAplphaS(bool _doit);
         void SetDoRenormalizationScale(bool _doit);
         void SetDoFactorizationScale(bool _doit);
         void SetDoTotError(bool _doit);
+        
+        void SetAlphaSmemberNumDown(int _memberNum);
+        void SetAlphaSmemberNumUp(int _memberNum);
+        void SetAlphaSPDFSetNameDown(string _name);
+        void SetAlphaSPDFSetNameUp(string _name);
+        void SetAlphaSPDFSetHistNameDown(string _name);
+        void SetAlphaSPDFSetHistNameUp(string _name);
 
     private:
         //VARIABLES
@@ -159,8 +173,8 @@ class MyPDF {
         string steeringFilePath;
         string steeringFileDir;
         string steeringFileName;    //name of steering file
-        string PDFtype;             //general name for PDF EX: "MSTW2008nlo"
-        string PDFname;             //specific name for PDF EX: "MSTW2008nlo68cl"
+        string PDFtype;             //general name for PDF, used for printing. EX: "MSTW2008nlo"
+        string PDFname;             //specific name for PDF, used for looking up a particular PDF. EX: "MSTW2008nlo68cl"
         int n_PDFMembers;
         int fillStyleCode;
         int fillColorCode;
@@ -170,34 +184,33 @@ class MyPDF {
         string renScaleNameUp;
         string renScaleNameDefault;
         string renScaleNameDown;
-        string renScaleNames[n_SCALES];
+        string renScaleNames[n_SCALES]; //array of all the renScaleNames for more generic retrieval
         double renScaleValUp;
         double renScaleValDefault;
         double renScaleValDown;
-        double renScaleVals[n_SCALES];
+        double renScaleVals[n_SCALES]; //array of all the renScaleVals for more generic retrieval
         string facScaleNameUp;
         string facScaleNameDefault;
         string facScaleNameDown;
-        string facScaleNames[n_SCALES];
+        string facScaleNames[n_SCALES]; //array of all the facScaleNames for more generic retrieval
         double facScaleValUp;
         double facScaleValDefault;
         double facScaleValDown;
-        double facScaleVals[n_SCALES];
+        double facScaleVals[n_SCALES]; //array of all the facScaleVals for more generic retrieval
         OptionHandler *myOptions;
         bool f_PDFBandType;
         bool f_PDFErrorSize;
         string pdfSetPath;
         
-        int AlphaSmemberNumDown;
+        int AlphaSmemberNumDown; //needed if do_AlphaS is set. Can be read from steering or set by mutator
         int AlphaSmemberNumUp;
         string AlphaSPDFSetNameDown;
         string AlphaSPDFSetNameUp;
         string AlphaSPDFSetHistNameDown;
         string AlphaSPDFSetHistNameUp;
         
-        //start old from therory_error_info/calc
         appl::grid *my_grid;
-    
+
         std::vector<TH1D*> h_errors_RenormalizationScale;
         std::vector<TH1D*> h_errors_FactorizationScale;
         std::vector<TH1D*> h_errors_PDFBand;
@@ -212,7 +225,6 @@ class MyPDF {
         bool do_RenormalizationScale;
         bool do_FactorizationScale;
         bool do_TotError;
-        //end old from therory_error_info/calc
         
         //METHODS
         bool FileExists(const string _fileName);
