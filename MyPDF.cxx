@@ -1129,34 +1129,22 @@ void MyPDF::ReadSteering(const string _fileName)
                 PDFErrorSize=text;
             } else if (optionName.compare("renScaleValUp")==0) {
                 sscanf(text.c_str(), "%lf", &renScaleValUp);
-                renScaleNameUp=text;
-                renScaleVals[UP]=renScaleValUp;
-                renScaleNames[UP]="RenScale("+renScaleNameUp+")";
+                SetRenScaleValUp(renScaleValUp);
             } else if (optionName.compare("renScaleValDefault")==0) {
                 sscanf(text.c_str(), "%lf", &renScaleValDefault);
-                renScaleNameDefault=text;
-                renScaleVals[DEF]=renScaleValDefault;
-                renScaleNames[DEF]="RenScale("+renScaleNameDefault+")";
+                SetRenScaleValDefault(renScaleValDefault);
             } else if (optionName.compare("renScaleValDown")==0) {
                 sscanf(text.c_str(), "%lf", &renScaleValDown);
-                renScaleNameDown=text;
-                renScaleVals[DOWN]=renScaleValDown;
-                renScaleNames[DOWN]="RenScale("+renScaleNameDown+")";
+                SetRenScaleValDown(renScaleValDown);
             } else if (optionName.compare("facScaleValUp")==0) {
                 sscanf(text.c_str(), "%lf", &facScaleValUp);
-                facScaleNameUp=text;
-                facScaleVals[UP]=facScaleValUp;
-                facScaleNames[UP]="FacScale("+facScaleNameUp+")";
+                SetFacScaleValUp(facScaleValUp);
             } else if (optionName.compare("facScaleValDefault")==0) {
                 sscanf(text.c_str(), "%lf", &facScaleValDefault);
-                facScaleNameDefault=text;
-                facScaleVals[DEF]=facScaleValDefault;
-                facScaleNames[DEF]="FacScale("+facScaleNameDefault+")";
+                SetFacScaleValDefault(facScaleValDefault);
             } else if (optionName.compare("facScaleValDown")==0) {
                 sscanf(text.c_str(), "%lf", &facScaleValDown);
-                facScaleNameDown=text;
-                facScaleVals[DOWN]=facScaleValDown;
-                facScaleNames[DOWN]="FacScale("+facScaleNameDown+")";
+                SetFacScaleValUp(facScaleValDown);
             } else if (optionName.compare("pdfSetPath")==0) {
                 pdfSetPath=text;
                 if(pdfSetPath.find_last_of("/") == pdfSetPath.size()-1)
@@ -1407,31 +1395,37 @@ void MyPDF::SetPDFErrorSize(string _PDFErrorSize) {
 void MyPDF::SetRenScaleValUp(double _renScaleVal) {
     renScaleValUp=_renScaleVal;
     renScaleVals[UP]=_renScaleVal;
+    renScaleNameUp=to_string(_renScaleVal);
     renScaleNames[UP]="RenScale("+to_string(_renScaleVal)+")";
 }
 void MyPDF::SetRenScaleValDefault(double _renScaleVal) {
     renScaleValDefault=_renScaleVal;
     renScaleVals[DEF]=_renScaleVal;
+    renScaleNameDefault=to_string(_renScaleVal);
     renScaleNames[DEF]="RenScale("+to_string(_renScaleVal)+")";
 }
 void MyPDF::SetRenScaleValDown(double _renScaleVal) {
     renScaleValDown=_renScaleVal;
     renScaleVals[DOWN]=_renScaleVal;
+    renScaleNameDown=to_string(_renScaleVal);
     renScaleNames[DOWN]="RenScale("+to_string(_renScaleVal)+")";
 }
 void MyPDF::SetFacScaleValUp(double _facScaleVal) {
     facScaleValUp=_facScaleVal;
     facScaleVals[UP]=_facScaleVal;
+    facScaleNameUp=to_string(_facScaleVal);
     facScaleNames[UP]="FacScale("+to_string(_facScaleVal)+")";
 }
 void MyPDF::SetFacScaleValDefault(double _facScaleVal) {
     facScaleValDefault=_facScaleVal;
     facScaleVals[DEF]=_facScaleVal;
+    facScaleNameDefault=to_string(_facScaleVal);
     facScaleNames[DEF]="FacScale("+to_string(_facScaleVal)+")";
 }
 void MyPDF::SetFacScaleValDown(double _facScaleVal) {
     facScaleValDown=_facScaleVal;
     facScaleVals[DOWN]=_facScaleVal;
+    facScaleNameDown=to_string(_facScaleVal);
     facScaleNames[DOWN]="FacScale("+to_string(_facScaleVal)+")";
 }
 void MyPDF::SetOptionsFileName(string _optionsFileName) {

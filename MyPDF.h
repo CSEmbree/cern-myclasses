@@ -152,6 +152,7 @@ class MyPDF {
         void SetFacScaleValUp(double _facScaleVal);
         void SetFacScaleValDefault(double _facScaleVal);
         void SetFacScaleValDown(double _facScaleVal);
+        
         void SetOptionsFileName(string _optionsFileName);
         
         void SetDoPDFBand(bool _doit);
