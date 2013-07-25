@@ -53,7 +53,6 @@ double alphasPDF(const double& Q) {
 MyPDF::MyPDF(bool _debug)
 {
     debug=_debug;
-    
     if(debug)std::cout<<" MyPDF::MyPDF: start"<<std::endl;
 
     //no values are being set for default, so assign default values to avoid crashes
@@ -63,8 +62,8 @@ MyPDF::MyPDF(bool _debug)
 }
 
 
-//overloaded constructor
-MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _debug)
+//overloaded constructor - Use if PDFErrorType is declared in MyPDF steering file.
+MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFile, bool _debug)
 {
     debug=_debug;
     if(debug)std::cout<<" MyPDF::MyPDF: Start overloaded constructor"<<std::endl;
@@ -72,7 +71,7 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _d
     SetVariablesDefault();   
     gridName=_gridName;
     xscale=_xscale;
-    steeringFilePath=_steeringFileName;
+    steeringFilePath=_steeringFile;
 
     if(debug)
         std::cout<<"Setting up MyPDF with:<<<<<<<<<<<<<<<<<<<<<<<<<<"
@@ -82,17 +81,53 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFileName, bool _d
                  <<"\n\tOptionsFile: "<<optionsFileName
                  <<"\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
 
-    if(FileExists(_steeringFileName)==true) {
-        ReadSteering(_steeringFileName);
+    if(FileExists(_steeringFile)==true) {
+        ReadSteering(_steeringFile);
         Initialize();
-    }
-    else {
-        std::cout<<"MyPDF::MyPDF: WARNING: Couldn't find file names: "<<_steeringFileName<<std::endl;
+    } else {
+        std::cout<<"MyPDF::MyPDF: WARNING: Couldn't find file names: "<<_steeringFile<<std::endl;
         SetVariablesDefault();
     }
 
     if(debug)std::cout<<" MyPDF::MyPDF: End overloaded constructor"<<std::endl;
 }
+
+/*
+//overloaded constructor - Use if PDFErrorType is not declared in MyPDF steering file
+MyPDF::MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS, bool _do_RenScale, bool _do_FacScale, bool _do_TotError, string _steeringFile, bool _debug)
+{
+    debug=_debug;
+    if(debug)std::cout<<" MyPDF::MyPDF: Start overloaded constructor"<<std::endl;
+    
+    SetVariablesDefault();
+    do_PDFBand = _do_PDFBand;
+    do_AlphaS = _do_AlphaS;
+    do_RenormalizationScale = _do_RenScale;
+    do_FactorizationScale = _do_FacScale;
+    do_TotError = _do_TotError;
+    gridName = _gridName;
+    xscale = _xscale;
+    steeringFilePath = _steeringFile;
+
+    if(debug)
+        std::cout<<"Setting up MyPDF with:<<<<<<<<<<<<<<<<<<<<<<<<<<"
+           <<"\n\tDebug: "<<(debug? "ON":"OFF")
+           <<"\n\tGridName: "<<gridName
+           <<"\n\tSteeringFile: "<<steeringFilePath
+           <<"\n\tOptionsFile: "<<optionsFileName
+           <<"\n>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"<<std::endl;
+
+    if(FileExists(_steeringFile)==true) {
+        ReadSteering(_steeringFile);
+        //Initialize();
+    } else {
+        std::cout<<"MyPDF::MyPDF: WARNING: Couldn't find file names: "<<_steeringFile<<std::endl;
+        SetVariablesDefault();
+    }
+    
+    if(debug)std::cout<<" MyPDF::MyPDF: End overloaded constructor"<<std::endl;
+}
+*/
 
 
 //perform any additional work after constructors but before the object is available for use
