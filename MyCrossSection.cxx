@@ -151,13 +151,9 @@ void MyCrossSection::Initialize() {
 
         for(int ipdf=0; ipdf<pdfdata.at(igrid).size(); ipdf++)
         {
-            MyPDF *newpdf = new MyPDF(GetGridName(igrid), GetMyData(igrid)->GetUnitGeVFactor(), pdfdata.at(igrid).at(ipdf), true);
-            std::cout<<" MyCrossSection::Initialize: Printing new mypdf num: "<<(ipdf+1)
-                                <<" of "<<pdfdata.at(igrid).size()
-                                <<" for grid: "<<GetGridName(igrid)<<std::endl;
-            newpdf->Print();
+           
             /*
-            //should be put outside the loop. Only need to check validity once at start
+            //Error checking should be put outside the loop. Only need to check validity once at start
             if(renScaleValUp<=renScaleValDefault || renScaleValDown>=renScaleValDefault) {
                 std::cout<<" MyCrossSection::Initialize: ERROR: Renormilization scales are inappropreate:"
                 <<"\n\trenScaleValUp: "<<renScaleValUp
@@ -174,7 +170,10 @@ void MyCrossSection::Initialize() {
                 exit(0); //TEST
             }
             */
-            /*
+            
+            
+            //MyPDF *newpdf = new MyPDF(GetGridName(igrid), GetMyData(igrid)->GetUnitGeVFactor(), pdfdata.at(igrid).at(ipdf), true);
+            
             MyPDF *newpdf = new MyPDF(GetGridName(igrid), 
                                         GetMyData(igrid)->GetUnitGeVFactor(), 
                                         do_PDFBand,
@@ -185,7 +184,7 @@ void MyCrossSection::Initialize() {
                                         pdfdata.at(igrid).at(ipdf), 
                                         true);
                                         
-            newpdf->SetPDFErrorSize         (errorSize);
+            newpdf->SetPDFErrorSize         (PDFErrorSize);
             
             newpdf->SetRenScaleValUp        (renScaleValUp);
             newpdf->SetRenScaleValDefault   (renScaleValDefault);
@@ -195,13 +194,27 @@ void MyCrossSection::Initialize() {
             newpdf->SetFacScaleValDefault   (facScaleValDefault);
             newpdf->SetFacScaleValDown      (facScaleValDown);
             
+            /*
+            std::cout<<"TEST: PDFerrorSize: "<<PDFErrorSize
+            <<" renScaleValUp: "<<renScaleValUp
+            <<", renScaleValDefault: "<<renScaleValDefault
+            <<", renScaleValDown: "<<renScaleValDown
+            <<", facScaleValUp: "<<facScaleValUp
+            <<", facScaleValDefault: "<<facScaleValDefault
+            <<", facScaleValDown: "<<facScaleValDown<<std::endl;
+            exit(0);
+            */
+            
             
             std::cout<<" MyCrossSection::Initialize: Printing updated mypdf num: "<<(ipdf+1)
                                 <<" of "<<pdfdata.at(igrid).size()
                                 <<" for grid: "<<GetGridName(igrid)<<std::endl;
             newpdf->Print();
             newpdf->Initialize(); //need to explicitly initialize when all parameters are set
-            */
+            
+            
+            //newpdf->Print();//TEST to make sure initialization happened correctly
+            
             t_mypdf.at(igrid).push_back(newpdf);
             
             pdfCount++;
@@ -426,33 +439,11 @@ void MyCrossSection::ReadSteering(char fname[100]) {
                 pdfdata.push_back(*parsedNames);
             }
 
-
-            /*
-            ////// What theory error types will we consider and how will they be displayed?
-            for(int pdfi = 0; pdfi < e_n_PDFs; pdfi++) {
-                if(cpp_line == PDF_strs[pdfi]) {
-                    PDFSetCodes_vec.push_back(pdfi);
-                }
-            }
-            if( cpp_line == "PDFErrorBand" )            do_PDFBand = true;
-            if( cpp_line == "AlphaS" )                  do_AlphaS = true;
-            if( cpp_line == "RenormalizationScale" )    do_RenormalizationScale = true;
-            if( cpp_line == "FactorizationScale" )      do_FactorizationScale = true;
-            if( cpp_line == "OneSigma" )                ErrorSize = e_OneSigma;
-            if( cpp_line == "90Percent" )               ErrorSize = e_90Percent;
-            */
-            /*
-            for(int pdfi = 0; pdfi < 4; pdfi++) {
-                if(cpp_line == PDF_strs[pdfi]) {
-                    PDFSetCodes_vec.push_back(pdfi);
-                }
-            }
-            */
             
-            /*
-            if( cpp_line.compare("OneSigma")==0){    
+            //mypdf extra settings
+            if( cpp_line.compare("OneSigma")==0 || cpp_line.compare("90Percent")==0){    
                 sscanf(line,"%s", name);
-                PDFErrorSize=name;    
+                PDFErrorSize=name;
             }
             
             if( cpp_line == "PDFErrorBand" )            do_PDFBand = true;
@@ -467,7 +458,6 @@ void MyCrossSection::ReadSteering(char fname[100]) {
             if( strstr(line,"facScaleValUp")!=0)        sscanf(line," %s %lf ",text, &facScaleValUp);
             if( strstr(line,"facScaleValDefault")!=0)   sscanf(line," %s %lf ",text, &facScaleValDefault);
             if( strstr(line,"facScaleValDown")!=0)      sscanf(line," %s %lf ",text, &facScaleValDown);  
-            */ 
         }
     }
 }

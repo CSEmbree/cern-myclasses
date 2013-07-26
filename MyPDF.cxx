@@ -92,7 +92,7 @@ MyPDF::MyPDF(string _gridName, double _xscale, string _steeringFile, bool _debug
     if(debug)std::cout<<" MyPDF::MyPDF: End overloaded constructor"<<std::endl;
 }
 
-/*
+
 //overloaded constructor - Use if PDFErrorType is not declared in MyPDF steering file
 MyPDF::MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS, bool _do_RenScale, bool _do_FacScale, bool _do_TotError, string _steeringFile, bool _debug)
 {
@@ -127,7 +127,7 @@ MyPDF::MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS
     
     if(debug)std::cout<<" MyPDF::MyPDF: End overloaded constructor"<<std::endl;
 }
-*/
+
 
 
 //perform any additional work after constructors but before the object is available for use
@@ -546,12 +546,12 @@ void MyPDF::InitializeErrorGraphs()
     h_AlphaS_results->SetFillStyle(fillStyleCode);
 
     h_RenormalizationScale_results = new TGraphAsymmErrors(n_bins, x_vals, y_vals, x_errs_low, x_errs_high, y_errs_low, y_errs_high);
-    h_RenormalizationScale_results->SetName((TString) (this_name + "_RenormalizationScale_results"));
+    h_RenormalizationScale_results->SetName((TString) (this_name + "_RenScale_results"));
     h_RenormalizationScale_results->SetFillColor(fillColorCode);
     h_RenormalizationScale_results->SetFillStyle(fillStyleCode);
 
     h_FactorizationScale_results = new TGraphAsymmErrors(n_bins, x_vals, y_vals, x_errs_low, x_errs_high, y_errs_low, y_errs_high);
-    h_FactorizationScale_results->SetName((TString) (this_name + "_FactorizationScale_results"));
+    h_FactorizationScale_results->SetName((TString) (this_name + "_FacScale_results"));
     h_FactorizationScale_results->SetFillColor(fillColorCode);
     h_FactorizationScale_results->SetFillStyle(fillStyleCode);
 

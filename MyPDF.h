@@ -70,7 +70,7 @@ class MyPDF {
         //METHODS
         MyPDF(bool _debug=false); //default constructor
         MyPDF(string _gridName, double _xscale=1.0, string _steeringFileName="steering_mypdf.txt", bool _debug=false);
-        //MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS, bool _do_RenScale, bool _do_FacScale, bool _do_TotError, string _steeringFile="steering_mypdf.txt", bool _debug=false);
+        MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS, bool _do_RenScale, bool _do_FacScale, bool _do_TotError, string _steeringFile="steering_mypdf.txt", bool _debug=false);
         virtual ~MyPDF() { CleanUpMyPDF(); }; //destructor
         void CleanUpMyPDF();
         void Initialize();
