@@ -29,23 +29,23 @@ fillColorCode 426
 PDFBandType UseAlphaS
 %
 %%PDFErrorType: PDFBand, AlphaS, RenormalizationScale, FactorizationScale, TotError
-PDFErrorType PDFBand
-PDFErrorType AlphaS
-PDFErrorType RenormalizationScale
-PDFErrorType FactorizationScale
+%PDFErrorType PDFBand
+%PDFErrorType AlphaS
+%PDFErrorType RenormalizationScale
+%PDFErrorType FactorizationScale
 %
 %%PDFErrorSize: OneSigma, 90Percent
-PDFErrorSize OneSigma
+%PDFErrorSize OneSigma
 %
 %%renScaleVal: 0.5, 1., 2.
-renScaleValUp 2.0
-renScaleValDefault 1.0
-renScaleValDown 0.5
+%renScaleValUp 2.0
+%renScaleValDefault 1.0
+%renScaleValDown 0.5
 %
 %%facScaleVal: 0.5, 1., 2.
-facScaleValUp 2.0
-facScaleValDefault 1.0
-facScaleValDown 0.5
+%facScaleValUp 2.0
+%facScaleValDefault 1.0
+%facScaleValDown 0.5
 %
 %%memberNumDown
 AlphaSmemberNumDown 3
