@@ -20,6 +20,8 @@ MyData::MyData()
     blogx=false;
     bliny=true;
     blinx=true;
+    
+    njetcut=false;
 
     dividebybinwith=false;
 
