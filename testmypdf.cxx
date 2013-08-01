@@ -28,8 +28,8 @@ main()
     MyPDF *mypdf1 = new MyPDF(false);
 
     mypdf1->Print();
-    mypdf1->setGridName(gridName);
-    mypdf1->setSteeringFilePath(steeringFileName);
+    mypdf1->SetGridName(gridName);
+    mypdf1->SetSteeringFilePath(steeringFileName);
     mypdf1->ReadSteering(steeringFileName);
     mypdf1->Initialize();
     
