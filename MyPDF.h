@@ -202,8 +202,6 @@ class MyPDF {
         double facScaleValDown;
         double facScaleVals[n_SCALES]; //array of all the facScaleVals for more generic retrieval
         OptionHandler *myOptions;
-        bool f_PDFBandType;
-        bool f_PDFErrorSize;
         string pdfSetPath;
         
         int AlphaSmemberNumDown; //needed if do_AlphaS is set. Can be read from steering or set by mutator

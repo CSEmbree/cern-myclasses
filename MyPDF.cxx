@@ -1257,6 +1257,7 @@ void MyPDF::SetVariablesDefault()
     renScaleNameUp=defaultString;
     renScaleNameDefault=defaultString;
     renScaleNameDown=defaultString;
+    
     renScaleValUp=DEFAULT;
     renScaleValDefault=DEFAULT;
     renScaleValDown=DEFAULT;
@@ -1264,9 +1265,11 @@ void MyPDF::SetVariablesDefault()
     facScaleNameUp=defaultString;
     facScaleNameDefault=defaultString;
     facScaleNameDown=defaultString;
+    
     facScaleValUp=DEFAULT;
     facScaleValDefault=DEFAULT;
     facScaleValDown=DEFAULT;
+    
     for(int i=0; i<n_SCALES; i++) {
         renScaleNames[i] = defaultString;
         facScaleNames[i] = defaultString;
@@ -1283,6 +1286,7 @@ void MyPDF::SetVariablesDefault()
     AlphaSmemberNumDown=DEFAULT;
     AlphaSmemberNumUp=DEFAULT;
     AlphaSPDFSetNameDown=defaultString;
+    
     AlphaSPDFSetNameUp=defaultString;
     AlphaSPDFSetHistNameDown=defaultString;
     AlphaSPDFSetHistNameUp=defaultString;
