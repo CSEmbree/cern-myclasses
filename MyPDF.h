@@ -3,13 +3,14 @@
  * Author:   Cameron S. Embree
  * Contact:  CSEmbree@gmail.com
  * Created:  01-Jun-2013
- * Edited:   22-Jun-2013
+ * Edited:   01-Aug-2013
  * Notes:    Class implimentation suggested by Dr. Carli based on the "theory_error_info.cxx/h" class
  */
 
 #ifndef __MY_PDF_H
 #define __MY_PDF_H
 
+//general
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -29,15 +30,13 @@
 #include "LHAPDF/LHAPDF.h"
 #include "LHAPDF.h"
 
-//TEMP
-//#include "VariableDefinitions.h"
 
 #define DEFAULT -1
 
 using namespace std;
 
 
-//used for indexing through renScale and facScale names and vals
+//used for indexing through renScale and facScale names and vals internally
 enum scales{UP=0, DEF, DOWN, n_SCALES};
 
 
@@ -68,13 +67,16 @@ class MyPDF {
         string calc_desc;
         
         //METHODS
-        MyPDF(bool _debug=false); //default constructor
+        //constructors
+        MyPDF(bool _debug=false);
         MyPDF(string _gridName, double _xscale=1.0, string _steeringFileName="steering_mypdf.txt", bool _debug=false);
         MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS, bool _do_RenScale, bool _do_FacScale, bool _do_TotError, string _steeringFile="steering_mypdf.txt", bool _debug=false);
-        virtual ~MyPDF() { CleanUpMyPDF(); }; //destructor
+        //destructor
+        virtual ~MyPDF() { CleanUpMyPDF(); };
+        //helper methods
         void CleanUpMyPDF();
         void Initialize();
-        void Print();
+        void Print(string level="");
         void PrintKnownOptionsForSteering();
         void PrintFoundOptionsFromSteering();
         void ReadSteering(const string _fileName);
@@ -235,6 +237,7 @@ class MyPDF {
         string GetEnv( const string & var);
 };
 
+//some default values for internal variables unless one is provided in steering or set by mutator
 const string defaultOptionsFileName="options_mypdf.txt";
 const string deafultPDFSetPath="PDFsets";
 

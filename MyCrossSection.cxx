@@ -209,7 +209,7 @@ void MyCrossSection::Initialize() {
             std::cout<<" MyCrossSection::Initialize: Printing updated mypdf num: "<<(ipdf+1)
                                 <<" of "<<pdfdata.at(igrid).size()
                                 <<" for grid: "<<GetGridName(igrid)<<std::endl;
-            newpdf->Print();
+            newpdf->Print("all");
             newpdf->Initialize(); //need to explicitly initialize when all parameters are set
             
             

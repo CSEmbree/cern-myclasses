@@ -22,17 +22,16 @@
 #include "MyPDF.h"
 
 
-
+//clean wrapper for evolvepdf_ fortran call
 void getPDF(const double& x, const double& Q, double* xf) {
     evolvepdf_(&x, &Q, xf);
     //evolvePDF( x, Q, xf);        //// calls LHAPDF
 }
 
+//find and returns envrionment variable contents if it exists
 string MyPDF::GetEnv( const string & var ) {
     const char* res= getenv( var.c_str() );
-
     std::string s = res!=NULL? res:"";
-    cout<<"s: "<<s<<endl;
     return s;
 }
 
@@ -130,7 +129,7 @@ MyPDF::MyPDF(string _gridName, double _xscale, bool _do_PDFBand, bool _do_AlphaS
 
 
 
-//perform any additional work after constructors but before the object is available for use
+//perform additional setup after all variables have ben set from steering and constructors
 void MyPDF::Initialize()
 {
     if (debug) std::cout<<" MyPDF::Initialize: Performing Initialization"<<std::endl;
@@ -246,7 +245,6 @@ void MyPDF::Initialize()
             }
         }
         
-    
         for(int i_facScale = 0; i_facScale < n_SCALES; i_facScale++) {
             temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops, 1., facScaleVals[i_facScale]);
             temp_hist_prenorm->SetName((TString) ("h_xsec_rscale_" + facScaleNames[i_facScale]));
@@ -308,41 +306,28 @@ void MyPDF::Initialize()
             }
     */
 
-
-
-
-
-
-
-
     if( do_AlphaS ) {
         //check for necessary names before continuing
         if(AlphaSmemberNumDown==DEFAULT) {
-            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSmemberNumDown' not provided in steer file: "<<steeringFilePath<<std::endl;
-            exit(0);
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSmemberNumDown' not found. Check steering: "<<steeringFilePath<<std::endl; exit(0);
         }
         if(AlphaSmemberNumUp==DEFAULT) {
-            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSmemberNumUp' not provided in steer file: "<<steeringFilePath<<std::endl;
-            exit(0);
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSmemberNumUp' not found. Check steering: "<<steeringFilePath<<std::endl; exit(0);
         }
         if(AlphaSPDFSetNameUp.compare("")==0) {
-            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetNameUp' not provided in steer file: "<<steeringFilePath<<std::endl;
-            exit(0);
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetNameUp' not found. Check steering: "<<steeringFilePath<<std::endl; exit(0);
         }
         if(AlphaSPDFSetNameDown.compare("")==0) {
-            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetNameDown' not provided in steer file: "<<steeringFilePath<<std::endl;
-            exit(0);
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetNameDown' not found. Check steering: "<<steeringFilePath<<std::endl; exit(0);
         }
         if(AlphaSPDFSetHistNameUp.compare("")==0) {
-            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetHistNameUp' not provided in steer file: "<<steeringFilePath<<std::endl;
-            exit(0);
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetHistNameUp' not found. Check steering: "<<steeringFilePath<<std::endl; exit(0);
         }
         if(AlphaSPDFSetHistNameDown.compare("")==0) {
-            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetHistNameDown' not provided in steer file: "<<steeringFilePath<<std::endl;
-            exit(0);
+            std::cout<<" MyPDF::Initialize: ERROR: 'AlphaSPDFSetHistNameDown' not found. Check steering: "<<steeringFilePath<<std::endl; exit(0);
         }
 
-
+        //new alphaS set-up, check previously commented out section above for old implimentation
         LHAPDF::initPDFSet(default_pdf_set_name.c_str(), 0);
         temp_hist_prenorm = (TH1D*) my_grid->convolute( getPDF, alphasPDF, nLoops);
         temp_hist_prenorm->SetName((TString) ("h_xsec_default"));
@@ -362,12 +347,6 @@ void MyPDF::Initialize()
         h_errors_AlphaS_prenorm.push_back(temp_hist_prenorm);
 
 
-
-
-
-
-
-
         for(int alphai = 0; alphai < h_errors_AlphaS_prenorm.size(); alphai++) {
             double stev=1000.;
             if(debug) std::cout<<" MyPDF::Initialize: use an xscale of "<<xscale<<" #evs assumed: "<<stev<<"\n";
@@ -384,9 +363,7 @@ void MyPDF::Initialize()
         double stev;
         if(debug) std::cout<<" MyPDF::Initialize: Calc PDF errors"<<std::endl;
         for(int pdferri = 0; pdferri < n_PDFMembers; pdferri++) {
-            //enum enum_PDFBandType {e_UseAlphaS, e_UseErrorBand, e_n_PDFBands};
             if(debug) std::cout<<" MyPDF::Initialize: pdferri: "<<pdferri<<" of "<<n_PDFMembers<<std::endl;
-            //if( pdf_code != e_HERAPDF15NLO ) initPDF(pdferri);
             if(PDFtype.compare("HERAPDF15NLO")!=0) LHAPDF::initPDF(pdferri); //change "pdferri" to be fore name
             else {   //// e_HERAPDF15NLO
                 if( pdferri <= 20 ) {
@@ -645,8 +622,7 @@ void MyPDF::CalcPDFBandErrors()
                 if( h_errors_PDFBand.at(pdferri)->GetBinContent(bi) > central_val ) {
                     this_err_up  += pow( h_errors_PDFBand.at(pdferri)->GetBinContent(bi) - central_val, 2.);
                     this_err_down += 0.;
-                }
-                else  {
+                } else {
                     this_err_up  += 0.;
                     this_err_down += pow( central_val - h_errors_PDFBand.at(pdferri)->GetBinContent(bi), 2.);
                 }
@@ -665,8 +641,7 @@ void MyPDF::CalcPDFBandErrors()
                 this_err_up *= 1.645;
                 this_err_down *= 1.645;
             }
-        }
-        else {
+        } else {
             std::cout<<" MyPDF::CalcPDFBandErrors: unsupported pdfCode encountered."<<std::endl;
             exit(0); //TEST
         }
@@ -676,7 +651,6 @@ void MyPDF::CalcPDFBandErrors()
         Double_t x_val;
         Double_t y_val;
         h_PDFBand_results->GetPoint(bi-1, x_val, y_val);
-
     }  /// loop over bins
 
     if(debug) std::cout<<" MyPDF::CalcPDFBandErrors: End cal of PDFBandErrors for: "<<PDFtype<<std::endl;
@@ -873,7 +847,6 @@ TGraphAsymmErrors* MyPDF::TH1TOTGraphAsymm(TH1 *h1)
         ey=h1->GetBinError(i+1);
         x=h1->GetBinCenter(i+1);
         ex=h1->GetBinWidth(i+1)/2.;
-
         //if(debug) std::cout<<i<<" x,y = "<<x<<" "<<y<<" ex,ey = "<<ex<<" "<<ey<<std::endl;
 
         g1->SetPoint(i,x,y);
@@ -1014,7 +987,7 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
         for(int pi2 = 0; pi2 < g_theory->GetN(); pi2++) {
             std::cout<<data_cov_matrix(pi,pi2)<<"\t";
         }
-        std::cout<<"\n";
+        std::cout<<"\n"; //formatting
     }
 
     TMatrixT<double> tot_cov_matrix = theory_cov_matrix + data_cov_matrix;
@@ -1023,7 +996,7 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
         for(int pi2 = 0; pi2 < g_theory->GetN(); pi2++) {
             std::cout<<tot_cov_matrix(pi,pi2)<<"\t";
         }
-        std::cout<<"\n";
+        std::cout<<"\n"; //formatting
     }
 
     TMatrixT<double> invertex_cov_matrix = tot_cov_matrix.Invert();    //// Now it includes the theory errors in the diagonal elements ...
@@ -1032,7 +1005,7 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
         for(int pi2 = 0; pi2 < g_theory->GetN(); pi2++) {
             std::cout<<invertex_cov_matrix(pi,pi2)<<"\t";
         }
-        std::cout<<"\n";
+        std::cout<<"\n"; //formatting
     }
 
     // Loop over bins and determine data-theory matrices
@@ -1072,10 +1045,8 @@ void MyPDF::CalcChi2(TGraphAsymmErrors *g_theory, TGraphAsymmErrors *g_data, TMa
 void MyPDF::ReadSteering(const string _fileName)
 {
     string fName="";
-    if(_fileName.size()>0)
-        fName=_fileName;
-    else
-        fName=steeringFilePath;
+    if(_fileName.size()>0)  fName=_fileName;
+    else                    fName=steeringFilePath;
 
     if (debug) std::cout<<" MyPDF::ReadSteering: reading steering file named: "<<fName<<std::endl;
 
@@ -1099,28 +1070,27 @@ void MyPDF::ReadSteering(const string _fileName)
 
         pdfSetPath=pdfSetDefaultPath;
 
-        cout<<" makegridfromsherpa::main: LHAPATH environment varaible found, using path: "<<pdfSetPath<<endl;
+        std::cout<<" makegridfromsherpa::main: LHAPATH environment varaible found, using path: "<<pdfSetPath<<std::endl;
+    } else {
+        std::cout<<" makegridfromsherpa::main: LHAPATH environment varaible not set, using default: "<<pdfSetPath<<std::endl;
     }
-    else {
-        cout<<" makegridfromsherpa::main: LHAPATH environment varaible not set, using default: "<<pdfSetPath<<endl;
-    }
 
 
-    string line;
-    string optionName;
-    string text;
+    string line;        //read a whole line from steering file and save in this buffer
+    string optionName;  //holds the name of the option read from the line buffer
+    string text;        //holds remaining text after option name
 
-    //load in all valid options
+    //load in all valid options that could show up in the steering file
     myOptions= new OptionHandler(optionsFileName);
     //mycsoptions->generateResultFile(); //generates *.txt file showing results of OptionHandler::isKnownOption execution
-    int w=20; //arbitrary width number for printing nicely formatted debug statements
+    int w=20; //arbitrary width number for printing nicely formatted output
 
-    //read and set all options and data
+    //read and set all options and data from the steering file
     while (infile.good()) {
-        getline(infile, line);
+        getline(infile, line); //read a line from steering to the buffer
 
-        optionName=line.substr(0, line.find(' '));
-        text=line.substr(line.find(' ')+1,line.size()); //'text' could be broken up further if needed
+        optionName=line.substr(0, line.find(' ')); //extract option
+        text=line.substr(line.find(' ')+1,line.size()); //'text' after the steering option could be broken up further if desired
 
         if(debug) {
             std::cout<<"\n MyPDF::ReadSteering: Read in:<<<<<<<<<<<<<<<<<<<"
@@ -1204,7 +1174,7 @@ void MyPDF::ReadSteering(const string _fileName)
 
 
 //Print all relevant internal variable values
-void MyPDF::Print()
+void MyPDF::Print(string level)
 {
     int w=30;               //arbitrary size that makes the formatting look pretty
     string empty="<empty>"; //print this if no input has been provided for that variable
@@ -1218,8 +1188,10 @@ void MyPDF::Print()
              <<"\n"<<setw(w)<<"steeringFileName:"     <<setw(w)<<(steeringFileName.size()>0? steeringFileName:empty)
              <<"\n"<<setw(w)<<"optionsFile:"          <<setw(w)<<(optionsFileName.size()>0? optionsFileName:empty)
              <<"\n"<<setw(w)<<"gridName:"             <<setw(w)<<(gridName.size()>0? gridName:empty)
-             <<"\n"
-             <<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
+             <<std::endl;
+             
+    if(level.compare("all")==0){ //print all internal variables if requested
+        std::cout<<"\n"<<setw(w)<<"PDFtype:"              <<setw(w)<<(PDFtype.size()>0? PDFtype:empty)
              <<"\n"<<setw(w)<<"PDFname:"              <<setw(w)<<(PDFname.size()>0? PDFname:empty)
              <<"\n"<<setw(w)<<"numPDFMembers:"        <<setw(w)<<(n_PDFMembers!=DEFAULT? to_string(n_PDFMembers):empty)
              <<"\n"<<setw(w)<<"fillStyleCode:"        <<setw(w)<<(fillStyleCode!=DEFAULT? to_string(fillStyleCode):empty)
@@ -1239,8 +1211,10 @@ void MyPDF::Print()
              <<"\n"<<setw(w)<<"**FAC SCALE VALS**"
              <<"\n"<<setw(w)<<"facScaleVals-Up:"      <<setw(w)<<(renScaleValUp!=DEFAULT? to_string(renScaleValUp):empty)
              <<"\n"<<setw(w)<<"facScaleVals-Default:" <<setw(w)<<(renScaleValDefault!=DEFAULT? to_string(renScaleValDefault):empty)
-             <<"\n"<<setw(w)<<"facScaleVals-Down:"    <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)
-             <<"\n MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
+             <<"\n"<<setw(w)<<"facScaleVals-Down:"    <<setw(w)<<(renScaleValDown!=DEFAULT? to_string(renScaleValDown):empty)<<std::endl;
+    }
+    
+    std::cout<<"MyPDF::Print:<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<\n"<<std::endl;
 }
 
 
@@ -1250,17 +1224,15 @@ bool MyPDF::FileExists(const string _fileName)
     bool exists;
 
     if ( FILE* file=fopen(_fileName.c_str(),"r") ) {
-        fclose(file);
-        exists = true;
+        fclose(file); 
+        return true;
     }
-    else exists = false;
-
-    std::cout<<"Does this file: '"<<_fileName<<"' exist? "<<exists<<std::endl;
-    return exists;
+    else return false;
 }
 
 
-//default values for variables to avoid crashes and check for proper setup before doing anything
+//give default vals for ALL variables to provide predictable behavior even if accidental use before initialisation.
+//allows for proper check for expected setup deafults before doing anything
 void MyPDF::SetVariablesDefault()
 {
     if(debug) std::cout<<" MyPDF::setVariablesDefault: Start default values being set."<<std::endl;
@@ -1269,7 +1241,7 @@ void MyPDF::SetVariablesDefault()
 
     //debug=false;
     //optionsFileName=defaultOptionsFileName;
-    optionsFileName="options_mypdf.txt"; // hardcoded, should use some default string like above
+    optionsFileName="options_mypdf.txt"; // hardcoded, should use some default string
     myOptions=NULL;
     steeringFileDir=defaultString;
     steeringFileName=defaultString;
@@ -1288,6 +1260,7 @@ void MyPDF::SetVariablesDefault()
     renScaleValUp=DEFAULT;
     renScaleValDefault=DEFAULT;
     renScaleValDown=DEFAULT;
+    
     facScaleNameUp=defaultString;
     facScaleNameDefault=defaultString;
     facScaleNameDown=defaultString;
@@ -1329,8 +1302,7 @@ void MyPDF::SetSteeringFileNameAndDir(const string _path)
         if(found==-1) {
             steeringFileDir="<current dir>"; //if there are no slashes, then the file is in the current directory
             steeringFileName=_path;
-        }
-        else {
+        } else {
             steeringFileDir =_path.substr(0,found);
             steeringFileName=_path.substr(found+1);
         }
@@ -1341,14 +1313,13 @@ void MyPDF::SetSteeringFileNameAndDir(const string _path)
                      <<" \n\tpath: '"<<_path.substr(0,found)<<"'"
                      <<" \n\tfile: '"<<_path.substr(found+1)<<"'"<<std::endl;
         }
-    }
-    else {
+    } else {
         std::cout<<" MyPDF::setSteeringFileNameAndDir: Steering file path '"<<_path<<"' is invalid."<<std::endl;
     }
 }
 
 
-//Print out all known supported options that could be read from the steeting file, if they have been read
+//Print out all known supported options that COULD be read from the steeting file
 void MyPDF::PrintKnownOptionsForSteering()
 {
     vector<string> *knownOptions;
@@ -1360,13 +1331,12 @@ void MyPDF::PrintKnownOptionsForSteering()
         for(int i=0; i<knownOptions->size(); i++)
             std::cout<<"\t("<<i<<"):"<<setw(w)<<knownOptions->at(i)<<std::endl;
         std::cout<<" MyPDF::PrintKnownOptionsForSteering: End printing known options."<<std::endl;
-    }
-    else {
+    } else {
         std::cout<<" MyPDF::PrintKnownOptionsForSteering: ERROR: Steering file has not yet been read."<<std::endl;
     }
 }
 
-//Print out all found options read from the steeting file, if they have been read
+//Print out all found options that HAVE been read from the steeting file, if they have been read
 void MyPDF::PrintFoundOptionsFromSteering()
 {
     vector<string> *foundOptions;
@@ -1378,8 +1348,7 @@ void MyPDF::PrintFoundOptionsFromSteering()
         for(int i=0; i<foundOptions->size(); i++)
             std::cout<<"\t("<<i<<"):"<<setw(w)<<foundOptions->at(i)<<std::endl;
         std::cout<<" MyPDF::PrintFoundOptionsFromSteering: End printing found options."<<std::endl;
-    }
-    else {
+    } else {
         std::cout<<" MyPDF::PrintFoundOptionsFromSteering: ERROR: Steering file has not yet been read."<<std::endl;
     }
 }
